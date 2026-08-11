@@ -7,6 +7,9 @@ TypeScript.
 O escopo termina no PRD. O fluxo tecnico (design doc, tarefas, pull requests)
 fica fora desta entrega.
 
+> Para reconstruir ou dar manutencao no projeto passo a passo, veja
+> [`docs/GUIA_DE_IMPLEMENTACAO.md`](docs/GUIA_DE_IMPLEMENTACAO.md).
+
 ## Como rodar
 
 ```bash
