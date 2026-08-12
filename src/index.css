@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+/*
+  A paleta padrao do Tailwind e removida de proposito.
+  Qualquer classe de cor fora das dez abaixo deixa de existir e falha na build,
+  o que impede a entrada acidental de tons cinza ou transparencias.
+*/
+@theme {
+  --color-*: initial;
+
+  --color-lime: #d4e137;
+  --color-green: #8bc34a;
+  --color-sky: #4fc3f7;
+  --color-blue: #0277bd;
+  --color-orange: #fb8c00;
+  --color-ember: #f4511e;
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-line: #e2e8f0;
+  --color-canvas: #f8fafc;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-black);
+  font-family: var(--font-sans);
+}
+
+textarea,
+input,
+select {
+  font-family: inherit;
+}
+
+/* O contorno de foco usa azul da paleta em vez do azul padrao do navegador. */
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-area {
+    border: 0 !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
