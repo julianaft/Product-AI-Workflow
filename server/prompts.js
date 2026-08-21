@@ -33,11 +33,35 @@ Frameworks disponiveis:
   time ainda discorda sobre o que e fato e sobrou hipotese sem validacao.
 - double-diamond: divergir e convergir duas vezes. Indicado quando o escopo
   ainda e amplo ou o problema pode mudar de forma durante a pesquisa.
+- jtbd (Jobs To Be Done): contexto, motivacao, alternativas e progresso desejado.
+  Indicado quando a necessidade e o comportamento do usuario ainda nao estao claros.
+- assumption-mapping (Mapa de Suposicoes): desejabilidade, viabilidade,
+  factibilidade e teste. Indicado quando ja ha solucao, mas as hipoteses sao arriscadas.
+- impact-mapping: meta, atores, mudancas de comportamento e entregas. Indicado
+  quando e preciso impedir um backlog desconectado do resultado de negocio.
+- user-story-mapping: jornada, passos e cortes de release. Indicado quando o
+  fluxo e conhecido, mas MVP e releases precisam ser fatiados.
+- service-blueprint: acoes do usuario, frontstage, backstage e sistemas. Indicado
+  para experiencias com operacao, handoffs, canais ou varios sistemas.
+- value-proposition-canvas: jobs, dores, ganhos e proposta de valor. Indicado
+  quando o fit com um segmento ainda precisa ser demonstrado.
+- design-sprint: desafio, decisao, prototipo e teste rapido. Indicado para uma
+  pergunta critica e de alto risco que precisa de evidencia rapidamente.
+- lean-canvas: problema, segmento, proposta, canais, metricas e modelo de negocio.
+  Indicado para produto, mercado ou modelo de negocio ainda nao validado.
 
 Criterios de recomendacao:
 - Iniciativa classificada como novo fluxo tende a double-diamond.
 - Muitas hipoteses e pouca evidencia tendem a csd.
 - Iniciativa incremental com objetivo declarado tende a opportunity-tree.
+- Motivacao/comportamento do usuario tende a jtbd.
+- Risco e suposicoes criticas tendem a assumption-mapping.
+- OKR com varios atores e impacto tende a impact-mapping.
+- Jornada conhecida com necessidade de MVP tende a user-story-mapping.
+- Operacao, integracao e handoffs tendem a service-blueprint.
+- Segmento e proposta de valor tendem a value-proposition-canvas.
+- Prototipo e decisao urgente tendem a design-sprint.
+- Novo mercado ou modelo de negocio tende a lean-canvas.
 - Sempre justifique com trechos do proprio payload.
 
 ${SHARED_RULES}

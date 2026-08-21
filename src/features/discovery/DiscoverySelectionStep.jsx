@@ -58,7 +58,7 @@ export function DiscoverySelectionStep({ onNext }) {
     <>
       <SkillPanel
         title="Recomendacao de discovery"
-        description="A skill compara a iniciativa com os tres frameworks disponiveis e justifica a escolha. Voce pode adotar outro framework a qualquer momento."
+        description={`A skill compara a necessidade da iniciativa com ${FRAMEWORK_IDS.length} frameworks de discovery e justifica a escolha. Voce pode adotar outro framework a qualquer momento.`}
         runLabel={recommendation ? 'Recomendar de novo' : 'Recomendar'}
         onRun={askSkill}
         loading={loading}
@@ -106,12 +106,12 @@ export function DiscoverySelectionStep({ onNext }) {
         )}
       </SkillPanel>
 
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 mb-6">
         {FRAMEWORK_IDS.map((id) => (
           <OptionCard
             key={id}
             title={FRAMEWORKS[id].label}
-            description={FRAMEWORKS[id].summary}
+            description={`${FRAMEWORKS[id].need} ${FRAMEWORKS[id].summary}`}
             selected={journey.discovery.framework === id}
             recommended={recommendation?.recommendedFramework === id}
             onSelect={() => chooseFramework(id)}

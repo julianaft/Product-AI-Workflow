@@ -45,12 +45,27 @@ npm run build        # build de producao
 | 1 | Contexto do produto | Dados estaveis da squad, reaproveitados por todas as iniciativas |
 | 2 | Iniciativa | Descricao, problema, publico, resultado esperado e restricoes |
 | 3 | Classificacao | A skill sugere incremental ou novo fluxo; o PM confirma |
-| 4 | Ferramenta de discovery | A skill recomenda um dos tres frameworks e justifica |
+| 4 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
 | 5 | Preenchimento do discovery | Sugestao por campo, revisao automatica e aprovacao humana |
 | 6 | PRD | Documento gerado, editavel, aprovavel e exportavel |
 
-Frameworks disponiveis: Arvore de Oportunidades, Matriz CSD e Double Diamond.
+Frameworks disponiveis:
+
+- Arvore de Oportunidades — outcome, dores, solucoes e experimentos
+- Matriz CSD — fatos, suposicoes e duvidas
+- Double Diamond — problema amplo e convergencia
+- Jobs To Be Done — motivacao e progresso do usuario
+- Mapa de Suposicoes — hipoteses mais arriscadas
+- Impact Mapping — meta, atores, impactos e entregas
+- User Story Mapping — jornada e cortes de MVP
+- Service Blueprint — operacao, canais, handoffs e sistemas
+- Value Proposition Canvas — segmento e proposta de valor
+- Design Sprint — prototipo e teste rapido
+- Lean Canvas — novo produto, mercado ou modelo de negocio
+
 Trocar de framework nao apaga conteudo — cada um guarda os proprios campos.
+Veja a orientacao de uso em
+[`docs/FRAMEWORKS_DISCOVERY.md`](docs/FRAMEWORKS_DISCOVERY.md).
 
 ## Skills de IA
 

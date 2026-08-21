@@ -101,6 +101,168 @@ function normalizeDiscovery(discovery = {}) {
         doubts: '',
       };
 
+    case 'jtbd':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: discoveryValue(discovery, 'desiredOutcomes'),
+        problem: [
+          discoveryValue(discovery, 'situation'),
+          discoveryValue(discovery, 'job'),
+          discoveryValue(discovery, 'currentAlternatives'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        solution: '',
+        experiments: '',
+        hypotheses: discoveryValue(discovery, 'forces'),
+        certainties: '',
+        doubts: '',
+      };
+
+    case 'assumption-mapping':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: '',
+        problem: discoveryValue(discovery, 'riskiestAssumptions'),
+        solution: '',
+        experiments: discoveryValue(discovery, 'validationPlan'),
+        hypotheses: [
+          discoveryValue(discovery, 'desirability'),
+          discoveryValue(discovery, 'viability'),
+          discoveryValue(discovery, 'feasibility'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        certainties: '',
+        doubts: discoveryValue(discovery, 'riskiestAssumptions'),
+      };
+
+    case 'impact-mapping':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: [
+          discoveryValue(discovery, 'goal'),
+          discoveryValue(discovery, 'measures'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        problem: [
+          discoveryValue(discovery, 'actors'),
+          discoveryValue(discovery, 'impacts'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        solution: discoveryValue(discovery, 'deliverables'),
+        experiments: '',
+        hypotheses: discoveryValue(discovery, 'impacts'),
+        certainties: '',
+        doubts: '',
+      };
+
+    case 'user-story-mapping':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: discoveryValue(discovery, 'personas'),
+        problem: discoveryValue(discovery, 'gaps'),
+        solution: [
+          discoveryValue(discovery, 'backbone'),
+          discoveryValue(discovery, 'tasks'),
+          discoveryValue(discovery, 'releaseSlices'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        experiments: '',
+        hypotheses: '',
+        certainties: '',
+        doubts: discoveryValue(discovery, 'gaps'),
+      };
+
+    case 'service-blueprint':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: discoveryValue(discovery, 'journey'),
+        problem: discoveryValue(discovery, 'failurePoints'),
+        solution: [
+          discoveryValue(discovery, 'frontstage'),
+          discoveryValue(discovery, 'backstage'),
+          discoveryValue(discovery, 'supportSystems'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        experiments: '',
+        hypotheses: '',
+        certainties: discoveryValue(discovery, 'userActions'),
+        doubts: discoveryValue(discovery, 'failurePoints'),
+      };
+
+    case 'value-proposition-canvas':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: discoveryValue(discovery, 'gains'),
+        problem: [
+          discoveryValue(discovery, 'customerJobs'),
+          discoveryValue(discovery, 'pains'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        solution: [
+          discoveryValue(discovery, 'productsServices'),
+          discoveryValue(discovery, 'painRelievers'),
+          discoveryValue(discovery, 'gainCreators'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        experiments: discoveryValue(discovery, 'fitEvidence'),
+        hypotheses: '',
+        certainties: '',
+        doubts: '',
+      };
+
+    case 'design-sprint':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: discoveryValue(discovery, 'challenge'),
+        problem: discoveryValue(discovery, 'sprintQuestions'),
+        solution: discoveryValue(discovery, 'solutionIdeas'),
+        experiments: [
+          discoveryValue(discovery, 'prototype'),
+          discoveryValue(discovery, 'testResults'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        hypotheses: discoveryValue(discovery, 'sprintQuestions'),
+        certainties: '',
+        doubts: '',
+      };
+
+    case 'lean-canvas':
+      return {
+        frameworkLabel: framework?.label ?? 'Discovery',
+        outcome: [
+          discoveryValue(discovery, 'uniqueValueProposition'),
+          discoveryValue(discovery, 'metrics'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        problem: [
+          discoveryValue(discovery, 'problems'),
+          discoveryValue(discovery, 'segments'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        solution: [
+          discoveryValue(discovery, 'solution'),
+          discoveryValue(discovery, 'channels'),
+          discoveryValue(discovery, 'businessModel'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        experiments: '',
+        hypotheses: discoveryValue(discovery, 'problems'),
+        certainties: '',
+        doubts: '',
+      };
+
     default:
       return {
         frameworkLabel: 'Discovery',

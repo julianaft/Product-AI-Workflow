@@ -8,6 +8,7 @@ import {
 } from '../shared/discoverySkill.js';
 import { PRD_SECTION_KEYS, generatePrd, prdToMarkdown } from '../shared/prdSkill.js';
 import { assertPrd, assertDiscoveryRecommendation } from '../shared/contracts.js';
+import { FRAMEWORKS, FRAMEWORK_IDS } from '../shared/frameworks.js';
 
 const product = {
   name: 'GCAM',
@@ -62,6 +63,42 @@ test('iniciativa incremental com objetivo claro recebe arvore de oportunidades',
   });
 
   assert.equal(result.recommendedFramework, 'opportunity-tree');
+});
+
+test('catalogo disponibiliza pelo menos 10 frameworks com necessidade e campos definidos', () => {
+  assert.ok(FRAMEWORK_IDS.length >= 10);
+
+  for (const id of FRAMEWORK_IDS) {
+    assert.equal(FRAMEWORKS[id].id, id);
+    assert.ok(FRAMEWORKS[id].need.length > 10);
+    assert.ok(FRAMEWORKS[id].summary.length > 10);
+    assert.ok(FRAMEWORKS[id].fields.length >= 3);
+  }
+});
+
+test('skill recomenda frameworks diferentes conforme a necessidade', () => {
+  const scenarios = [
+    ['service-blueprint', 'Mapear handoff da operacao e integracao entre varios sistemas.'],
+    ['user-story-mapping', 'Definir o MVP e fatiar cada release da jornada ponta a ponta.'],
+    ['jtbd', 'Entender a motivacao e o comportamento de abandono do usuario.'],
+    ['assumption-mapping', 'Existe risco e incerteza em uma hipotese critica que precisamos validar antes.'],
+    ['impact-mapping', 'O OKR envolve varios atores e mudanca de comportamento para gerar impacto.'],
+    ['value-proposition-canvas', 'Validar a proposta de valor e o fit com um novo segmento.'],
+    ['design-sprint', 'Criar um prototipo e testar rapido uma decisao urgente.'],
+    ['lean-canvas', 'Validar o modelo de negocio e a receita em um novo mercado.'],
+  ];
+
+  for (const [expected, description] of scenarios) {
+    const result = recommendDiscovery({
+      product,
+      initiative: { ...incrementalInitiative, description },
+      initiativeType: expected === 'lean-canvas' ? 'new' : 'incremental',
+    });
+
+    assert.equal(result.recommendedFramework, expected, description);
+    assert.doesNotThrow(() => assertDiscoveryRecommendation(result));
+    assert.ok(Object.keys(result.suggestedFields).length >= 3);
+  }
 });
 
 test('revisao aponta campo obrigatorio vazio e bloqueia o PRD', () => {
