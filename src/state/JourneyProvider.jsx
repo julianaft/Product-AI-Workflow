@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
-import { createJourney } from './journeyModel.js';
+import { createJourney, mergeJourney } from './journeyModel.js';
 import { journeyReducer } from './journeyReducer.js';
 import { loadJourney, saveJourney } from '../services/storage.js';
 
@@ -7,7 +7,7 @@ const JourneyContext = createContext(null);
 
 function init() {
   const stored = loadJourney();
-  return stored ? { ...createJourney(), ...stored } : createJourney();
+  return stored ? mergeJourney(stored) : createJourney();
 }
 
 export function JourneyProvider({ children }) {

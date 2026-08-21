@@ -209,7 +209,7 @@ Regra que atravessa todas: quando falta insumo, use a constante `PENDING`
 ### 6.2 Skill de PRD (`shared/prdSkill.js`)
 
 - Exporte `PRD_SECTIONS` (chave + rotulo) como fonte unica da ordem das secoes.
-- `normalizeDiscovery(discovery)` traduz qualquer um dos tres frameworks para um
+- `normalizeDiscovery(discovery)` traduz qualquer framework do catalogo para um
   formato comum (problema, solucao, experimentos, etc.), para o gerador nao
   precisar conhecer cada formato.
 - `generatePrd(payload)` monta titulo, metadados, todas as secoes,
@@ -361,7 +361,7 @@ validacao e (quando aplicavel) skill.
    sugestao e exige confirmacao humana via `OptionCard` + botao confirmar.
 4. **`discovery/DiscoverySelectionStep.jsx`** — dispara a skill de recomendacao,
    exibe motivo, alternativas e perguntas, e deixa o PM escolher qualquer um dos
-   tres frameworks.
+   frameworks disponiveis.
 5. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
    a partir dos metadados, oferece sugestao por campo e "preencher vazios",
    roda a revisao e exige aprovacao humana.

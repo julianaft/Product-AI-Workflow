@@ -1,13 +1,26 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { createJourney, discoveryFields } from '../src/state/journeyModel.js';
+import { createJourney, discoveryFields, mergeJourney } from '../src/state/journeyModel.js';
 import { journeyReducer } from '../src/state/journeyReducer.js';
 import { isStepComplete, validateStep } from '../src/services/validation.js';
 
 function reduce(state, ...actions) {
   return actions.reduce(journeyReducer, state);
 }
+
+test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
+  const merged = mergeJourney({
+    product: { name: 'GCAM', squad: 'GCAM' },
+    initiative: { name: 'Input Output' },
+  });
+
+  assert.equal(merged.product.name, 'GCAM');
+  assert.equal(merged.product.directorate, '');
+  assert.equal(merged.initiative.okrCode, '');
+  assert.equal(merged.initiative.stakeholders, '');
+});
+
 
 test('trocar de framework preserva o conteudo do framework anterior', () => {
   const journey = reduce(

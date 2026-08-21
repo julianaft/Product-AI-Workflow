@@ -15,15 +15,24 @@ export function InitiativeStep({ onNext }) {
 
   return (
     <>
-      <TextField
-        label="Nome da iniciativa"
-        required
-        value={journey.initiative.name}
-        error={errorFor(errors, 'name')}
-        onBlur={markTouched('name')}
-        onChange={update('name')}
-        placeholder="Lucro Extra Progressivo"
-      />
+      <div className="grid gap-x-6 md:grid-cols-2">
+        <TextField
+          label="Nome da iniciativa"
+          required
+          value={journey.initiative.name}
+          error={errorFor(errors, 'name')}
+          onBlur={markTouched('name')}
+          onChange={update('name')}
+          placeholder="Automatizacao de input e output"
+        />
+        <TextField
+          label="Codigo da iniciativa OKR"
+          hint="Identificador rastreavel da iniciativa, se existir."
+          value={journey.initiative.okrCode}
+          onChange={update('okrCode')}
+          placeholder="C17IN1120"
+        />
+      </div>
 
       <TextAreaField
         label="Descricao"
@@ -69,8 +78,16 @@ export function InitiativeStep({ onNext }) {
       </div>
 
       <TextAreaField
-        label="Restricoes conhecidas"
-        hint="Prazo, dependencia de outro time, sistema legado."
+        label="Pessoas envolvidas por area"
+        hint="Agrupar por squad, areas parceiras e areas consumidoras."
+        rows={4}
+        value={journey.initiative.stakeholders}
+        onChange={update('stakeholders')}
+      />
+
+      <TextAreaField
+        label="Restricoes e dependencias conhecidas"
+        hint="Prazo, planilha, sistema, area ou permissao sem os quais a entrega nao fecha."
         rows={3}
         value={journey.initiative.constraints}
         onChange={update('constraints')}
