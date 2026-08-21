@@ -1,30 +1,26 @@
 /**
  * Skill de PRD — implementacao deterministica.
  *
- * Regra central: o documento so pode usar informacao que chegou no payload.
- * O que falta vira pergunta em aberto, nunca texto inventado. Uma futura versao
- * baseada em LLM deve manter exatamente o mesmo contrato de saida e a mesma regra.
+ * O documento segue o modelo de PRDs reais de produto: iniciativa OKR,
+ * pessoas por area, hipoteses com dor/decisao, metricas AS IS/TO BE,
+ * solucoes com jornada, CAs agrupados, permissao, regras de campo, erros,
+ * fora de escopo, dependencias e epicos.
+ *
+ * Regra central: so usa informacao do payload. O que falta vira pergunta
+ * em aberto, nunca texto inventado.
  */
 
+import {
+  ACCEPTANCE_TEMPLATE,
+  HYPOTHESIS_TEMPLATE,
+  METRIC_TEMPLATE,
+  PRD_SECTION_KEYS,
+  PRD_SECTIONS,
+  SOLUTION_TEMPLATE,
+} from './prdSections.js';
 import { getFramework } from './frameworks.js';
 
-export const PRD_SECTIONS = [
-  { key: 'context', label: 'Contextualizacao' },
-  { key: 'problem', label: 'Problema ou necessidade' },
-  { key: 'audience', label: 'Publico afetado' },
-  { key: 'objectives', label: 'Objetivos' },
-  { key: 'hypotheses', label: 'Hipoteses' },
-  { key: 'proposedSolution', label: 'Solucao proposta' },
-  { key: 'scope', label: 'Escopo' },
-  { key: 'outOfScope', label: 'Fora do escopo' },
-  { key: 'expectedImpact', label: 'Impacto esperado' },
-  { key: 'successMetrics', label: 'Metricas de sucesso' },
-  { key: 'risks', label: 'Riscos' },
-  { key: 'assumptions', label: 'Premissas' },
-  { key: 'experiments', label: 'Experimentos' },
-];
-
-export const PRD_SECTION_KEYS = PRD_SECTIONS.map((section) => section.key);
+export { PRD_SECTION_KEYS, PRD_SECTIONS };
 
 const MISSING = 'Nao informado no discovery. Ver perguntas em aberto.';
 
@@ -51,14 +47,20 @@ function bulletize(value) {
     .join('\n');
 }
 
+function listPeople(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => text(item)).filter(Boolean);
+  }
+  return text(value)
+    .split(/[,;/\n]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function discoveryValue(discovery, key) {
   return text(discovery?.fields?.[key]);
 }
 
-/**
- * Extrai contexto, problema, solucao e experimentos independente do framework,
- * para que o restante do gerador nao precise conhecer cada formato.
- */
 function normalizeDiscovery(discovery = {}) {
   const framework = getFramework(discovery.framework);
 
@@ -113,20 +115,164 @@ function normalizeDiscovery(discovery = {}) {
   }
 }
 
-function buildOpenQuestions({ initiative, discovery, sections }) {
+function splitSolutionBlocks(raw) {
+  const source = text(raw);
+  if (!source) return [];
+
+  const chunks = source.split(/\n(?=solu[cç][aã]o\s*\d+\s*[:.-])/i);
+  if (chunks.length > 1) {
+    return chunks.map((chunk) => text(chunk)).filter(Boolean);
+  }
+  return [source];
+}
+
+function formatHypotheses({ discovery, initiative }) {
+  const source = discovery.hypotheses || initiative.problem;
+  if (isBlank(source)) {
+    return `${MISSING}\n\nModelo esperado:\n${HYPOTHESIS_TEMPLATE}`;
+  }
+
+  if (/^h\d+\s*:/i.test(text(source))) {
+    return text(source);
+  }
+
+  const lines = text(source)
+    .split(/\n+/)
+    .map((line) => line.replace(/^[-•*]\s*/, '').trim())
+    .filter(Boolean);
+
+  return lines
+    .map((line, index) => {
+      return [
+        `H${index + 1}: ${line.slice(0, 80)}`,
+        `Dor: ${line}`,
+        'Hipotese: Se [acao], entao [resultado mensuravel] — [a preencher]',
+        'Decisao: [a preencher]',
+      ].join('\n');
+    })
+    .join('\n\n');
+}
+
+function formatImpactMetrics({ initiative, discovery }) {
+  const outcome = initiative.expectedOutcome || discovery.outcome;
+  if (isBlank(outcome)) {
+    return `${MISSING}\n\nModelo esperado:\n${METRIC_TEMPLATE}`;
+  }
+
+  return [
+    'Solucao 1: [nome da solucao — a confirmar]',
+    `- Resultado esperado informado: ${text(outcome)}`,
+    '- Cobertura: [a preencher]',
+    '- Volume: [a preencher]',
+    '- AS IS: [tempo ou esforco atual — a preencher]',
+    '- TO BE: [tempo ou esforco esperado — a preencher]',
+    '- Reducao / impacto: [delta — a preencher se nao estiver no resultado esperado]',
+  ].join('\n');
+}
+
+function formatSolutions({ discovery, initiative }) {
+  const blocks = splitSolutionBlocks(discovery.solution || initiative.description);
+  if (blocks.length === 0) {
+    return `${MISSING}\n\nModelo esperado:\n${SOLUTION_TEMPLATE}`;
+  }
+
+  return blocks
+    .map((block, index) => {
+      const title = /^solu[cç][aã]o\s*\d+/i.test(block)
+        ? block.split('\n')[0]
+        : `Solucao ${index + 1}: ${initiative.name || 'sem titulo'}`;
+      const body = /^solu[cç][aã]o\s*\d+/i.test(block)
+        ? block.split('\n').slice(1).join('\n').trim()
+        : block;
+
+      return [
+        title,
+        'Aplicavel a: [a preencher]',
+        'Jornada AS IS:',
+        '- [a preencher]',
+        'Jornada TO BE:',
+        '- [a preencher]',
+        `Descricao: ${body || MISSING}`,
+        'Mudancas necessarias:',
+        '- [a preencher]',
+      ].join('\n');
+    })
+    .join('\n\n');
+}
+
+function formatAcceptanceCriteria({ discovery, initiative }) {
+  const blocks = splitSolutionBlocks(discovery.solution || initiative.description);
+  if (blocks.length === 0) {
+    return `${MISSING}\n\nModelo esperado:\n${ACCEPTANCE_TEMPLATE}`;
+  }
+
+  return blocks
+    .map((block, index) => {
+      const name = /^solu[cç][aã]o\s*\d+/i.test(block)
+        ? block.split('\n')[0]
+        : `Solucao ${index + 1}`;
+      return [
+        name,
+        'CA1: Dado [contexto], quando [acao], entao [resultado observavel] — [a preencher]',
+      ].join('\n');
+    })
+    .join('\n\n');
+}
+
+function formatStakeholders({ product, initiative }) {
+  const groups = [];
+  const squadPeople = listPeople(product.owners);
+  if (product.squad || squadPeople.length) {
+    groups.push(
+      `- Squad ${product.squad || '[squad]'}: ${squadPeople.join(', ') || '[a preencher]'}`,
+    );
+  }
+  if (!isBlank(initiative.stakeholders)) {
+    groups.push(bulletize(initiative.stakeholders));
+  }
+  if (!isBlank(product.pm)) groups.push(`- PM / GPM: ${text(product.pm)}`);
+  if (!isBlank(product.pd)) groups.push(`- PD: ${text(product.pd)}`);
+  if (!isBlank(product.tm)) groups.push(`- TM: ${text(product.tm)}`);
+  if (!isBlank(product.tl)) groups.push(`- TL: ${text(product.tl)}`);
+
+  return groups.length ? groups.join('\n') : MISSING;
+}
+
+function formatOkr({ initiative }) {
+  const code = text(initiative.okrCode);
+  const name = text(initiative.name);
+  if (!code && !name) return MISSING;
+  if (code && name) return `${code} - ${name}`;
+  if (code) return code;
+  return `${name}\nCodigo OKR: [a preencher]`;
+}
+
+function buildOpenQuestions({ product, initiative, discovery, sections }) {
   const questions = [];
 
-  if (isBlank(initiative.expectedOutcome) && isBlank(discovery.outcome)) {
-    questions.push('Qual metrica de negocio comprova o sucesso desta iniciativa?');
+  if (isBlank(initiative.okrCode)) {
+    questions.push('Qual e o codigo da iniciativa OKR?');
   }
-  if (isBlank(discovery.problem)) {
+  if (isBlank(initiative.expectedOutcome) && isBlank(discovery.outcome)) {
+    questions.push('Qual metrica de negocio comprova o sucesso, com baseline AS IS e meta TO BE?');
+  }
+  if (isBlank(discovery.problem) && isBlank(initiative.problem)) {
     questions.push('Qual problema, com evidencia, esta iniciativa resolve?');
   }
-  if (isBlank(discovery.solution)) {
-    questions.push('Qual solucao foi escolhida e por que ela venceu as alternativas?');
+  if (isBlank(discovery.solution) && isBlank(initiative.description)) {
+    questions.push('Quais solucoes entram nesta entrega e para que recorte cada uma vale?');
   }
-  if (isBlank(discovery.experiments)) {
-    questions.push('Como a solucao sera validada antes da construcao completa?');
+  if (!text(sections.solutions).includes('Jornada AS IS') || text(sections.solutions).includes('[a preencher]')) {
+    questions.push('A jornada AS IS e TO BE de cada solucao foi descrita passo a passo?');
+  }
+  if (text(sections.acceptanceCriteria).includes('[a preencher]') || sections.acceptanceCriteria === MISSING) {
+    questions.push('Os criterios de aceite estao escritos de forma verificavel por solucao?');
+  }
+  if (sections.outOfScope === MISSING || /nao definido/i.test(sections.outOfScope)) {
+    questions.push('O que explicitamente fica fora desta entrega?');
+  }
+  if (isBlank(product.pm) && listPeople(product.owners).length === 0) {
+    questions.push('Quem sao as pessoas envolvidas, agrupadas por area?');
   }
 
   for (const section of PRD_SECTIONS) {
@@ -138,9 +284,6 @@ function buildOpenQuestions({ initiative, discovery, sections }) {
   return [...new Set(questions)];
 }
 
-/**
- * Gera o rascunho completo do PRD a partir do contexto aprovado.
- */
 export function generatePrd(payload = {}) {
   const product = payload.productContext ?? {};
   const initiative = payload.initiative ?? {};
@@ -149,39 +292,49 @@ export function generatePrd(payload = {}) {
   const links = Array.isArray(payload.referenceLinks) ? payload.referenceLinks : [];
 
   const sections = {
+    okrInitiative: formatOkr({ initiative }),
+    stakeholders: formatStakeholders({ product, initiative }),
     context: orMissing(
       [product.businessContext, product.technicalContext].filter(Boolean).join('\n\n'),
     ),
     problem: orMissing(discovery.problem || initiative.problem),
     audience: orMissing(initiative.audience),
-    objectives: bulletize(initiative.expectedOutcome || discovery.outcome),
-    hypotheses: bulletize(discovery.hypotheses || discovery.problem),
-    proposedSolution: orMissing(discovery.solution || initiative.description),
-    scope: bulletize(discovery.solution),
-    outOfScope: 'Nao definido. Listar explicitamente o que fica fora desta entrega.',
-    expectedImpact: bulletize(discovery.outcome || initiative.expectedOutcome),
-    successMetrics: isBlank(initiative.expectedOutcome)
-      ? MISSING
-      : `- Metrica derivada do resultado esperado: ${text(initiative.expectedOutcome)}\n- Meta numerica: a definir com o time de dados.`,
-    risks: isBlank(initiative.constraints)
-      ? MISSING
-      : bulletize(initiative.constraints),
+    hypotheses: formatHypotheses({ discovery, initiative }),
+    impactMetrics: formatImpactMetrics({ initiative, discovery }),
+    solutions: formatSolutions({ discovery, initiative }),
+    permissions: MISSING,
+    fieldRules: MISSING,
+    errorHandling: MISSING,
+    acceptanceCriteria: formatAcceptanceCriteria({ discovery, initiative }),
+    outOfScope: MISSING,
+    dependencies: isBlank(initiative.constraints) ? MISSING : bulletize(initiative.constraints),
+    epics: MISSING,
+    risks: isBlank(initiative.constraints) ? MISSING : bulletize(initiative.constraints),
     assumptions: bulletize(discovery.certainties),
     experiments: bulletize(discovery.experiments),
   };
 
-  const openQuestions = buildOpenQuestions({ initiative, discovery, sections });
+  const openQuestions = buildOpenQuestions({ product, initiative, discovery, sections });
+  const owners = listPeople(product.owners);
 
   return {
     title: text(initiative.name) || 'PRD sem titulo',
     metadata: {
+      directorate: text(product.directorate),
       product: text(product.name),
       tribe: text(product.tribe),
       squad: text(product.squad),
-      owners: Array.isArray(product.owners) ? product.owners : [],
+      pm: text(product.pm),
+      pd: text(product.pd),
+      writers: listPeople(product.writers).length ? listPeople(product.writers) : owners,
+      tm: text(product.tm),
+      tl: text(product.tl),
+      owners,
+      okrCode: text(initiative.okrCode),
       initiativeType: classification.type ?? null,
       discoveryFramework: payload.discovery?.framework ?? null,
       status: 'draft',
+      reviewers: Array.isArray(payload.reviewers) ? payload.reviewers : [],
     },
     sections,
     openQuestions,
@@ -194,14 +347,12 @@ export function generatePrd(payload = {}) {
       framework: discovery.frameworkLabel,
       discoveryApproved: Boolean(payload.discovery?.approved),
       generatedFrom: ['productContext', 'initiative', 'discovery'],
+      model: 'prd-v2-input-output',
     },
     generatedAt: new Date().toISOString(),
   };
 }
 
-/**
- * Regera uma unica secao, preservando o restante do documento editado.
- */
 export function regeneratePrdSection(payload = {}, sectionKey) {
   if (!PRD_SECTION_KEYS.includes(sectionKey)) {
     throw new Error(`Secao desconhecida: ${sectionKey}`);
@@ -216,9 +367,6 @@ export function regeneratePrdSection(payload = {}, sectionKey) {
   };
 }
 
-/**
- * Renderiza o PRD em Markdown para exportacao.
- */
 export function prdToMarkdown(prd) {
   if (!prd) return '';
 
@@ -226,10 +374,16 @@ export function prdToMarkdown(prd) {
   const metadata = prd.metadata ?? {};
 
   lines.push('| Campo | Valor |', '| --- | --- |');
+  lines.push(`| Dir. | ${metadata.directorate || '-'} |`);
   lines.push(`| Produto | ${metadata.product || '-'} |`);
   lines.push(`| Tribo | ${metadata.tribe || '-'} |`);
   lines.push(`| Squad | ${metadata.squad || '-'} |`);
-  lines.push(`| Responsaveis | ${(metadata.owners ?? []).join(', ') || '-'} |`);
+  lines.push(`| PM / GPM | ${metadata.pm || '-'} |`);
+  lines.push(`| PD | ${metadata.pd || '-'} |`);
+  lines.push(`| Redatores | ${(metadata.writers ?? []).join(', ') || '-'} |`);
+  lines.push(`| TM | ${metadata.tm || '-'} |`);
+  lines.push(`| TL | ${metadata.tl || '-'} |`);
+  lines.push(`| Iniciativa OKR | ${metadata.okrCode || '-'} |`);
   lines.push(`| Tipo | ${metadata.initiativeType || '-'} |`);
   lines.push(`| Discovery | ${metadata.discoveryFramework || '-'} |`);
   lines.push(`| Status | ${metadata.status || 'draft'} |`, '');
@@ -247,9 +401,17 @@ export function prdToMarkdown(prd) {
   }
 
   if (prd.references?.length) {
-    lines.push('## Referencias', '');
+    lines.push('## Links importantes', '');
     for (const reference of prd.references) {
       lines.push(`- [${reference.title || reference.url}](${reference.url})`);
+    }
+    lines.push('');
+  }
+
+  if (metadata.reviewers?.length) {
+    lines.push('## Revisores', '', '| Participante | Status da analise |', '| --- | --- |');
+    for (const reviewer of metadata.reviewers) {
+      lines.push(`| ${reviewer.name || reviewer} | ${reviewer.status || 'Nao iniciada'} |`);
     }
     lines.push('');
   }

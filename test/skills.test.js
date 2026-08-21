@@ -132,5 +132,52 @@ test('exportacao em markdown inclui titulo e secoes', () => {
   const markdown = prdToMarkdown(prd);
 
   assert.ok(markdown.startsWith('# Lucro Extra Progressivo'));
-  assert.ok(markdown.includes('## Metricas de sucesso'));
+  assert.ok(markdown.includes('## Metricas de impacto'));
+  assert.ok(markdown.includes('## Criterios de aceite'));
+});
+
+test('PRD detalha hipoteses no formato Hn e pede AS IS / TO BE quando falta numero', () => {
+  const prd = generatePrd({
+    productContext: product,
+    initiative: {
+      ...incrementalInitiative,
+      okrCode: 'C17IN1120',
+    },
+    discovery: {
+      framework: 'csd',
+      approved: true,
+      fields: {
+        certainties: 'Cadastro ainda e manual.',
+        assumptions: 'A digitacao dos campos descritivos gera retrabalho.',
+        doubts: 'Qual recorte de mecanica entra na primeira entrega?',
+      },
+    },
+  });
+
+  assert.match(prd.sections.hypotheses, /H1:/);
+  assert.match(prd.sections.hypotheses, /Dor:/);
+  assert.match(prd.sections.impactMetrics, /AS IS/);
+  assert.equal(prd.metadata.okrCode, 'C17IN1120');
+});
+
+test('varias solucoes no discovery viram blocos separados no PRD', () => {
+  const prd = generatePrd({
+    productContext: product,
+    initiative: incrementalInitiative,
+    discovery: {
+      framework: 'opportunity-tree',
+      fields: {
+        outcome: 'Reduzir horas de cadastro manual.',
+        opportunities: 'Cadastro unitario nao cabe na janela da rodada.',
+        solutions:
+          'Solucao 1: IA para campos descritivos\nSugestao de nome, descricao e texto legal.\nSolucao 2: Subida massiva\nUpload da planilha e planejamento em lote.',
+        experiments: 'Piloto em uma rodada.',
+      },
+    },
+  });
+
+  assert.match(prd.sections.solutions, /Solucao 1/);
+  assert.match(prd.sections.solutions, /Solucao 2/);
+  assert.match(prd.sections.solutions, /Jornada AS IS/);
+  assert.match(prd.sections.acceptanceCriteria, /CA1:/);
 });

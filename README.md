@@ -9,6 +9,10 @@ fica fora desta entrega.
 
 > Para reconstruir ou dar manutencao no projeto passo a passo, veja
 > [`docs/GUIA_DE_IMPLEMENTACAO.md`](docs/GUIA_DE_IMPLEMENTACAO.md).
+>
+> O modelo de PRD (cabecalho, secoes, hipoteses, AS IS/TO BE e CAs) esta em
+> [`docs/MODELO_PRD.md`](docs/MODELO_PRD.md). Exemplo preenchido:
+> [`fixtures/prd-exemplo-input-output.md`](fixtures/prd-exemplo-input-output.md).
 
 ## Como rodar
 
