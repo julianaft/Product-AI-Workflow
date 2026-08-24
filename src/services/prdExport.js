@@ -71,7 +71,11 @@ export function prdToDocumentHtml(prd) {
   <meta charset="utf-8">
   <title>${escapeHtml(prd.title)}</title>
   <style>
-    body { font-family: Arial, sans-serif; color: #000000; background: #FFFFFF; line-height: 1.5; }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+    body, table, th, td, h1, h2, p, li, a {
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    body { color: #000000; background: #FFFFFF; line-height: 1.5; }
     h1 { color: #0277BD; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; }
     h2 { color: #0277BD; border-bottom: 1px solid #E2E8F0; padding-bottom: 4px; margin-top: 24px; }
     table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }

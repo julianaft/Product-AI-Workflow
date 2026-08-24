@@ -90,7 +90,7 @@ export function PrdStep() {
           <p className="text-sm">
             Versão {document.revision ?? 1} gerada em{' '}
             {new Date(document.generatedAt).toLocaleString('pt-BR')} a partir de{' '}
-            {document.traceability?.framework}. Use o chat ao lado para responder perguntas
+            {document.traceability?.framework}. Use o chat abaixo para responder perguntas
             ou pedir alterações sem perder o restante do documento.
           </p>
         ) : (
@@ -106,7 +106,6 @@ export function PrdStep() {
 
       {document ? (
         <>
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.9fr)] items-start">
           <div className="print-area border border-line rounded-2xl p-5 md:p-8 mb-6">
             <h3 className="text-2xl md:text-3xl font-extrabold border-b border-line pb-3 mb-5">
               {document.title}
@@ -179,7 +178,6 @@ export function PrdStep() {
             error={revisionError}
             onSend={sendRevision}
           />
-          </div>
 
           <HumanGate>
             {approved

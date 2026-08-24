@@ -99,6 +99,13 @@ O conteúdo do NotebookLM não é lido nativamente; o link identifica a fonte. O
 contexto técnico usa somente os repositórios GitHub selecionados para a iniciativa.
 Miro e outros materiais continuam entrando apenas como links de referência.
 
+## Tipografia
+
+A plataforma usa **IBM Plex Sans** em toda a interface. A mesma família é
+declarada na exportação DOC e no conteúdo formatado copiado para o Google Docs.
+Os arquivos usados pela interface são locais, fornecidos por
+`@fontsource/ibm-plex-sans`.
+
 ## Paleta
 
 Somente dez cores sao permitidas:

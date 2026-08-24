@@ -327,8 +327,8 @@ function formatImpactMetrics({ initiative, discovery }) {
     `- Resultado esperado informado: ${text(outcome)}`,
     '- Cobertura: [a preencher]',
     '- Volume: [a preencher]',
-    '- AS IS: [tempo ou esforco atual — a preencher]',
-    '- TO BE: [tempo ou esforco esperado — a preencher]',
+    '- AS IS: [tempo ou esforço atual — a preencher]',
+    '- TO BE: [tempo ou esforço esperado — a preencher]',
     '- Redução / impacto: [delta — a preencher se não estiver no resultado esperado]',
   ].join('\n');
 }
@@ -350,13 +350,13 @@ function formatSolutions({ discovery, initiative }) {
 
       return [
         title,
-        'Aplicavel a: [a preencher]',
+        'Aplicável a: [a preencher]',
         'Jornada AS IS:',
         '- [a preencher]',
         'Jornada TO BE:',
         '- [a preencher]',
         `Descrição: ${body || MISSING}`,
-        'Mudancas necessarias:',
+        'Mudanças necessárias:',
         '- [a preencher]',
       ].join('\n');
     })
@@ -552,7 +552,7 @@ function subtractAnsweredQuestions(questions, answers = []) {
 
 export function regeneratePrdSection(payload = {}, sectionKey) {
   if (!PRD_SECTION_KEYS.includes(sectionKey)) {
-    throw new Error(`Secao desconhecida: ${sectionKey}`);
+    throw new Error(`Seção desconhecida: ${sectionKey}`);
   }
 
   const draft = generatePrd(payload);
