@@ -1,8 +1,9 @@
 # PM Builder — do input da iniciativa ao PRD
 
-Aplicação React que conduz um Product Manager por seis etapas, do contexto do
-produto ate um PRD revisado e aprovado. Escrita em JavaScript puro, sem
-TypeScript.
+Aplicação React para Product Managers, com login Google mockado, configuração
+reutilizável do projeto/time e jornadas independentes por iniciativa. Cada
+iniciativa percorre cinco etapas até um PRD revisado e aprovado. Escrita em
+JavaScript puro, sem TypeScript.
 
 O escopo termina no PRD. O fluxo técnico (design doc, tarefas, pull requests)
 fica fora desta entrega.
@@ -38,16 +39,22 @@ npm test             # testes das skills, do reducer e das validações
 npm run build        # build de producao
 ```
 
-## As seis etapas
+## Login, setup e iniciativas
+
+1. **Login mockado:** o e-mail simula a identidade Google e separa os dados
+   locais de cada pessoa.
+2. **Setup do projeto/time:** membros, documentação geral de negócio e
+   repositórios são cadastrados uma vez.
+3. **Iniciativas:** o dashboard permite criar e retomar vários discoveries,
+   todos herdando o setup.
 
 | # | Etapa | O que acontece |
 | --- | --- | --- |
-| 1 | Contexto do produto | Dados estaveis da squad, reaproveitados por todas as iniciativas |
-| 2 | Iniciativa | Descrição, problema, público, resultado esperado e restrições |
-| 3 | Classificação | A skill sugere incremental ou novo fluxo; o PM confirma |
-| 4 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
-| 5 | Preenchimento do discovery | Rascunho automático a partir da dor e da entrega, revisão e aprovação |
-| 6 | PRD | Documento gerado, revisado por chat, aprovável e exportável em DOC |
+| 1 | Iniciativa | Descrição, problema, público, resultado esperado e restrições |
+| 2 | Classificação | A skill sugere incremental ou novo fluxo; o PM confirma |
+| 3 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
+| 4 | Preenchimento do discovery | Rascunho automático a partir da dor e da entrega, revisão e aprovação |
+| 5 | PRD | Documento gerado, revisado por chat, aprovável e exportável em DOC |
 
 Frameworks disponiveis:
 
@@ -96,7 +103,7 @@ interface para o servidor.
 
 O contexto de negócio aceita link do NotebookLM ou arquivo TXT/DOC baseado em texto.
 O conteúdo do NotebookLM não é lido nativamente; o link identifica a fonte. O
-contexto técnico usa somente os repositórios GitHub selecionados para a iniciativa.
+contexto técnico usa os repositórios GitHub selecionados no setup do projeto.
 Miro e outros materiais continuam entrando apenas como links de referência.
 
 ## Tipografia
@@ -147,8 +154,10 @@ Duas regras do reducer merecem atencao:
 
 ## Persistencia
 
-`localStorage`, com autosave em `src/services/storage.js`. O acesso esta isolado
-num serviço para que a troca por uma API não exija tocar em componente nenhum.
+`localStorage`, com autosave em `src/services/storage.js`. Cada e-mail mockado
+usa uma chave de workspace própria, com setup geral e uma lista de iniciativas.
+Isso demonstra isolamento funcional no navegador, mas não substitui autorização
+real: em produção, SSO, sessão e controle de acesso precisam ficar no backend.
 
 ## Proximos passos
 

@@ -21,7 +21,7 @@ servidor de skills em Node com o modulo `http` nativo e testes com `node:test`.
 8. [Bloco 5 — Estado da jornada](#8-bloco-5--estado-da-jornada)
 9. [Bloco 6 — Serviços (IA, validação, storage)](#9-bloco-6--servicos-ia-validacao-storage)
 10. [Bloco 7 — Componentes de interface](#10-bloco-7--componentes-de-interface)
-11. [Bloco 8 — As seis etapas](#11-bloco-8--as-seis-etapas)
+11. [Bloco 8 — Login, setup e etapas da iniciativa](#11-bloco-8--login-setup-e-etapas-da-iniciativa)
 12. [Bloco 9 — Montagem da pagina](#12-bloco-9--montagem-da-pagina)
 13. [Bloco 10 — Servidor de skills](#13-bloco-10--servidor-de-skills)
 14. [Bloco 11 — Testes](#14-bloco-11--testes)
@@ -304,9 +304,11 @@ de obrigatoriedade pelos componentes.
 
 ### 9.3 Storage (`src/services/storage.js`)
 
-`loadJourney`, `saveJourney`, `clearJourney` sobre `localStorage`, com
-try/catch. Isolar o acesso num servico permite trocar por API depois sem tocar
-em componente.
+O storage guarda uma sessão mockada e um workspace por e-mail
+(`pm-builder:workspace:<email>`). Cada workspace contém o setup geral, as
+iniciativas e o ID da iniciativa ativa. A chave antiga `pm-builder:journey` é
+migrada uma única vez para a primeira conta que entrar. Esse isolamento é só
+funcional no navegador; produção exige backend e autorização por usuário.
 
 ### 9.4 Payload do PRD (`src/services/prdPayload.js`)
 
@@ -349,27 +351,31 @@ montagem das etapas.
 
 ---
 
-## 11. Bloco 8 — As seis etapas
+## 11. Bloco 8 — Login, setup e etapas da iniciativa
 
-**Objetivo:** uma pasta por etapa em `src/features/`, cada uma consumindo estado,
-validação e (quando aplicável) skill.
+**Objetivo:** separar identidade, configuração estável e trabalho por iniciativa.
 
-1. **`product-context/ProductContextStep.jsx`** — formulário com Produto, PM,
+1. **`auth/MockLoginPage.jsx`** — simula o login Google por e-mail. Cada conta
+   carrega uma chave própria de workspace no storage.
+2. **`workspace/ProjectSetupPage.jsx`** — envolve o formulário de contexto com
+   Produto, PM,
    PD, TM e TL; fonte de contexto de negócio por NotebookLM ou TXT/DOC; e seleção
-   explícita dos repositórios GitHub relevantes para a iniciativa.
-2. **`initiative/InitiativeStep.jsx`** — nome, descrição, problema, público,
+   dos repositórios do projeto. Esse setup é reaproveitado.
+3. **`workspace/WorkspaceDashboard.jsx`** — lista somente as iniciativas da
+   conta ativa e permite criar ou retomar cada fluxo.
+4. **`initiative/InitiativeStep.jsx`** — nome, descrição, problema, público,
    resultado esperado e restrições.
-3. **`initiative/ClassificationStep.jsx`** — dispara a skill de classificação ao
+5. **`initiative/ClassificationStep.jsx`** — dispara a skill de classificação ao
    abrir (com `useRef` para não repetir a chamada em remontagem), mostra a
    sugestão e exige confirmação humana via `OptionCard` + botão confirmar.
-4. **`discovery/DiscoverySelectionStep.jsx`** — dispara a skill de recomendação,
+6. **`discovery/DiscoverySelectionStep.jsx`** — dispara a skill de recomendação,
    exibe motivo, alternativas e perguntas, e deixa o PM escolher qualquer um dos
    frameworks disponíveis.
-5. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
+7. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
    a partir dos metadados, já traz rascunho baseado no problema, na dor e na
    entrega da iniciativa (sem sobrescrever texto do PM), oferece sugestão por
    campo e "preencher vazios", roda a revisão e exige aprovação humana.
-6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
+8. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
    perguntas em aberto e referências; abaixo do documento fica o chat de
    revisão (cada mensagem gera uma nova versão), seguido de aprovar/reabrir,
    exportar DOC compatível com Google Docs e copiar o conteúdo formatado.
@@ -377,8 +383,8 @@ validação e (quando aplicável) skill.
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.
 
-**Validação:** com o dev server rodando, percorra as seis etapas manualmente
-(roteiro no Bloco 16).
+**Validação:** entre com dois e-mails diferentes, confirme o isolamento, configure
+um projeto e crie duas iniciativas sem repetir o setup.
 
 ---
 

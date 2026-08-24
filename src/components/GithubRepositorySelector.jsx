@@ -59,10 +59,10 @@ export function GithubRepositorySelector({
     <section className="border border-line rounded-2xl p-5 mb-6">
       <h3 className="font-extrabold mb-1">Contexto técnico</h3>
       <p className="text-sm mb-4">
-        Carregue os repositórios públicos de uma organização ou usuário e selecione somente os
-        necessários para esta iniciativa. Nesta versão, a seleção registra o escopo; a leitura do
-        código será feita por uma integração posterior. Repositórios privados exigirão autenticação
-        no backend.
+        Carregue os repositórios públicos de uma organização ou usuário e selecione os que
+        pertencem ao contexto técnico geral deste projeto/time. Eles serão reutilizados em novas
+        iniciativas. Nesta versão, a seleção registra o escopo; a leitura do código será feita por
+        uma integração posterior. Repositórios privados exigirão autenticação no backend.
       </p>
 
       <div className="grid gap-3 md:grid-cols-[1fr_auto] mb-4">

@@ -6,6 +6,7 @@ function blank(value) {
 }
 
 const PRODUCT_RULES = [
+  ['projectName', 'Informe o nome do projeto ou time.'],
   ['name', 'Informe o nome do produto.'],
 ];
 
@@ -40,7 +41,7 @@ export function validateStep(stepId, journey) {
           'Adicione uma fonte de contexto de negócio pelo NotebookLM ou por arquivo.';
       }
       if (!journey.product.repositories?.some((repository) => repository.selected)) {
-        errors.repositories = 'Selecione pelo menos um repositório para esta iniciativa.';
+        errors.repositories = 'Selecione pelo menos um repositório do projeto.';
       }
       return { errors, blockers: [] };
     }

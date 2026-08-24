@@ -28,7 +28,7 @@ function technicalContextFromRepositories(product) {
   if (!repositories.length) return '';
 
   return [
-    'Repositórios selecionados para esta iniciativa:',
+    'Repositórios do contexto técnico geral do projeto:',
     ...repositories.map(
       (repository) =>
         `- ${repository.fullName} (${repository.url}) — branch padrão: ${repository.defaultBranch}`,
