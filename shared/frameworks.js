@@ -8,25 +8,25 @@ export const FRAMEWORKS = {
   'opportunity-tree': {
     id: 'opportunity-tree',
     label: 'Arvore de Oportunidades',
-    need: 'Conectar um outcome claro a problemas, solucoes e experimentos.',
+    need: 'Conectar um outcome claro a problemas, soluções e experimentos.',
     summary:
-      'Liga o objetivo de negocio as dores, solucoes e experimentos. Boa para iniciativas incrementais.',
+      'Liga o objetivo de negócio às dores, soluções e experimentos. Boa para iniciativas incrementais.',
     fields: [
       {
         key: 'outcome',
-        label: 'Objetivo de negocio (outcome)',
+        label: 'Objetivo de negócio (outcome)',
         hint: 'Resultado mensuravel que a iniciativa persegue.',
         required: true,
       },
       {
         key: 'opportunities',
         label: 'Oportunidades e dores',
-        hint: 'Problemas reais observados, com a fonte da evidencia.',
+        hint: 'Problemas reais observados, com a fonte da evidência.',
         required: true,
       },
       {
         key: 'solutions',
-        label: 'Solucoes propostas',
+        label: 'Soluções propostas',
         hint: 'Caminhos possiveis para atacar as oportunidades.',
         required: true,
       },
@@ -42,9 +42,9 @@ export const FRAMEWORKS = {
   csd: {
     id: 'csd',
     label: 'Matriz CSD',
-    need: 'Separar fatos, hipoteses e perguntas antes de tomar decisoes.',
+    need: 'Separar fatos, hipóteses e perguntas antes de tomar decisões.',
     summary:
-      'Separa o que e fato, o que e hipotese e o que ainda precisa ser investigado. Boa quando ha muitas duvidas.',
+      'Separa o que é fato, o que é hipótese e o que ainda precisa ser investigado. Boa quando há muitas dúvidas.',
     fields: [
       {
         key: 'certainties',
@@ -54,14 +54,14 @@ export const FRAMEWORKS = {
       },
       {
         key: 'assumptions',
-        label: 'Suposicoes',
-        hint: 'Hipoteses que precisam de validacao.',
+        label: 'Suposições',
+        hint: 'Hipóteses que precisam de validação.',
         required: true,
       },
       {
         key: 'doubts',
-        label: 'Duvidas',
-        hint: 'Perguntas em aberto que bloqueiam decisoes.',
+        label: 'Dúvidas',
+        hint: 'Perguntas em aberto que bloqueiam decisões.',
         required: true,
       },
     ],
@@ -70,7 +70,7 @@ export const FRAMEWORKS = {
   'double-diamond': {
     id: 'double-diamond',
     label: 'Double Diamond',
-    need: 'Explorar um problema amplo e convergir para um recorte de solucao.',
+    need: 'Explorar um problema amplo e convergir para um recorte de solução.',
     summary:
       'Divergir e convergir duas vezes. Boa quando o escopo ainda esta amplo ou indefinido.',
     fields: [
@@ -89,13 +89,13 @@ export const FRAMEWORKS = {
       {
         key: 'develop',
         label: '3. Desenvolver (divergir)',
-        hint: 'Alternativas de solucao consideradas.',
+        hint: 'Alternativas de solução consideradas.',
         required: true,
       },
       {
         key: 'deliver',
         label: '4. Entregar (convergir)',
-        hint: 'A solucao escolhida para o MVP.',
+        hint: 'A solução escolhida para o MVP.',
         required: true,
       },
     ],
@@ -104,9 +104,9 @@ export const FRAMEWORKS = {
   jtbd: {
     id: 'jtbd',
     label: 'Jobs To Be Done',
-    need: 'Entender por que uma pessoa contrata uma solucao e qual progresso busca.',
+    need: 'Entender por que uma pessoa contrata uma solução e qual progresso busca.',
     summary:
-      'Investiga contexto, motivacao, barreiras e resultado desejado. Boa quando o comportamento e a necessidade do usuario ainda nao estao claros.',
+      'Investiga contexto, motivação, barreiras e resultado desejado. Boa quando o comportamento e a necessidade do usuário ainda não estão claros.',
     fields: [
       {
         key: 'situation',
@@ -143,39 +143,39 @@ export const FRAMEWORKS = {
 
   'assumption-mapping': {
     id: 'assumption-mapping',
-    label: 'Mapa de Suposicoes',
-    need: 'Priorizar as hipoteses mais arriscadas antes de investir na solucao.',
+    label: 'Mapa de Suposições',
+    need: 'Priorizar as hipóteses mais arriscadas antes de investir na solução.',
     summary:
-      'Organiza suposicoes por importancia e nivel de evidencia. Boa quando o time ja tem uma solucao, mas nao sabe o que pode invalida-la.',
+      'Organiza suposições por importância e nível de evidência. Boa quando o time já tem uma solução, mas não sabe o que pode invalidá-la.',
     fields: [
       {
         key: 'desirability',
-        label: 'Suposicoes de desejabilidade',
-        hint: 'O usuario quer ou precisa disso?',
+        label: 'Suposições de desejabilidade',
+        hint: 'O usuário quer ou precisa disso?',
         required: true,
       },
       {
         key: 'viability',
-        label: 'Suposicoes de viabilidade',
-        hint: 'O modelo de negocio e as restricoes permitem sustentar a solucao?',
+        label: 'Suposições de viabilidade',
+        hint: 'O modelo de negócio e as restrições permitem sustentar a solução?',
         required: true,
       },
       {
         key: 'feasibility',
-        label: 'Suposicoes de factibilidade',
-        hint: 'E possivel entregar com tecnologia, dados, prazo e operacao disponiveis?',
+        label: 'Suposições de factibilidade',
+        hint: 'É possível entregar com tecnologia, dados, prazo e operação disponíveis?',
         required: true,
       },
       {
         key: 'riskiestAssumptions',
-        label: 'Suposicoes mais arriscadas',
-        hint: 'Importantes para o sucesso e ainda sem evidencia.',
+        label: 'Suposições mais arriscadas',
+        hint: 'Importantes para o sucesso e ainda sem evidência.',
         required: true,
       },
       {
         key: 'validationPlan',
-        label: 'Plano de validacao',
-        hint: 'Teste, evidencia esperada, criterio de sucesso e ordem.',
+        label: 'Plano de validação',
+        hint: 'Teste, evidência esperada, critério de sucesso e ordem.',
         required: true,
       },
     ],
@@ -184,14 +184,14 @@ export const FRAMEWORKS = {
   'impact-mapping': {
     id: 'impact-mapping',
     label: 'Impact Mapping',
-    need: 'Conectar uma meta de negocio a atores, mudancas de comportamento e entregas.',
+    need: 'Conectar uma meta de negócio a atores, mudanças de comportamento e entregas.',
     summary:
-      'Parte da meta e evita backlog de funcionalidades sem impacto. Boa quando ha muitos stakeholders ou solucoes concorrentes.',
+      'Parte da meta e evita backlog de funcionalidades sem impacto. Boa quando há muitos stakeholders ou soluções concorrentes.',
     fields: [
       {
         key: 'goal',
         label: 'Meta',
-        hint: 'Objetivo mensuravel de negocio.',
+        hint: 'Objetivo mensurável de negócio.',
         required: true,
       },
       {
@@ -264,26 +264,26 @@ export const FRAMEWORKS = {
   'service-blueprint': {
     id: 'service-blueprint',
     label: 'Service Blueprint',
-    need: 'Mapear uma experiencia que atravessa canais, operacao e varios sistemas.',
+    need: 'Mapear uma experiência que atravessa canais, operação e vários sistemas.',
     summary:
-      'Relaciona acoes do usuario, frontstage, backstage e suporte. Boa para processos operacionais complexos e integracoes.',
+      'Relaciona ações do usuário, frontstage, backstage e suporte. Boa para processos operacionais complexos e integrações.',
     fields: [
       {
         key: 'journey',
         label: 'Etapas da jornada',
-        hint: 'Sequencia ponta a ponta observada pelo usuario.',
+        hint: 'Sequência ponta a ponta observada pelo usuário.',
         required: true,
       },
       {
         key: 'userActions',
-        label: 'Acoes do usuario',
+        label: 'Ações do usuário',
         hint: 'O que a pessoa faz em cada etapa.',
         required: true,
       },
       {
         key: 'frontstage',
         label: 'Frontstage',
-        hint: 'Telas, pessoas e respostas visiveis ao usuario.',
+        hint: 'Telas, pessoas e respostas visíveis ao usuário.',
         required: true,
       },
       {
@@ -295,7 +295,7 @@ export const FRAMEWORKS = {
       {
         key: 'supportSystems',
         label: 'Sistemas e processos de suporte',
-        hint: 'Servicos, dados, integracoes e times que sustentam o fluxo.',
+        hint: 'Serviços, dados, integrações e times que sustentam o fluxo.',
         required: true,
       },
       {
@@ -352,7 +352,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'fitEvidence',
-        label: 'Evidencias de fit',
+        label: 'Evidências de fit',
         hint: 'Dados que sustentam o encaixe e lacunas a validar.',
         required: true,
       },
@@ -364,7 +364,7 @@ export const FRAMEWORKS = {
     label: 'Design Sprint',
     need: 'Responder rapidamente uma pergunta critica com prototipo e teste.',
     summary:
-      'Estrutura desafio, ideias, decisao, prototipo e teste. Boa quando ha pouco tempo e uma decisao de alto risco precisa de evidencia.',
+      'Estrutura desafio, ideias, decisão, protótipo e teste. Boa quando há pouco tempo e uma decisão de alto risco precisa de evidência.',
     fields: [
       {
         key: 'challenge',
@@ -375,7 +375,7 @@ export const FRAMEWORKS = {
       {
         key: 'sprintQuestions',
         label: 'Perguntas do sprint',
-        hint: 'O que precisa ser verdade para a solucao funcionar.',
+        hint: 'O que precisa ser verdade para a solução funcionar.',
         required: true,
       },
       {
@@ -386,8 +386,8 @@ export const FRAMEWORKS = {
       },
       {
         key: 'solutionIdeas',
-        label: 'Ideias de solucao',
-        hint: 'Alternativas consideradas antes da decisao.',
+        label: 'Ideias de solução',
+        hint: 'Alternativas consideradas antes da decisão.',
         required: true,
       },
       {
@@ -398,8 +398,8 @@ export const FRAMEWORKS = {
       },
       {
         key: 'testResults',
-        label: 'Resultados e decisao',
-        hint: 'Padroes observados, criterio e proximo passo.',
+        label: 'Resultados e decisão',
+        hint: 'Padrões observados, critério e próximo passo.',
         required: false,
       },
     ],
@@ -408,9 +408,9 @@ export const FRAMEWORKS = {
   'lean-canvas': {
     id: 'lean-canvas',
     label: 'Lean Canvas',
-    need: 'Estruturar uma nova proposta ou produto sob incerteza de negocio.',
+    need: 'Estruturar uma nova proposta ou produto sob incerteza de negócio.',
     summary:
-      'Sintetiza problema, segmentos, proposta, canais, custos e metricas. Boa para novos produtos ou modelos ainda nao validados.',
+      'Sintetiza problema, segmentos, proposta, canais, custos e métricas. Boa para novos produtos ou modelos ainda não validados.',
     fields: [
       {
         key: 'problems',
@@ -432,8 +432,8 @@ export const FRAMEWORKS = {
       },
       {
         key: 'solution',
-        label: 'Solucao de alto nivel',
-        hint: 'Hipoteses de solucao para cada problema.',
+        label: 'Solução de alto nível',
+        hint: 'Hipóteses de solução para cada problema.',
         required: true,
       },
       {
@@ -444,7 +444,7 @@ export const FRAMEWORKS = {
       },
       {
         key: 'metrics',
-        label: 'Metricas-chave',
+        label: 'Métricas-chave',
         hint: 'Sinais de aquisicao, uso, retencao ou valor.',
         required: true,
       },

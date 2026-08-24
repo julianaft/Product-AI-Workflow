@@ -1,8 +1,8 @@
 # Automatizacao dos processos de input e output
 
-Este arquivo e um **exemplo de qualidade**, nao uma regra da skill. Mostra o
+Este arquivo é um **exemplo de qualidade**, não uma regra da skill. Mostra o
 nivel de detalhe esperado no modelo de PRD. Dominio e numeros pertencem a um
-produto especifico e nao devem ser copiados para outras iniciativas.
+produto específico e não devem ser copiados para outras iniciativas.
 
 | Campo | Valor |
 | --- | --- |
@@ -25,14 +25,14 @@ C17IN1120 - [GCAM] - Automatizacao dos processos de input e output GCAM
 ## Principais pessoas envolvidas
 
 - Squad GCAM: Juliana Fabeni Tostes, Romulo Jose Ferreira De Morais, Dovilio Rodolfo Squisatti, Caroline Morito Pereira, Liria Maria Ricci Ricci, Gustavo Rafael Novaes Silva
-- Inteligencia e Solucoes: Felipe Garcias Verbicaro, Giovana Dantas Matos, Igor Bernardes Oliveira, Maite Laranjeira Da Silva
+- Inteligência e Soluções: Felipe Garcias Verbicaro, Giovana Dantas Matos, Igor Bernardes Oliveira, Maite Laranjeira Da Silva
 - RGM LP: Fernanda Carlota Drzewinski, Melissa Santos De Resende, Erick De Oliveira Tourinho, Francisco Henrique Marqueti Monteverde
 - Gestao de Campanhas: Rafael Lozano Da Luz
 - RGM Curto Prazo: Renata Souza Ferreira, Bernardo De Souza Aristides
 
-## Contextualizacao
+## Contextualização
 
-Hoje o GCAM lida com mais de 10.800 acoes planejadas por ano, porem o processo ainda e descasado entre as areas: 74% das acoes precisam de ajuste depois de planejadas. Para a Rodada 05 de RGM, que se inicia no final de junho/26, o desafio e cadastrar a grade fullyear 2027 (~5.100 acoes) em 5 dias.
+Hoje o GCAM lida com mais de 10.800 ações planejadas por ano, porém o processo ainda é descasado entre as áreas: 74% das ações precisam de ajuste depois de planejadas. Para a Rodada 05 de RGM, que se inicia no final de junho/26, o desafio é cadastrar a grade fullyear 2027 (~5.100 ações) em 5 dias.
 
 O diferencial agora e que os processos de RGM e Demanda passam a rodar juntos. Em vez de discussoes separadas que geram retrabalho sobre metas de volume, o fluxo integrado desde o inicio permite fechar a grade com mais assertividade, para que o que foi planejado chegue na ponta sem ajuste de ultima hora.
 
@@ -40,164 +40,164 @@ O diferencial agora e que os processos de RGM e Demanda passam a rodar juntos. E
 
 Reduzir as horas gastas em cadastro manual (estimado em 31 semanas por ano) para o time cumprir o cronograma da Rodada 05.
 
-## Publico afetado
+## Público afetado
 
-Times de RGM, Gestao de Campanhas e operadores de cadastro de acoes no GCAM.
+Times de RGM, Gestão de Campanhas e operadores de cadastro de ações no GCAM.
 
-## Hipoteses
+## Hipóteses
 
 H1: IA para campos descritivos
-Dor: Preenchimento de nome, descricao e texto legal e moroso e falho (responsavel por ~4,7% das AGCs em 2025).
-Hipotese: Se utilizarmos IA para sugerir e pre-preencher estes campos com base em mecanica, subtipo, ciclo, vigencia e % max., reduziremos tempo e erros.
-Decisao: Mover a etapa de Dados Gerais para o fim, como tela de revisao.
+Dor: Preenchimento de nome, descrição e texto legal é moroso e falho (responsável por ~4,7% das AGCs em 2025).
+Hipótese: Se utilizarmos IA para sugerir e pré-preencher estes campos com base em mecânica, subtipo, ciclo, vigência e % máx., reduziremos tempo e erros.
+Decisão: Mover a etapa de Dados Gerais para o fim, como tela de revisão.
 
 H2: Formulario simplificado para Desconto Direto
 Dor: O fluxo de Desconto Direto tem 13 etapas com redundancias.
-Hipotese: Se criarmos um fluxo especifico, enxuto e com pre-preenchimento, o esforco cai para ~25% das acoes da grade.
-Decisao: Entregar recorte de Desconto Direto primeiro.
+Hipótese: Se criarmos um fluxo específico, enxuto e com pré-preenchimento, o esforço cai para ~25% das ações da grade.
+Decisão: Entregar recorte de Desconto Direto primeiro.
 
 H3: Importacao massiva
 Dor: Cadastro e planejamento ainda sao unitarios.
-Hipotese: Se viabilizarmos rascunho e upload massivo, o lote substitui o clique a clique.
-Decisao: Foco inicial em Desconto Direto; demais mecanicas no longo prazo.
+Hipótese: Se viabilizarmos rascunho e upload massivo, o lote substitui o clique a clique.
+Decisão: Foco inicial em Desconto Direto; demais mecânicas no longo prazo.
 
-## Metricas de impacto
+## Métricas de impacto
 
-Solucao 1: IA para Nome / Descricao / Texto Legal
-- Volume: 3 campos em 5.300 acoes = preenchimento automatico de +15.000 campos
-- Cobertura: 100% das acoes cadastradas (todas as mecanicas)
-- Reducao de esforco: eliminacao de digitacao repetitiva em campos com padrao previsivel
+Solução 1: IA para Nome / Descrição / Texto Legal
+- Volume: 3 campos em 5.300 ações = preenchimento automático de +15.000 campos
+- Cobertura: 100% das ações cadastradas (todas as mecânicas)
+- Redução de esforço: eliminação de digitação repetitiva em campos com padrão previsível
 - Consistencia: padronizacao da nomenclatura; em 2025 esses campos geraram ~5% das AGCs (~600)
 
-Solucao 2: Subida e planejamento massivo de Desconto Direto
+Solução 2: Subida e planejamento massivo de Desconto Direto
 Subida massiva
-- Cobertura: 45% da grade 2025 — 4.888 acoes de desconto direto em 10.830
-- AS IS: 5 min x 2.500 acoes = 208 horas
-- TO BE: 1 min x 2.500 acoes = 40 horas
+- Cobertura: 45% da grade 2025 — 4.888 ações de desconto direto em 10.830
+- AS IS: 5 min x 2.500 ações = 208 horas
+- TO BE: 1 min x 2.500 ações = 40 horas
 - Reducao: 80% no tempo de cadastro
 Planejamento massivo
-- AS IS: 1 min por acao x 2.500 = 40 horas
+- AS IS: 1 min por ação x 2.500 = 40 horas
 - TO BE: 5 min para o lote
 
-## Detalhamento das solucoes
+## Detalhamento das soluções
 
-Solucao 1: IA para Nome / Descricao / Texto Legal
+Solução 1: IA para Nome / Descrição / Texto Legal
 Aplicavel a: todas as mecanicas
 Jornada AS IS:
 - Cadastro comeca obrigatoriamente por Dados Gerais
-- Usuario consulta PPT/documentos de nomenclatura
-- Digita nome (marca + % + ciclo), descricao (SKUs e mecanica) e texto legal (vigencia e regras)
+- Usuário consulta PPT/documentos de nomenclatura
+- Digita nome (marca + % + ciclo), descrição (SKUs e mecânica) e texto legal (vigência e regras)
 - Volta na primeira tela no fim para ajustar o nome
 Jornada TO BE:
-- Usuario preenche dados tecnicos primeiro (SKUs, mecanica, vigencia, categoria)
+- Usuário preenche dados técnicos primeiro (SKUs, mecânica, vigência, categoria)
 - Na penultima etapa aciona "Gerar Sugestao"
 - Sistema sugere textos com historico 2025 + book de regras de cadastro 2027
-- Usuario revisa, edita se precisar e finaliza
-Descricao: V0 algoritmo / V1 GenAI para sugerir nome, descricao e texto legal. Sugestao aceitavel e editavel.
+- Usuário revisa, edita se precisar e finaliza
+Descrição: V0 algoritmo / V1 GenAI para sugerir nome, descrição e texto legal. Sugestão aceitável e editável.
 Mudancas necessarias:
 - Dados Gerais deixa de ser a primeira etapa e vira a ultima antes da revisao
 - Campos permanecem editaveis apos a sugestao
 
-Solucao 2: Subida e planejamento massivo de Desconto Direto
-Aplicavel a: somente acoes de Desconto Direto
+Solução 2: Subida e planejamento massivo de Desconto Direto
+Aplicável a: somente ações de Desconto Direto
 Jornada AS IS:
-- Usuario manipula 6 a 7 planilhas para consolidar a grade
-- Copia SKU e percentual acao a acao
-- Percorre 16 etapas por acao (~5.300)
+- Usuário manipula 6 a 7 planilhas para consolidar a grade
+- Copia SKU e percentual ação a ação
+- Percorre 16 etapas por ação (~5.300)
 - Usa 0% em Desconto Direcional so para destravar o fluxo
 - Clica em Planejar individualmente
 Jornada TO BE:
 - Upload da planilha modelo RGM na pagina Subida Massiva
 - Sistema pre-cria rascunhos validando regras de front
-- Usuario filtra, seleciona em lote e clica em Planejar Acoes
-Descricao: Upload de planilha com multiplas acoes, rascunho validado e planejamento em lote.
+- Usuário filtra, seleciona em lote e clica em Planejar Ações
+Descrição: Upload de planilha com múltiplas ações, rascunho validado e planejamento em lote.
 
 ## Permissionamento
 
-Nova permissao "Subida massiva": criacao massiva de acoes via upload de planilha.
-Pagina visivel apenas para quem tem a permissao. Demais perfis sao bloqueados.
+Nova permissão "Subida massiva": criação massiva de ações via upload de planilha.
+Página visível apenas para quem tem a permissão. Demais perfis são bloqueados.
 
-## Regras de campos, defaults e validacoes
+## Regras de campos, defaults e validações
 
 Planilha modelo RGM: limite 25.000 linhas, arquivo maximo 10 MB.
-Obrigatorios (sem eles a linha nao cria acao): Nome (J), Descricao (K), Texto legal (S), Agregador (G, alfanumerico 100), UN (A: BOT, EUD, QBD, OUI), Canal (B: loja, vd, ecommerce), Ciclo (F: AAAACC, ciclo aberto), Tipo/Subtipo/Mecanica (L, M, N; V1 so Desconto Direto), SKU (H), % Desconto (R, ate 5 casas).
-Regras de canal: Eudora e QDB nao podem selecionar os tres canais juntos; OUI nao seleciona loja nem multiplos canais.
-Agregador agrupa SKUs da mesma acao; divergencia de cabecalho prevalece a primeira linha.
-Defaults se vazios: Projeto/Tag/Cluster em branco; Optin, Dual Pricing, Aero, Personalizada, Limitar aplicacoes = Nao; Regra acumulativa; Cliente Sellin + Sellout; Reembolsar BSO = Sim; Trazer todas as versoes de SKU = Sim.
+Obrigatórios (sem eles a linha não cria ação): Nome (J), Descrição (K), Texto legal (S), Agregador (G, alfanumérico 100), UN (A: BOT, EUD, QBD, OUI), Canal (B: loja, vd, ecommerce), Ciclo (F: AAAACC, ciclo aberto), Tipo/Subtipo/Mecânica (L, M, N; V1 só Desconto Direto), SKU (H), % Desconto (R, até 5 casas).
+Regras de canal: Eudora e QDB não podem selecionar os três canais juntos; OUI não seleciona loja nem múltiplos canais.
+Agregador agrupa SKUs da mesma ação; divergência de cabeçalho prevalece a primeira linha.
+Defaults se vazios: Projeto/Tag/Cluster em branco; Optin, Dual Pricing, Aero, Personalizada, Limitar aplicações = Não; Regra acumulativa; Cliente Sellin + Sellout; Reembolsar BSO = Sim; Trazer todas as versões de SKU = Sim.
 
 ## Tratamento de erros
 
 Upload com erro: modal Linha + Erro, exportacao CSV. Fechar no X exige reimportar.
-Planejamento em lote: planeja as validas, mantem invalidas em rascunho, modal Codigo da acao + erro, exportacao CSV.
+Planejamento em lote: planeja as válidas, mantém inválidas em rascunho, modal Código da ação + erro, exportação CSV.
 Persistencia: planilha permanece conectada ate Desconectar planilha, mesmo fechando a aba.
-Historico: "Criado por USUARIO via subida massiva" e "Planejado massivamente por USUARIO".
+Histórico: "Criado por USUÁRIO via subida massiva" e "Planejado massivamente por USUÁRIO".
 
 ## Criterios de aceite
 
-Solucao 1: IA para Nome / Descricao / Texto Legal
+Solução 1: IA para Nome / Descrição / Texto Legal
 CA1: O cadastro reordena Dados Gerais para a ultima etapa antes da revisao, em todas as mecanicas.
-CA2: Na etapa Dados Gerais existe o botao Gerar Sugestao, que preenche Nome, Descricao e Texto Legal.
-CA3: A geracao consome historico de acoes de 2025 e o documento Novo formato de Cadastro 2027.
-CA4: Apos a geracao, os tres campos permanecem editaveis.
-CA5: Se o usuario alterar dado tecnico e voltar, Gerar Sugestao pode ser acionado de novo e sobrescreve o texto.
-CA6: Nao avanca para Planejamento com campos vazios; respeita limite de caracteres.
+CA2: Na etapa Dados Gerais existe o botão Gerar Sugestão, que preenche Nome, Descrição e Texto Legal.
+CA3: A geração consome histórico de ações de 2025 e o documento Novo formato de Cadastro 2027.
+CA4: Após a geração, os três campos permanecem editáveis.
+CA5: Se o usuário alterar dado técnico e voltar, Gerar Sugestão pode ser acionado de novo e sobrescreve o texto.
+CA6: Não avança para Planejamento com campos vazios; respeita limite de caracteres.
 
-Solucao 2: Subida e planejamento massivo
-CA1: Botao Subida Massiva no modulo de acoes so para quem tem a permissao.
+Solução 2: Subida e planejamento massivo
+CA1: Botão Subida Massiva no módulo de ações só para quem tem a permissão.
 CA2: Acesso a pagina bloqueado para demais perfis.
 CA3: Aceita so o modelo RGM, 25.000 linhas, 10 MB.
 CA4: Colunas obrigatorias vazias impedem a criacao da linha e reportam erro.
 CA5: Regras de canal por UN aplicadas na importacao.
-CA6: Ciclo congelado nao cria rascunho, salvo excecao valida.
+CA6: Ciclo congelado não cria rascunho, salvo exceção válida.
 CA7: Agregador agrupa SKUs; divergencia usa a primeira linha.
 CA8: Modal de erros com Linha + Erro e exportacao CSV.
-CA9: Acoes surgem na aba Subida Massiva como Rascunho.
-CA10: Lista permanece vinculada ao usuario ate Desconectar planilha; paginacao padrao de 10.
-CA11: Busca por agregador ou codigo; filtros UN, Canal, Ciclo, Situacao.
+CA9: Ações surgem na aba Subida Massiva como Rascunho.
+CA10: Lista permanece vinculada ao usuário até Desconectar planilha; paginação padrão de 10.
+CA11: Busca por agregador ou código; filtros UN, Canal, Ciclo, Situação.
 CA12: Checkbox do cabecalho seleciona todas as paginas.
-CA13: Exportar gera CSV/XLSX com COD. ACAO, AGREGADOR, NOME, CICLO, UN, CANAL, SITUACAO.
-CA14: Planejar acoes fica inativo sem selecao.
-CA15: Planejar executa as validacoes de Dataquality do fluxo unitario.
+CA13: Exportar gera CSV/XLSX com COD. AÇÃO, AGREGADOR, NOME, CICLO, UN, CANAL, SITUAÇÃO.
+CA14: Planejar ações fica inativo sem seleção.
+CA15: Planejar executa as validações de Dataquality do fluxo unitário.
 CA16: Sucesso parcial: planeja as corretas, mantem as demais em rascunho, modal com exportacao.
-CA17: Historico registra planejamento massivo com usuario e timestamp.
-CA18: Acoes aparecem na listagem geral e em Meus rascunhos.
+CA17: Histórico registra planejamento massivo com usuário e timestamp.
+CA18: Ações aparecem na listagem geral e em Meus rascunhos.
 CA19: Campos opcionais vazios assumem os defaults documentados.
 
 ## Fora do escopo
 
-- Acoes com voucher
-- Selecao de lojas especificas (padrao Nao)
-- IA de nome/descricao/texto legal no fluxo massivo (usuario ja traz os campos na planilha)
-- Preco otimo "aplicar a todos os SKUs" de forma massiva (padrao Nao; usar 5 casas no desconto)
+- Ações com voucher
+- Seleção de lojas específicas (padrão Não)
+- IA de nome/descrição/texto legal no fluxo massivo (usuário já traz os campos na planilha)
+- Preço ótimo "aplicar a todos os SKUs" de forma massiva (padrão Não; usar 5 casas no desconto)
 - Desconto direcional (sempre zero; desconto ajustado por SKU)
-- Validacao de duplicidade de acoes
+- Validação de duplicidade de ações
 - Descarte massivo de rascunhos
 
 ## Principais dependencias
 
-- Planilha modelo padrao de RGM
+- Planilha modelo padrão de RGM
 - Matriz de campos e regras da planilha
 - Regras de Dataquality do planejamento unitario
 
 ## Epicos
 
-- [GCAM] Criacao e planejamento massivo acoes Desconto Direto
-- [GCAM] Inteligencia campos descritivos da acao promocional
+- [GCAM] Criação e planejamento massivo ações Desconto Direto
+- [GCAM] Inteligência campos descritivos da ação promocional
 
 ## Riscos
 
-- Rodada 05 com janela de 5 dias para ~5.100 acoes; atraso na entrega impede o cronograma
-- Regras de canal e ciclo congelado, se nao replicadas no lote, geram rascunhos invalidos
+- Rodada 05 com janela de 5 dias para ~5.100 ações; atraso na entrega impede o cronograma
+- Regras de canal e ciclo congelado, se não replicadas no lote, geram rascunhos inválidos
 
 ## Premissas
 
 - Recorte V1 da subida massiva e somente Desconto Direto
-- Regras de ouro de duplicidade do modulo de acoes foram retiradas
+- Regras de ouro de duplicidade do módulo de ações foram retiradas
 - Historico 2025 e o book de cadastro 2027 existem e podem ser consumidos pela sugestao
 
 ## Experimentos
 
-Nao informado neste PRD de referencia.
+Não informado neste PRD de referência.
 
 ## Links importantes
 
@@ -210,7 +210,7 @@ Nao informado neste PRD de referencia.
 
 ## Revisores
 
-| Participante | Status da analise |
+| Participante | Status da análise |
 | --- | --- |
 | Ariane Maria Messias De Souza | Em andamento |
 | Giovana Dantas Matos | Aprovada |

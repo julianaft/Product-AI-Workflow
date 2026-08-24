@@ -2,7 +2,7 @@ const STORAGE_KEY = 'pm-builder:journey';
 
 /**
  * Persistencia local do MVP. Fica isolada num servico para que a troca por uma
- * API nao exija tocar em componente nenhum.
+ * API não exija tocar em componente nenhum.
  */
 export function loadJourney() {
   try {

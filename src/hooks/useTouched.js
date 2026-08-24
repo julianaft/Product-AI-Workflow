@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
 /**
- * Erro de campo obrigatorio so aparece depois que o campo perde o foco.
+ * Erro de campo obrigatório só aparece depois que o campo perde o foco.
  * Sem isso, o formulario abriria com todos os campos marcados em vermelho.
  */
 export function useTouched() {

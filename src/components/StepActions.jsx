@@ -1,6 +1,6 @@
 import { BUTTON } from './ui.js';
 
-export function StepActions({ blockers = [], onNext, nextLabel = 'Avancar', children }) {
+export function StepActions({ blockers = [], onNext, nextLabel = 'Avançar', children }) {
   const blocked = blockers.length > 0;
 
   return (

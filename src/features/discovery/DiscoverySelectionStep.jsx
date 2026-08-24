@@ -57,8 +57,8 @@ export function DiscoverySelectionStep({ onNext }) {
   return (
     <>
       <SkillPanel
-        title="Recomendacao de discovery"
-        description={`A skill compara a necessidade da iniciativa com ${FRAMEWORK_IDS.length} frameworks de discovery e justifica a escolha. Voce pode adotar outro framework a qualquer momento.`}
+        title="Recomendação de discovery"
+        description={`A skill compara a necessidade da iniciativa com ${FRAMEWORK_IDS.length} frameworks de discovery e justifica a escolha. Você pode adotar outro framework a qualquer momento.`}
         runLabel={recommendation ? 'Recomendar de novo' : 'Recomendar'}
         onRun={askSkill}
         loading={loading}
@@ -68,7 +68,7 @@ export function DiscoverySelectionStep({ onNext }) {
           <div className="border border-line rounded-xl p-4">
             <p className="font-extrabold mb-2">
               {FRAMEWORKS[recommendation.recommendedFramework]?.label} (
-              {Math.round(recommendation.confidence * 100)}% de confianca)
+              {Math.round(recommendation.confidence * 100)}% de confiança)
             </p>
             <p className="text-sm mb-4">{recommendation.reason}</p>
 
@@ -91,7 +91,7 @@ export function DiscoverySelectionStep({ onNext }) {
             {recommendation.questions?.length ? (
               <>
                 <p className="text-xs font-extrabold uppercase tracking-widest text-blue mb-2">
-                  Perguntas que a skill nao consegue responder sozinha
+                  Perguntas que a skill não consegue responder sozinha
                 </p>
                 <ul className="text-sm space-y-1">
                   {recommendation.questions.map((question) => (
@@ -102,7 +102,7 @@ export function DiscoverySelectionStep({ onNext }) {
             ) : null}
           </div>
         ) : (
-          <p className="text-sm">Nenhuma recomendacao ainda.</p>
+          <p className="text-sm">Nenhuma recomendação ainda.</p>
         )}
       </SkillPanel>
 
@@ -120,7 +120,7 @@ export function DiscoverySelectionStep({ onNext }) {
       </div>
 
       <p className="text-sm mb-6">
-        Trocar de framework nao apaga nada: o conteudo de cada metodo fica guardado separadamente.
+        Trocar de framework não apaga nada: o conteúdo de cada método fica guardado separadamente.
       </p>
 
       <StepActions blockers={blockers} onNext={onNext} nextLabel="Preencher discovery" />

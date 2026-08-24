@@ -21,7 +21,7 @@ function stepStatus(stepId, journey) {
 function summaryFor(stepId, journey) {
   switch (stepId) {
     case 1:
-      return journey.product.name ? `${journey.product.name} — squad ${journey.product.squad}` : null;
+      return journey.product.name || null;
     case 2:
       return journey.initiative.name || null;
     case 3:
@@ -63,7 +63,7 @@ export default function App() {
   const filled = ((journey.activeStep - 0.5) / TOTAL_STEPS) * 100;
 
   function restart() {
-    if (window.confirm('Descartar a jornada atual e comecar do zero?')) {
+    if (window.confirm('Descartar a jornada atual e começar do zero?')) {
       clearJourney();
       dispatch({ type: 'reset' });
     }
@@ -84,7 +84,7 @@ export default function App() {
         <h1 className="text-3xl md:text-5xl font-extrabold mb-3">Do input da iniciativa ao PRD</h1>
         <p className="max-w-3xl">
           Seis etapas com duas skills de IA: uma recomenda e revisa o discovery, outra constroi o
-          PRD. Ferramentas externas entram como link, sem integracao nativa.
+          PRD. Ferramentas externas entram como link, sem integração nativa.
         </p>
         <p className="text-sm font-bold text-blue mt-3">
           Modo das skills: {getAiMode() === 'http' ? 'servidor' : 'deterministico local'}

@@ -1,5 +1,5 @@
 /**
- * Validacao dos contratos entre a jornada e as skills.
+ * Validação dos contratos entre a jornada e as skills.
  *
  * A interface nunca confia na resposta da skill: uma resposta fora do formato
  * vira erro tratado na tela em vez de quebrar a renderizacao. Isso vale tanto
@@ -18,7 +18,7 @@ class ContractError extends Error {
 
 function requireObject(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new ContractError(`${label}: resposta nao e um objeto.`);
+    throw new ContractError(`${label}: resposta não é um objeto.`);
   }
 }
 
@@ -35,11 +35,11 @@ function requireArray(value, label) {
 }
 
 export function assertClassification(value) {
-  requireObject(value, 'classificacao');
+  requireObject(value, 'classificação');
   if (value.type !== 'incremental' && value.type !== 'new') {
-    throw new ContractError('classificacao: type deve ser "incremental" ou "new".');
+    throw new ContractError('classificação: type deve ser "incremental" ou "new".');
   }
-  requireString(value.reason, 'classificacao.reason');
+  requireString(value.reason, 'classificação.reason');
   return value;
 }
 

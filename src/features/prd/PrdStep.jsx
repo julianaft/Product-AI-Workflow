@@ -1,10 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { PRD_SECTIONS, prdToMarkdown } from '../../../shared/prdSkill.js';
 import { HumanGate, SkillPanel } from '../../components/SkillPanel.jsx';
 import { BUTTON, INPUT, classNames } from '../../components/ui.js';
 import { useSkill } from '../../hooks/useSkill.js';
 import { generatePrd } from '../../services/aiClient.js';
 import { buildPrdPayload } from '../../services/prdPayload.js';
+import { copyPrdForGoogleDocs, downloadPrdDoc } from '../../services/prdExport.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
 
 function downloadMarkdown(prd) {
@@ -22,6 +23,7 @@ function downloadMarkdown(prd) {
 export function PrdStep() {
   const { journey, dispatch } = useJourney();
   const { run, loading, error } = useSkill(generatePrd);
+  const [copyStatus, setCopyStatus] = useState('');
 
   const document = journey.prd.document;
   const approved = journey.prd.status === 'approved';
@@ -34,11 +36,20 @@ export function PrdStep() {
     }
   }, [dispatch, journey, run]);
 
+  async function copyForGoogleDocs() {
+    try {
+      await copyPrdForGoogleDocs(document);
+      setCopyStatus('PRD copiado. Cole diretamente no Google Docs.');
+    } catch {
+      setCopyStatus('Não foi possível copiar. Use a exportação DOC.');
+    }
+  }
+
   return (
     <>
       <SkillPanel
-        title="Construcao do PRD"
-        description="A skill monta um PRD no formato de produto: OKR, pessoas por area, hipoteses com decisao, metricas AS IS/TO BE, jornada por solucao e criterios de aceite verificaveis. O que faltar vira pergunta em aberto."
+        title="Construção do PRD"
+        description="A skill monta um PRD no formato de produto: OKR, pessoas por área, hipóteses com decisão, métricas AS IS/TO BE, jornada por solução e critérios de aceite verificáveis. O que faltar vira pergunta em aberto."
         runLabel={document ? 'Gerar novamente' : 'Gerar PRD'}
         onRun={generate}
         loading={loading}
@@ -57,7 +68,7 @@ export function PrdStep() {
 
       {stale ? (
         <p className="border border-orange rounded-xl px-4 py-3 text-sm font-bold mb-6">
-          O contexto mudou depois desta geracao. Gere o PRD novamente para refletir as alteracoes.
+          O contexto mudou depois desta geração. Gere o PRD novamente para refletir as alterações.
         </p>
       ) : null}
 
@@ -126,7 +137,7 @@ export function PrdStep() {
           <HumanGate>
             {approved
               ? 'PRD aprovado. Reabra para editar.'
-              : 'o PRD precisa de aprovacao antes de circular com o time.'}
+              : 'o PRD precisa de aprovação antes de circular com o time.'}
           </HumanGate>
 
           <div className="no-print flex flex-wrap gap-3">
@@ -136,7 +147,7 @@ export function PrdStep() {
                 className={BUTTON.secondary}
                 onClick={() => dispatch({ type: 'reopenPrd' })}
               >
-                Reabrir para edicao
+                Reabrir para edição
               </button>
             ) : (
               <button
@@ -152,10 +163,19 @@ export function PrdStep() {
               Exportar Markdown
             </button>
 
+            <button type="button" className={BUTTON.primary} onClick={() => downloadPrdDoc(document)}>
+              Exportar DOC
+            </button>
+
+            <button type="button" className={BUTTON.quiet} onClick={copyForGoogleDocs}>
+              Copiar para Google Docs
+            </button>
+
             <button type="button" className={BUTTON.quiet} onClick={() => window.print()}>
               Imprimir / PDF
             </button>
           </div>
+          {copyStatus ? <p className="text-sm font-semibold text-blue mt-3">{copyStatus}</p> : null}
         </>
       ) : null}
     </>
@@ -164,13 +184,9 @@ export function PrdStep() {
 
 function MetadataTable({ metadata = {} }) {
   const rows = [
-    ['Dir.', metadata.directorate],
     ['Produto', metadata.product],
-    ['Tribo', metadata.tribe],
-    ['Squad', metadata.squad],
-    ['PM / GPM', metadata.pm],
+    ['PM', metadata.pm],
     ['PD', metadata.pd],
-    ['Redatores', (metadata.writers ?? []).join(', ')],
     ['TM', metadata.tm],
     ['TL', metadata.tl],
     ['Iniciativa OKR', metadata.okrCode],

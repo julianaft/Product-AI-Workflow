@@ -23,10 +23,10 @@ export function InitiativeStep({ onNext }) {
           error={errorFor(errors, 'name')}
           onBlur={markTouched('name')}
           onChange={update('name')}
-          placeholder="Automatizacao de input e output"
+          placeholder="Automatização de input e output"
         />
         <TextField
-          label="Codigo da iniciativa OKR"
+          label="Código da iniciativa OKR"
           hint="Identificador rastreavel da iniciativa, se existir."
           value={journey.initiative.okrCode}
           onChange={update('okrCode')}
@@ -35,8 +35,8 @@ export function InitiativeStep({ onNext }) {
       </div>
 
       <TextAreaField
-        label="Descricao"
-        hint="O que se pretende construir, em linguagem de negocio."
+        label="Descrição"
+        hint="O que se pretende construir, em linguagem de negócio."
         required
         rows={4}
         value={journey.initiative.description}
@@ -47,7 +47,7 @@ export function InitiativeStep({ onNext }) {
 
       <TextAreaField
         label="Problema percebido"
-        hint="O que acontece hoje e por que isso e um problema. Cite a evidencia quando houver."
+        hint="O que acontece hoje e por que isso é um problema. Cite a evidência quando houver."
         required
         rows={4}
         value={journey.initiative.problem}
@@ -58,7 +58,7 @@ export function InitiativeStep({ onNext }) {
 
       <div className="grid gap-x-6 md:grid-cols-2">
         <TextField
-          label="Publico afetado"
+          label="Público afetado"
           required
           value={journey.initiative.audience}
           error={errorFor(errors, 'audience')}
@@ -68,7 +68,7 @@ export function InitiativeStep({ onNext }) {
         />
         <TextField
           label="Resultado esperado"
-          hint="De preferencia com numero e prazo."
+          hint="De preferência com número e prazo."
           required
           value={journey.initiative.expectedOutcome}
           error={errorFor(errors, 'expectedOutcome')}
@@ -78,16 +78,16 @@ export function InitiativeStep({ onNext }) {
       </div>
 
       <TextAreaField
-        label="Pessoas envolvidas por area"
-        hint="Agrupar por squad, areas parceiras e areas consumidoras."
+        label="Pessoas envolvidas por área"
+        hint="Agrupar por squad, áreas parceiras e áreas consumidoras."
         rows={4}
         value={journey.initiative.stakeholders}
         onChange={update('stakeholders')}
       />
 
       <TextAreaField
-        label="Restricoes e dependencias conhecidas"
-        hint="Prazo, planilha, sistema, area ou permissao sem os quais a entrega nao fecha."
+        label="Restrições e dependências conhecidas"
+        hint="Prazo, planilha, sistema, área ou permissão sem os quais a entrega não fecha."
         rows={3}
         value={journey.initiative.constraints}
         onChange={update('constraints')}

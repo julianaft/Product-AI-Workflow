@@ -21,39 +21,9 @@ export function createJourney() {
       tl: '',
       businessContext: '',
       technicalContext: '',
-    },
-
-    initiative: {
-      name: '',
-      okrCode: '',
-      description: '',
-      problem: '',
-      audience: '',
-      expectedOutcome: '',
-      constraints: '',
-      stakeholders: '',
-    },
-    id:
-      typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : String(Date.now()),
-    version: 1,
-    activeStep: 1,
-    maxRevealedStep: 1,
-
-    product: {
-      name: '',
-      directorate: '',
-      tribe: '',
-      squad: '',
-      owners: '',
-      pm: '',
-      pd: '',
-      writers: '',
-      tm: '',
-      tl: '',
-      businessContext: '',
-      technicalContext: '',
+      businessContextSources: [],
+      githubOwner: '',
+      repositories: [],
     },
 
     initiative: {
@@ -76,8 +46,8 @@ export function createJourney() {
     discovery: {
       recommendation: null,
       framework: null,
-      // Cada framework guarda os proprios campos, entao trocar de metodo
-      // nao apaga o que ja foi escrito no anterior.
+      // Cada framework guarda os próprios campos, então trocar de método
+      // não apaga o que já foi escrito no anterior.
       fieldsByFramework: {},
       review: null,
       approved: false,
@@ -102,11 +72,35 @@ export function discoveryFields(journey) {
 export function mergeJourney(stored) {
   const base = createJourney();
   if (!stored || typeof stored !== 'object') return base;
+  const storedSources = Array.isArray(stored.product?.businessContextSources)
+    ? stored.product.businessContextSources
+    : [];
+  const businessContextSources =
+    storedSources.length > 0
+      ? storedSources
+      : stored.product?.businessContext?.trim()
+        ? [
+            {
+              id: 'legacy-business-context',
+              type: 'file',
+              title: 'Contexto migrado da jornada anterior',
+              fileName: 'contexto-migrado.txt',
+              content: stored.product.businessContext.trim(),
+            },
+          ]
+        : [];
 
   return {
     ...base,
     ...stored,
-    product: { ...base.product, ...(stored.product ?? {}) },
+    product: {
+      ...base.product,
+      ...(stored.product ?? {}),
+      businessContextSources,
+      repositories: Array.isArray(stored.product?.repositories)
+        ? stored.product.repositories
+        : [],
+    },
     initiative: { ...base.initiative, ...(stored.initiative ?? {}) },
     classification: { ...base.classification, ...(stored.classification ?? {}) },
     discovery: { ...base.discovery, ...(stored.discovery ?? {}) },
