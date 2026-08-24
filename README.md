@@ -47,7 +47,7 @@ npm run build        # build de producao
 | 3 | Classificação | A skill sugere incremental ou novo fluxo; o PM confirma |
 | 4 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
 | 5 | Preenchimento do discovery | Rascunho automático a partir da dor e da entrega, revisão e aprovação |
-| 6 | PRD | Documento gerado, editável no chat de revisão, aprovável e exportável |
+| 6 | PRD | Documento gerado, revisado por chat, aprovável e exportável em DOC |
 
 Frameworks disponiveis:
 
@@ -158,7 +158,7 @@ Antes de ampliar escopo:
 2. Reunir PRDs aprovados como exemplos nas instrucoes das skills.
 3. Backend com banco, autenticacao e historico de versoes.
 4. Comentarios de revisores dentro do documento.
-5. Exportacao para DOCX alem de Markdown e impressao.
+5. Exportacao para DOCX nativo, alem do DOC atual.
 
 Fora deste MVP por dependerem de backend, credenciais e permissões: integração
 nativa com NotebookLM, Miro e BusinessMap, acesso a repositórios privados e

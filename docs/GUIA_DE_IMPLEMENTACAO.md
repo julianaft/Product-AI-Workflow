@@ -372,7 +372,7 @@ validação e (quando aplicável) skill.
 6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
    perguntas em aberto e referências; abaixo do documento fica o chat de
    revisão (cada mensagem gera uma nova versão), seguido de aprovar/reabrir,
-   exportar Markdown, DOC compatível com Google Docs, copiar formatado e imprimir.
+   exportar DOC compatível com Google Docs e copiar o conteúdo formatado.
 
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.
@@ -486,7 +486,8 @@ Com `npm run dev` no ar:
    conteúdo digitado.
 5. **Etapa 5:** usar "sugerir conteúdo" não sobrescreve texto já escrito; a
    revisao lista lacunas; aprovar libera o PRD.
-6. **Etapa 6:** gerar, editar uma seção, aprovar, exportar DOC ou Markdown, copiar para Google Docs e imprimir.
+6. **Etapa 6:** gerar, editar uma seção, conversar no chat de revisão até sair uma
+   nova versão, aprovar, exportar DOC e copiar para Google Docs.
 7. **Persistencia:** recarregar a pagina mantem tudo.
 8. **Coerencia:** voltar e editar a iniciativa marca o PRD como desatualizado.
 
@@ -531,7 +532,7 @@ Depois do MVP funcional:
 3. Backend com banco, autenticacao e historico de versoes (trocar o
    `localStorage` pelos endpoints, mantendo o `storageService` como fronteira).
 4. Comentarios de revisores dentro do documento.
-5. Exportacao para DOCX alem de Markdown e impressao.
+5. Exportacao para DOCX nativo, alem do DOC atual.
 
 Fora deste MVP por dependerem de backend, credenciais e permissões: integração
 nativa com NotebookLM, Miro e BusinessMap, leitura automática dos repositórios
