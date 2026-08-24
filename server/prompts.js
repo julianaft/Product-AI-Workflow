@@ -110,6 +110,9 @@ Princípios do documento:
 - Pessoas envolvidas são agrupadas por área, não uma lista única.
 - Links entram só como referência (título, tipo, URL). Você não leu o conteúdo.
 - Nada de seção decorativa: se não há insumo, o texto diz isso claramente.
+- Contextualização usa somente o que se relaciona à iniciativa em foco
+  (problema, entrega, público e resultado). Não copie o contexto de negócio
+  completo nem trechos de outras frentes.
 
 ${SHARED_RULES}
 

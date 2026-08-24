@@ -37,6 +37,152 @@ function orMissing(value) {
   return isBlank(value) ? MISSING : text(value);
 }
 
+const CONTEXT_STOPWORDS = new Set([
+  'para',
+  'como',
+  'esta',
+  'este',
+  'essa',
+  'esse',
+  'isso',
+  'aqui',
+  'ainda',
+  'quando',
+  'onde',
+  'porque',
+  'sobre',
+  'entre',
+  'depois',
+  'antes',
+  'muito',
+  'pouco',
+  'mais',
+  'menos',
+  'todo',
+  'toda',
+  'todos',
+  'todas',
+  'pelo',
+  'pela',
+  'pelos',
+  'pelas',
+  'uma',
+  'umas',
+  'com',
+  'sem',
+  'que',
+  'nao',
+  'sim',
+  'dos',
+  'das',
+  'nos',
+  'nas',
+  'fonte',
+  'arquivo',
+  'externa',
+  'conteudo',
+  'lido',
+  'automaticamente',
+]);
+
+function tokenize(value) {
+  return text(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length >= 4 && !CONTEXT_STOPWORDS.has(token));
+}
+
+function uniqueTokens(value) {
+  return [...new Set(tokenize(value))];
+}
+
+function initiativeFocus({ initiative = {}, discovery = {} }) {
+  return [
+    initiative.name,
+    initiative.problem,
+    initiative.description,
+    initiative.audience,
+    initiative.expectedOutcome,
+    initiative.constraints,
+    discovery.problem,
+    discovery.solution,
+    discovery.outcome,
+  ]
+    .map((item) => text(item))
+    .filter(Boolean);
+}
+
+function splitContextChunks(value) {
+  const blocks = text(value)
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+  const chunks = [];
+
+  for (const block of blocks) {
+    if (block.length > 500) {
+      chunks.push(
+        ...block
+          .split(/(?<=[.!?])\s+/)
+          .map((sentence) => sentence.trim())
+          .filter((sentence) => sentence.length > 24),
+      );
+    } else {
+      chunks.push(block);
+    }
+  }
+
+  return chunks;
+}
+
+function selectRelevantBusinessContext(businessContext, focusTexts) {
+  const focusTokens = new Set(focusTexts.flatMap((item) => uniqueTokens(item)));
+  if (focusTokens.size === 0) return '';
+
+  const selected = [];
+  for (const chunk of splitContextChunks(businessContext)) {
+    const overlap = uniqueTokens(chunk).filter((token) => focusTokens.has(token));
+    if (overlap.length > 0) selected.push(chunk);
+    if (selected.length >= 8) break;
+  }
+
+  return selected.join('\n\n');
+}
+
+function formatContext({ product = {}, initiative = {}, discovery = {} }) {
+  const focusTexts = initiativeFocus({ initiative, discovery });
+  const parts = [];
+
+  if (text(initiative.name)) {
+    parts.push(`Iniciativa em foco: ${text(initiative.name)}.`);
+  }
+  if (text(initiative.problem)) {
+    parts.push(`Problema tratado neste fluxo: ${text(initiative.problem)}`);
+  }
+  if (text(initiative.description)) {
+    parts.push(`Entrega prevista: ${text(initiative.description)}`);
+  }
+
+  const relevantBusiness = selectRelevantBusinessContext(product.businessContext, focusTexts);
+  if (relevantBusiness) {
+    parts.push(
+      `Trechos do contexto de negócio relacionados a esta iniciativa:\n${relevantBusiness}`,
+    );
+  } else if (text(product.businessContext)) {
+    parts.push(
+      'O contexto de negócio anexado não teve trechos claramente ligados a esta iniciativa. O texto completo não foi copiado para o PRD.',
+    );
+  }
+
+  if (text(product.technicalContext)) {
+    parts.push(`Contexto técnico desta iniciativa:\n${text(product.technicalContext)}`);
+  }
+
+  return orMissing(parts.join('\n\n'));
+}
+
 function bulletize(value) {
   if (isBlank(value)) return MISSING;
 
@@ -457,9 +603,7 @@ export function generatePrd(payload = {}) {
   const sections = {
     okrInitiative: formatOkr({ initiative }),
     stakeholders: formatStakeholders({ product, initiative }),
-    context: orMissing(
-      [product.businessContext, product.technicalContext].filter(Boolean).join('\n\n'),
-    ),
+    context: formatContext({ product, initiative, discovery }),
     problem: orMissing(discovery.problem || initiative.problem),
     audience: orMissing(initiative.audience),
     hypotheses: formatHypotheses({ discovery, initiative }),
