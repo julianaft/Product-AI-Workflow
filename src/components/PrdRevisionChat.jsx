@@ -45,27 +45,33 @@ export function PrdRevisionChat({
   }
 
   return (
-    <section className="no-print border border-line rounded-2xl overflow-hidden mb-6 flex flex-col min-h-[28rem] max-h-[40rem]">
+    <section className="no-print border border-line rounded-2xl overflow-hidden mb-6">
       <div className="bg-sky px-5 py-4">
         <p className="text-xs font-extrabold uppercase tracking-widest">Chat de revisão</p>
-        <h3 className="text-lg font-extrabold">Perguntas em aberto e mudanças</h3>
+        <h3 className="text-lg font-extrabold">Converse com o PRD</h3>
         <p className="text-sm mt-1">
-          Responda uma pergunta ou descreva o que precisa mudar. Cada envio gera uma nova
-          versão do PRD.
+          Responda uma pergunta em aberto ou descreva o que precisa mudar. Cada envio gera uma
+          nova versão do documento acima, preservando o restante do conteúdo.
         </p>
       </div>
 
+      {disabled ? (
+        <p className="border-b border-line bg-white px-5 py-3 text-sm font-bold">
+          O PRD está aprovado. Use &quot;Reabrir para edição&quot; para voltar a conversar.
+        </p>
+      ) : null}
+
       {openQuestions.length ? (
-        <div className="px-4 py-3 border-b border-line bg-white">
+        <div className="px-5 py-4 border-b border-line bg-white">
           <p className="text-xs font-extrabold uppercase tracking-widest mb-2">
-            Responder pergunta
+            Responder uma pergunta em aberto
           </p>
-          <div className="flex flex-col gap-2 max-h-28 overflow-y-auto">
+          <div className="flex flex-col gap-2 max-h-40 overflow-y-auto">
             {openQuestions.map((question) => (
               <button
                 key={question}
                 type="button"
-                className="text-left text-sm border border-line rounded-xl px-3 py-2 hover:border-blue"
+                className="text-left text-sm border border-line rounded-xl px-3 py-2 hover:border-blue disabled:text-line"
                 disabled={disabled || loading}
                 onClick={() => quoteQuestion(question)}
               >
@@ -76,11 +82,14 @@ export function PrdRevisionChat({
         </div>
       ) : null}
 
-      <div ref={threadRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-canvas">
+      <div
+        ref={threadRef}
+        className="p-5 space-y-3 bg-canvas min-h-40 max-h-96 overflow-y-auto"
+      >
         {chat.length === 0 ? (
           <p className="text-sm">
-            Nenhuma mensagem ainda. Exemplos: “o código OKR é I-1042” ou “adicione na seção
-            Fora do escopo: esta entrega não inclui o app mobile”.
+            Nenhuma mensagem ainda. Exemplos: “o código OKR é I-1042”, “adicione na seção Fora do
+            escopo: esta entrega não inclui o app mobile” ou “reescreva a seção Riscos”.
           </p>
         ) : (
           chat.map((message) => (
@@ -89,11 +98,11 @@ export function PrdRevisionChat({
               className={classNames(
                 'rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap',
                 message.role === 'user'
-                  ? 'bg-blue text-white ml-8'
-                  : 'bg-white border border-line mr-8',
+                  ? 'bg-blue text-white md:ml-24'
+                  : 'bg-white border border-line md:mr-24',
               )}
             >
-              <p className="text-xs font-extrabold uppercase tracking-widest mb-1 opacity-80">
+              <p className="text-xs font-extrabold uppercase tracking-widest mb-1">
                 {message.role === 'user' ? 'Você' : 'Skill de PRD'}
                 {message.revision ? ` · versão ${message.revision}` : ''}
               </p>
@@ -107,16 +116,19 @@ export function PrdRevisionChat({
       </div>
 
       {error ? (
-        <p role="alert" className="text-sm font-semibold text-ember px-4 py-2">
+        <p role="alert" className="text-sm font-semibold text-ember px-5 py-3">
           {error}
         </p>
       ) : null}
 
-      <form onSubmit={submit} className="border-t border-line p-4 bg-white">
-          <p className="text-xs font-extrabold uppercase tracking-widest mb-2">
-            Mensagem
-          </p>
-          <textarea
+      <form onSubmit={submit} className="border-t border-line p-5 bg-white">
+        <label
+          htmlFor="prd-chat-input"
+          className="block text-xs font-extrabold uppercase tracking-widest mb-2"
+        >
+          Mensagem
+        </label>
+        <textarea
           id="prd-chat-input"
           className={classNames(INPUT, 'resize-y mb-3')}
           rows={3}
@@ -130,13 +142,16 @@ export function PrdRevisionChat({
             }
           }}
         />
-        <button
-          type="submit"
-          className={BUTTON.primary}
-          disabled={disabled || loading || !draft.trim()}
-        >
-          {loading ? 'Gerando...' : 'Enviar e gerar nova versão'}
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            className={BUTTON.primary}
+            disabled={disabled || loading || !draft.trim()}
+          >
+            {loading ? 'Gerando...' : 'Enviar e gerar nova versão'}
+          </button>
+          <span className="text-sm">Ctrl + Enter envia.</span>
+        </div>
       </form>
     </section>
   );

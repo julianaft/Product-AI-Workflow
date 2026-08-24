@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { PRD_SECTIONS, prdToMarkdown } from '../../../shared/prdSkill.js';
+import { PRD_SECTIONS } from '../../../shared/prdSkill.js';
 import { HumanGate, SkillPanel } from '../../components/SkillPanel.jsx';
 import { PrdRevisionChat, createMessage } from '../../components/PrdRevisionChat.jsx';
 import { BUTTON, INPUT, classNames } from '../../components/ui.js';
@@ -8,18 +8,6 @@ import { generatePrd, revisePrd } from '../../services/aiClient.js';
 import { buildPrdPayload } from '../../services/prdPayload.js';
 import { copyPrdForGoogleDocs, downloadPrdDoc } from '../../services/prdExport.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
-
-function downloadMarkdown(prd) {
-  const blob = new Blob([prdToMarkdown(prd)], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-
-  anchor.href = url;
-  anchor.download = `${prd.title.replace(/\s+/g, '-').toLowerCase()}.md`;
-  anchor.click();
-
-  URL.revokeObjectURL(url);
-}
 
 export function PrdStep() {
   const { journey, dispatch } = useJourney();
@@ -204,20 +192,12 @@ export function PrdStep() {
               </button>
             )}
 
-            <button type="button" className={BUTTON.quiet} onClick={() => downloadMarkdown(document)}>
-              Exportar Markdown
-            </button>
-
             <button type="button" className={BUTTON.primary} onClick={() => downloadPrdDoc(document)}>
               Exportar DOC
             </button>
 
             <button type="button" className={BUTTON.quiet} onClick={copyForGoogleDocs}>
               Copiar para Google Docs
-            </button>
-
-            <button type="button" className={BUTTON.quiet} onClick={() => window.print()}>
-              Imprimir / PDF
             </button>
           </div>
           {copyStatus ? <p className="text-sm font-semibold text-blue mt-3">{copyStatus}</p> : null}
