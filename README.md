@@ -47,7 +47,7 @@ npm run build        # build de producao
 | 3 | Classificação | A skill sugere incremental ou novo fluxo; o PM confirma |
 | 4 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
 | 5 | Preenchimento do discovery | Sugestao por campo, revisao automatica e aprovacao humana |
-| 6 | PRD | Documento gerado, editavel, aprovavel e exportavel |
+| 6 | PRD | Documento gerado, editável no chat de revisão, aprovável e exportável |
 
 Frameworks disponiveis:
 
@@ -73,8 +73,8 @@ Duas skills, ambas atras do mesmo adaptador (`src/services/aiClient.js`):
 
 - **Discovery** (`shared/discoverySkill.js`): classifica a iniciativa, recomenda
   framework, rascunha campos e revisa o preenchimento.
-- **PRD** (`shared/prdSkill.js`): monta o documento a partir do discovery
-  aprovado.
+- **PRD** (`shared/prdSkill.js` e `shared/prdRevision.js`): monta o documento e
+  gera novas versões a partir do chat (respostas e pedidos de mudança).
 
 Três decisões sustentam esse desenho:
 

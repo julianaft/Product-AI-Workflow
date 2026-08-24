@@ -22,7 +22,8 @@ import { getFramework } from './frameworks.js';
 
 export { PRD_SECTION_KEYS, PRD_SECTIONS };
 
-const MISSING = 'Não informado no discovery. Ver perguntas em aberto.';
+export const PRD_MISSING = 'Não informado no discovery. Ver perguntas em aberto.';
+const MISSING = PRD_MISSING;
 
 function text(value) {
   return String(value ?? '').trim();
@@ -406,14 +407,14 @@ function formatOkr({ initiative }) {
   if (!code && !name) return MISSING;
   if (code && name) return `${code} - ${name}`;
   if (code) return code;
-  return `${name}\nCodigo OKR: [a preencher]`;
+  return `${name}\nCódigo OKR: [a preencher]`;
 }
 
 function buildOpenQuestions({ product, initiative, discovery, sections }) {
   const questions = [];
 
   if (isBlank(initiative.okrCode)) {
-    questions.push('Qual e o codigo da iniciativa OKR?');
+    questions.push('Qual é o código da iniciativa OKR?');
   }
   if (isBlank(initiative.expectedOutcome) && isBlank(discovery.outcome)) {
     questions.push('Qual métrica de negócio comprova o sucesso, com baseline AS IS e meta TO BE?');
@@ -439,7 +440,7 @@ function buildOpenQuestions({ product, initiative, discovery, sections }) {
 
   for (const section of PRD_SECTIONS) {
     if (sections[section.key] === MISSING) {
-      questions.push(`Secao "${section.label}" sem insumo no discovery.`);
+      questions.push(`Seção "${section.label}" sem insumo no discovery.`);
     }
   }
 
@@ -476,11 +477,18 @@ export function generatePrd(payload = {}) {
     experiments: bulletize(discovery.experiments),
   };
 
-  const openQuestions = buildOpenQuestions({ product, initiative, discovery, sections });
+  applyPayloadAnswers(sections, payload.prdAnswers);
+
+  const openQuestions = subtractAnsweredQuestions(
+    buildOpenQuestions({ product, initiative, discovery, sections }),
+    payload.prdAnswers,
+  );
   const owners = listPeople(product.owners);
+  const previousRevision = Number(payload.currentPrd?.revision ?? 0);
 
   return {
     title: text(initiative.name) || 'PRD sem título',
+    revision: previousRevision + 1,
     metadata: {
       directorate: text(product.directorate),
       product: text(product.name),
@@ -508,11 +516,38 @@ export function generatePrd(payload = {}) {
     traceability: {
       framework: discovery.frameworkLabel,
       discoveryApproved: Boolean(payload.discovery?.approved),
-      generatedFrom: ['productContext', 'initiative', 'discovery'],
+      generatedFrom: [
+        'productContext',
+        'initiative',
+        'discovery',
+        ...(Array.isArray(payload.prdAnswers) && payload.prdAnswers.length > 0
+          ? ['prdRevisionChat']
+          : []),
+      ],
       model: 'prd-v2-input-output',
     },
     generatedAt: new Date().toISOString(),
   };
+}
+
+function applyPayloadAnswers(sections, answers = []) {
+  if (!Array.isArray(answers)) return;
+
+  for (const item of answers) {
+    const key = item?.sectionKey;
+    const answer = text(item?.answer);
+    if (!key || !answer || typeof sections[key] !== 'string') continue;
+    sections[key] =
+      sections[key] === MISSING || isBlank(sections[key])
+        ? answer
+        : `${sections[key].trim()}\n\nAtualização do PM:\n${answer}`;
+  }
+}
+
+function subtractAnsweredQuestions(questions, answers = []) {
+  if (!Array.isArray(answers) || answers.length === 0) return questions;
+  const answered = new Set(answers.map((item) => text(item?.question)).filter(Boolean));
+  return questions.filter((question) => !answered.has(question));
 }
 
 export function regeneratePrdSection(payload = {}, sectionKey) {

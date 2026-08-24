@@ -217,6 +217,8 @@ Regra que atravessa todas: quando falta insumo, use a constante `PENDING`
   `MISSING` e alimenta as perguntas em aberto.
 - `regeneratePrdSection(payload, key)` regenera uma única seção.
 - `prdToMarkdown(prd)` serializa para exportacao.
+- `revisePrd` em `shared/prdRevision.js` aplica a mensagem do chat sobre o
+  documento atual (respostas e pedidos de mudança) e devolve `{ prd, reply }`.
 
 **Validação:** os testes do Bloco 11 cobrem estas funções; rode-os assim que
 existirem.
@@ -366,8 +368,9 @@ validação e (quando aplicável) skill.
    a partir dos metadados, oferece sugestão por campo e "preencher vazios",
    roda a revisão e exige aprovação humana.
 6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
-   perguntas em aberto e referências, com aprovar/reabrir, exportar Markdown,
-   DOC compatível com Google Docs, copiar formatado e imprimir.
+   perguntas em aberto e referências, com chat de revisão (cada mensagem gera
+   uma nova versão), aprovar/reabrir, exportar Markdown, DOC compatível com
+   Google Docs, copiar formatado e imprimir.
 
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.
@@ -402,10 +405,11 @@ externa.
 
 Arquivos em `server/`:
 
-- `index.js` — servidor `http` nativo. Roteia `POST /api/ai/<skill>`, le o corpo
-  com limite de tamanho, e para cada rota decide entre provedor real (se
-  configurado) e fallback deterministico. Valida a saida pelo contrato antes de
-  responder. Erro vira `502` com mensagem, detalhe fica no log.
+- `index.js` — servidor `http` nativo. Roteia `POST /api/ai/<skill>` (`classify-initiative`,
+  `recommend-discovery`, `suggest-discovery-field`, `review-discovery`, `generate-prd`,
+  `revise-prd`), le o corpo com limite de tamanho, e para cada rota decide entre
+  provedor real (se configurado) e fallback deterministico. Valida a saida pelo
+  contrato antes de responder. Erro vira `502` com mensagem, detalhe fica no log.
 - `provider.js` — unico ponto de contato com o provedor de IA. `runPrompt({
   system, payload })` faz a chamada com timeout via `AbortController`, pede
   `response_format: json_object` e extrai JSON mesmo se vier dentro de bloco de
