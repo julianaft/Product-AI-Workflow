@@ -2,7 +2,7 @@ import { TOTAL_STEPS } from '../data/steps.js';
 import { createJourney, mergeJourney } from './journeyModel.js';
 
 function clampStep(step) {
-  return Math.min(Math.max(step, 1), TOTAL_STEPS);
+  return Math.min(Math.max(step, 2), TOTAL_STEPS);
 }
 
 function withStep(state, step) {
@@ -35,7 +35,7 @@ export function journeyReducer(state, action) {
       return mergeJourney(action.journey);
 
     case 'reset':
-      return createJourney();
+      return { ...createJourney(state.product), id: state.id };
 
     case 'goToStep':
       return withStep(state, action.step);

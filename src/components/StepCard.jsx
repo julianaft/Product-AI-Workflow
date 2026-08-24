@@ -55,7 +55,11 @@ export function StepCard({ step, status, summary, onEdit, children }) {
       className="relative scroll-mt-24 pb-8"
       aria-current={status === 'active' ? 'step' : undefined}
     >
-      <NodeIcon status={status} accent={step.accent} index={step.id} />
+      <NodeIcon
+        status={status}
+        accent={step.accent}
+        index={step.displayIndex ?? step.id}
+      />
 
       <div className="pl-16 md:pl-24">
         <div className={classNames(CARD, 'overflow-hidden')}>

@@ -1,30 +1,37 @@
-export function createJourney() {
+export function createProductSetup(overrides = {}) {
+  return {
+    projectName: '',
+    name: '',
+    directorate: '',
+    tribe: '',
+    squad: '',
+    teamName: '',
+    owners: '',
+    pm: '',
+    pd: '',
+    writers: '',
+    tm: '',
+    tl: '',
+    businessContext: '',
+    technicalContext: '',
+    businessContextSources: [],
+    githubOwner: '',
+    repositories: [],
+    ...overrides,
+  };
+}
+
+export function createJourney(product = {}) {
   return {
     id:
       typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : String(Date.now()),
     version: 1,
-    activeStep: 1,
-    maxRevealedStep: 1,
+    activeStep: 2,
+    maxRevealedStep: 2,
 
-    product: {
-      name: '',
-      directorate: '',
-      tribe: '',
-      squad: '',
-      owners: '',
-      pm: '',
-      pd: '',
-      writers: '',
-      tm: '',
-      tl: '',
-      businessContext: '',
-      technicalContext: '',
-      businessContextSources: [],
-      githubOwner: '',
-      repositories: [],
-    },
+    product: createProductSetup(product),
 
     initiative: {
       name: '',
@@ -72,7 +79,7 @@ export function discoveryFields(journey) {
 }
 
 export function mergeJourney(stored) {
-  const base = createJourney();
+  const base = createJourney(stored?.product);
   if (!stored || typeof stored !== 'object') return base;
   const storedSources = Array.isArray(stored.product?.businessContextSources)
     ? stored.product.businessContextSources
@@ -95,6 +102,8 @@ export function mergeJourney(stored) {
   return {
     ...base,
     ...stored,
+    activeStep: Math.max(2, Number(stored.activeStep ?? 2)),
+    maxRevealedStep: Math.max(2, Number(stored.maxRevealedStep ?? 2)),
     product: {
       ...base.product,
       ...(stored.product ?? {}),

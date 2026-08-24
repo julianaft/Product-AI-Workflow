@@ -4,6 +4,11 @@ import { test } from 'node:test';
 import { createJourney, discoveryFields, mergeJourney } from '../src/state/journeyModel.js';
 import { journeyReducer } from '../src/state/journeyReducer.js';
 import { isStepComplete, validateStep } from '../src/services/validation.js';
+import {
+  activeJourney,
+  createWorkspace,
+  setupIsComplete,
+} from '../src/state/workspaceModel.js';
 
 function reduce(state, ...actions) {
   return actions.reduce(journeyReducer, state);
@@ -92,7 +97,7 @@ test('sugestão da skill não sobrescreve texto escrito pelo PM', () => {
   assert.equal(fields.solutions, 'Sugestao aceita');
 });
 
-test('a navegação não ultrapassa a última etapa nem volta antes da primeira', () => {
+test('a navegação da iniciativa vai da primeira etapa até o PRD', () => {
   let journey = createJourney();
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'nextStep' });
@@ -102,7 +107,7 @@ test('a navegação não ultrapassa a última etapa nem volta antes da primeira'
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'previousStep' });
   }
-  assert.equal(journey.activeStep, 1);
+  assert.equal(journey.activeStep, 2);
 });
 
 test('a etapa de contexto exige produto, fonte de negócio e repositório selecionado', () => {
@@ -111,6 +116,7 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
 
   const filled = reduce(
     empty,
+    { type: 'updateProduct', field: 'projectName', value: 'Projeto GCAM' },
     { type: 'updateProduct', field: 'name', value: 'GCAM' },
     {
       type: 'updateProduct',
@@ -132,6 +138,42 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
   );
 
   assert.equal(isStepComplete(1, filled), true);
+});
+
+test('workspace separa setup geral das iniciativas', () => {
+  const workspace = createWorkspace({
+    email: 'pm@empresa.com',
+    name: 'PM',
+  });
+  workspace.setup = {
+    ...workspace.setup,
+    projectName: 'Projeto A',
+    name: 'Produto A',
+    businessContextSources: [{ id: 'fonte', type: 'file', content: 'Contexto' }],
+    repositories: [{ id: 1, selected: true }],
+  };
+  const first = createJourney(workspace.setup);
+  const second = createJourney(workspace.setup);
+  first.initiative.name = 'Iniciativa 1';
+  second.initiative.name = 'Iniciativa 2';
+  workspace.initiatives = [first, second];
+  workspace.activeInitiativeId = second.id;
+
+  assert.equal(setupIsComplete(workspace.setup), true);
+  assert.equal(activeJourney(workspace).initiative.name, 'Iniciativa 2');
+  assert.equal(activeJourney(workspace).product.projectName, 'Projeto A');
+  assert.notEqual(first.id, second.id);
+});
+
+test('cada conta gera um workspace com proprietário próprio', () => {
+  const juliana = createWorkspace({ email: 'juliana@empresa.com' });
+  const outraPessoa = createWorkspace({ email: 'outra@empresa.com' });
+
+  juliana.setup.projectName = 'Projeto privado da Juliana';
+
+  assert.equal(juliana.ownerId, 'juliana@empresa.com');
+  assert.equal(outraPessoa.ownerId, 'outra@empresa.com');
+  assert.equal(outraPessoa.setup.projectName, '');
 });
 
 test('revisão do PRD pelo chat preserva o histórico e atualiza o documento', () => {

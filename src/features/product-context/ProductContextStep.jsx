@@ -21,6 +21,15 @@ export function ProductContextStep({ onNext }) {
     <>
       <div className="grid gap-x-6 md:grid-cols-2">
         <TextField
+          label="Projeto / espaço do time"
+          required
+          value={journey.product.projectName}
+          error={errorFor(errors, 'projectName')}
+          onBlur={markTouched('projectName')}
+          onChange={update('projectName')}
+          placeholder="Ex.: Growth B2B"
+        />
+        <TextField
           label="Produto"
           required
           value={journey.product.name}
@@ -28,6 +37,12 @@ export function ProductContextStep({ onNext }) {
           onBlur={markTouched('name')}
           onChange={update('name')}
           placeholder="Nome do produto"
+        />
+        <TextField
+          label="Time / squad"
+          value={journey.product.teamName}
+          onChange={update('teamName')}
+          placeholder="Nome do time"
         />
         <TextField
           label="PM"
@@ -65,7 +80,7 @@ export function ProductContextStep({ onNext }) {
         error={errors.repositories}
       />
 
-      <StepActions blockers={blockers} onNext={onNext} nextLabel="Salvar contexto e seguir" />
+      <StepActions blockers={blockers} onNext={onNext} nextLabel="Salvar configuração do projeto" />
     </>
   );
 }
