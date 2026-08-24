@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { draftDiscoveryFields } from '../../../shared/discoverySkill.js';
 import { getFramework } from '../../../shared/frameworks.js';
 import { TextAreaField } from '../../components/Field.jsx';
 import { LinkAttachments } from '../../components/LinkAttachments.jsx';
@@ -21,6 +22,31 @@ export function DiscoveryFormStep({ onNext }) {
   const framework = getFramework(journey.discovery.framework);
   const fields = discoveryFields(journey);
   const { errors, blockers } = validateStep(5, journey);
+  const drafts = framework
+    ? draftDiscoveryFields(framework.id, {
+        product: journey.product,
+        initiative: journey.initiative,
+      })
+    : {};
+
+  useEffect(() => {
+    const frameworkId = journey.discovery.framework;
+    if (!frameworkId) return;
+
+    dispatch({
+      type: 'applySuggestedFields',
+      framework: frameworkId,
+      fields: draftDiscoveryFields(frameworkId, {
+        product: journey.product,
+        initiative: journey.initiative,
+      }),
+    });
+  }, [
+    dispatch,
+    journey.discovery.framework,
+    journey.initiative,
+    journey.product,
+  ]);
 
   const runReview = useCallback(async () => {
     const result = await review.run({
@@ -52,7 +78,6 @@ export function DiscoveryFormStep({ onNext }) {
     return <p className="text-sm font-semibold text-ember">Selecione um framework na etapa anterior.</p>;
   }
 
-  const suggested = journey.discovery.recommendation?.suggestedFields;
   const reviewResult = journey.discovery.review;
 
   return (
@@ -63,7 +88,7 @@ export function DiscoveryFormStep({ onNext }) {
         </span>
         <span className="font-extrabold">{framework.label}</span>
 
-        {suggested ? (
+        {Object.keys(drafts).length ? (
           <button
             type="button"
             className={`${BUTTON.quiet} no-print`}
@@ -71,7 +96,7 @@ export function DiscoveryFormStep({ onNext }) {
               dispatch({
                 type: 'applySuggestedFields',
                 framework: journey.discovery.framework,
-                fields: suggested,
+                fields: drafts,
               })
             }
           >
@@ -79,6 +104,12 @@ export function DiscoveryFormStep({ onNext }) {
           </button>
         ) : null}
       </div>
+
+      <p className="text-sm mb-6">
+        Os campos já vêm com um rascunho a partir do problema, da dor e da entrega descritos nas
+        etapas anteriores. A skill não inventa evidência: o que faltar aparece como ponto a
+        validar. Edite o que não bater e use o botão por campo para regenerar só aquele trecho.
+      </p>
 
       {framework.fields.map((field) => (
         <div key={field.key} className="relative">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { draftDiscoveryFields } from '../../../shared/discoverySkill.js';
 import { FRAMEWORKS, FRAMEWORK_IDS } from '../../../shared/frameworks.js';
 import { OptionCard } from '../../components/OptionCard.jsx';
 import { SkillPanel } from '../../components/SkillPanel.jsx';
@@ -27,9 +28,18 @@ export function DiscoverySelectionStep({ onNext }) {
     if (result) {
       dispatch({ type: 'setDiscoveryRecommendation', recommendation: result });
 
+      const frameworkId = journey.discovery.framework || result.recommendedFramework;
       if (!journey.discovery.framework) {
         dispatch({ type: 'selectFramework', framework: result.recommendedFramework });
       }
+      dispatch({
+        type: 'applySuggestedFields',
+        framework: frameworkId,
+        fields: draftDiscoveryFields(frameworkId, {
+          product: journey.product,
+          initiative: journey.initiative,
+        }),
+      });
     }
   }, [
     dispatch,
@@ -52,6 +62,14 @@ export function DiscoverySelectionStep({ onNext }) {
 
   function chooseFramework(id) {
     dispatch({ type: 'selectFramework', framework: id });
+    dispatch({
+      type: 'applySuggestedFields',
+      framework: id,
+      fields: draftDiscoveryFields(id, {
+        product: journey.product,
+        initiative: journey.initiative,
+      }),
+    });
   }
 
   return (

@@ -80,8 +80,11 @@ suggest-discovery-field:
 review-discovery:
 {"readyForPrd":false,"completeness":0.0,"gaps":[""],"contradictions":[""],"questions":[""]}
 
-Em suggestedFields, use somente as chaves do framework recomendado. Campos sem
-base no payload recebem o marcador [a preencher].
+Em suggestedFields, use somente as chaves do framework recomendado.
+Preencha cada campo com rascunho baseado no problema (dor), na entrega
+(description) e no resultado esperado já presentes no payload. Não invente
+métrica, evidência ou sistema. O que faltar vira uma linha "A validar: ...".
+Não deixe o campo vazio se houver insumo correspondente no payload.
 `;
 
 export const PRD_PROMPT = `
