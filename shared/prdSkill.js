@@ -137,18 +137,45 @@ function splitContextChunks(value) {
   return chunks;
 }
 
-function selectRelevantBusinessContext(businessContext, focusTexts) {
-  const focusTokens = new Set(focusTexts.flatMap((item) => uniqueTokens(item)));
+const MAX_CONTEXT_CHUNKS = 8;
+
+/**
+ * Nome do produto, da squad e da área aparecem em praticamente todo parágrafo
+ * do contexto de negócio — inclusive nos que dizem não ter relação com a
+ * iniciativa. Por isso não contam como evidência de relevância.
+ */
+function ambientTokens(product = {}) {
+  return new Set(
+    [product.name, product.projectName, product.squad, product.tribe, product.directorate]
+      .flatMap((value) => uniqueTokens(value)),
+  );
+}
+
+function selectRelevantBusinessContext(businessContext, focusTexts, ambient = new Set()) {
+  const focusTokens = new Set(
+    focusTexts.flatMap((item) => uniqueTokens(item)).filter((token) => !ambient.has(token)),
+  );
   if (focusTokens.size === 0) return '';
 
-  const selected = [];
-  for (const chunk of splitContextChunks(businessContext)) {
-    const overlap = uniqueTokens(chunk).filter((token) => focusTokens.has(token));
-    if (overlap.length > 0) selected.push(chunk);
-    if (selected.length >= 8) break;
-  }
-
-  return selected.join('\n\n');
+  return splitContextChunks(businessContext)
+    .map((chunk, position) => {
+      const tokens = uniqueTokens(chunk);
+      const overlap = tokens.filter((token) => focusTokens.has(token)).length;
+      return {
+        chunk,
+        position,
+        overlap,
+        density: tokens.length > 0 ? overlap / tokens.length : 0,
+      };
+    })
+    .filter(({ overlap }) => overlap > 0)
+    .sort(
+      (a, b) => b.overlap - a.overlap || b.density - a.density || a.position - b.position,
+    )
+    .slice(0, MAX_CONTEXT_CHUNKS)
+    .sort((a, b) => a.position - b.position)
+    .map(({ chunk }) => chunk)
+    .join('\n\n');
 }
 
 function formatContext({ product = {}, initiative = {}, discovery = {} }) {
@@ -165,7 +192,11 @@ function formatContext({ product = {}, initiative = {}, discovery = {} }) {
     parts.push(`Entrega prevista: ${text(initiative.description)}`);
   }
 
-  const relevantBusiness = selectRelevantBusinessContext(product.businessContext, focusTexts);
+  const relevantBusiness = selectRelevantBusinessContext(
+    product.businessContext,
+    focusTexts,
+    ambientTokens(product),
+  );
   if (relevantBusiness) {
     parts.push(
       `Trechos do contexto de negócio relacionados a esta iniciativa:\n${relevantBusiness}`,

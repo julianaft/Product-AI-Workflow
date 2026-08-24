@@ -299,6 +299,24 @@ test('contextualização do PRD usa só trechos ligados à iniciativa', () => {
   assert.doesNotMatch(prd.sections.context, /programa de pontos/);
 });
 
+test('contextualização descarta trecho que só repete o nome do produto', () => {
+  const prd = generatePrd({
+    productContext: {
+      ...product,
+      businessContext: [
+        'A comissao das revendedoras do canal VD é calculada por faixa de pedido no GCAM.',
+        'O programa de fidelidade lança cashback em pontos no app de milhas, sem relação com o GCAM.',
+      ].join('\n\n'),
+    },
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+
+  assert.match(prd.sections.context, /faixa de pedido/);
+  assert.doesNotMatch(prd.sections.context, /cashback/);
+  assert.doesNotMatch(prd.sections.context, /milhas/);
+});
+
 test('exportação DOC gera HTML compatível com editores de documento', () => {
   const prd = generatePrd({
     productContext: product,
