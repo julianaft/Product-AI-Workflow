@@ -27,7 +27,7 @@ inventa: marca pendente e abre pergunta.
 | --- | --- |
 | Iniciativa OKR | Código + título |
 | Pessoas envolvidas | Agrupadas por área, não lista única |
-| Contextualização | Volume, processo atual, evidência, o que muda agora |
+| Contextualização | Recorte da iniciativa: processo atual, evidência, o que muda agora. Sem o contexto de negócio completo. |
 | Necessidade | Dor + número + prazo |
 | Público afetado | Quem opera, decide e é impactado |
 | Hipóteses | Hn com Dor, Hipótese (Se... então...) e Decisão |

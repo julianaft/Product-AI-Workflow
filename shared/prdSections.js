@@ -24,7 +24,7 @@ export const PRD_SECTIONS = [
     key: 'context',
     label: 'Contextualização',
     quality:
-      'Volume atual, processo AS IS, evidência numérica e o que muda agora. Fato, não slogan.',
+      'Só o recorte da iniciativa: processo AS IS, evidência e o que muda agora. Não colar o contexto de negócio inteiro.',
   },
   {
     key: 'problem',

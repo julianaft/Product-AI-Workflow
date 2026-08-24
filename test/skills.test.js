@@ -279,6 +279,26 @@ test('payload usa somente repositórios selecionados e inclui conteúdo de arqui
   assert.equal(payload.productContext.repositories.length, 1);
 });
 
+test('contextualização do PRD usa só trechos ligados à iniciativa', () => {
+  const prd = generatePrd({
+    productContext: {
+      ...product,
+      businessContext: [
+        'Campanhas do canal VD sao cadastradas manualmente no GCAM.',
+        'O app de logística usa SAP para roteirizar entregas em 12 estados.',
+        'O programa de pontos do varejo próprio muda no próximo semestre.',
+      ].join('\n\n'),
+    },
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+
+  assert.match(prd.sections.context, /Iniciativa em foco: Lucro Extra Progressivo/);
+  assert.match(prd.sections.context, /canal VD/);
+  assert.doesNotMatch(prd.sections.context, /logística/);
+  assert.doesNotMatch(prd.sections.context, /programa de pontos/);
+});
+
 test('exportação DOC gera HTML compatível com editores de documento', () => {
   const prd = generatePrd({
     productContext: product,
