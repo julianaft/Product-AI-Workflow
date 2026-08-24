@@ -292,6 +292,24 @@ test('exportação DOC gera HTML compatível com editores de documento', () => {
   assert.match(html, /<h1>Lucro Extra Progressivo<\/h1>/);
   assert.match(html, /<h2>Contextualização<\/h2>/);
   assert.match(html, /charset="utf-8"/);
+  assert.match(html, /font-family: 'IBM Plex Sans'/);
+});
+
+test('PRD determinístico usa português correto nos textos gerados', () => {
+  const prd = generatePrd({
+    productContext: product,
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+  const generatedText = Object.values(prd.sections).join('\n');
+
+  assert.match(generatedText, /tempo ou esforço atual/);
+  assert.match(generatedText, /Aplicável a/);
+  assert.match(generatedText, /Mudanças necessárias/);
+  assert.doesNotMatch(
+    generatedText,
+    /\b(?:esforco|Aplicavel|Mudancas|necessarias|Secao)\b/,
+  );
 });
 
 test('chat de revisão incorpora resposta e gera nova versão do PRD', () => {

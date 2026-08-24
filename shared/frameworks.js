@@ -49,7 +49,7 @@ export const FRAMEWORKS = {
       {
         key: 'certainties',
         label: 'Certezas',
-        hint: 'Somente o que esta comprovado por dado ou pesquisa.',
+        hint: 'Somente o que está comprovado por dado ou pesquisa.',
         required: true,
       },
       {
@@ -72,7 +72,7 @@ export const FRAMEWORKS = {
     label: 'Double Diamond',
     need: 'Explorar um problema amplo e convergir para um recorte de solução.',
     summary:
-      'Divergir e convergir duas vezes. Boa quando o escopo ainda esta amplo ou indefinido.',
+      'Divergir e convergir duas vezes. Boa quando o escopo ainda está amplo ou indefinido.',
     fields: [
       {
         key: 'discover',
@@ -110,14 +110,14 @@ export const FRAMEWORKS = {
     fields: [
       {
         key: 'situation',
-        label: 'Situacao e contexto',
+        label: 'Situação e contexto',
         hint: 'Quando e em qual contexto a necessidade aparece.',
         required: true,
       },
       {
         key: 'job',
         label: 'Job principal',
-        hint: 'Quando [situacao], quero [motivacao], para [resultado].',
+        hint: 'Quando [situação], quero [motivação], para [resultado].',
         required: true,
       },
       {
@@ -128,8 +128,8 @@ export const FRAMEWORKS = {
       },
       {
         key: 'forces',
-        label: 'Forcas de progresso e resistencia',
-        hint: 'Pressao, atracao, ansiedade e habitos que influenciam a mudanca.',
+        label: 'Forças de progresso e resistência',
+        hint: 'Pressão, atração, ansiedade e hábitos que influenciam a mudança.',
         required: true,
       },
       {
@@ -215,7 +215,7 @@ export const FRAMEWORKS = {
       {
         key: 'measures',
         label: 'Medidas de impacto',
-        hint: 'Como medir a mudanca de comportamento e a meta.',
+        hint: 'Como medir a mudança de comportamento e a meta.',
         required: true,
       },
     ],
@@ -226,7 +226,7 @@ export const FRAMEWORKS = {
     label: 'User Story Mapping',
     need: 'Visualizar uma jornada ponta a ponta e definir cortes de MVP.',
     summary:
-      'Organiza atividades, passos e historias na ordem da experiencia. Boa quando o fluxo e conhecido, mas o escopo de cada entrega precisa ser fatiado.',
+      'Organiza atividades, passos e histórias na ordem da experiência. Boa quando o fluxo é conhecido, mas o escopo de cada entrega precisa ser fatiado.',
     fields: [
       {
         key: 'personas',
@@ -249,13 +249,13 @@ export const FRAMEWORKS = {
       {
         key: 'releaseSlices',
         label: 'Cortes de entrega',
-        hint: 'MVP e releases seguintes, com criterio para cada corte.',
+        hint: 'MVP e releases seguintes, com critério para cada corte.',
         required: true,
       },
       {
         key: 'gaps',
         label: 'Lacunas e edge cases',
-        hint: 'Excecoes, dependencias e pontos sem comportamento definido.',
+        hint: 'Exceções, dependências e pontos sem comportamento definido.',
         required: false,
       },
     ],
@@ -289,7 +289,7 @@ export const FRAMEWORKS = {
       {
         key: 'backstage',
         label: 'Backstage',
-        hint: 'Processos, regras e atividades internas invisiveis.',
+        hint: 'Processos, regras e atividades internas invisíveis.',
         required: true,
       },
       {
@@ -323,25 +323,25 @@ export const FRAMEWORKS = {
       {
         key: 'pains',
         label: 'Dores',
-        hint: 'Obstaculos, riscos e resultados indesejados.',
+        hint: 'Obstáculos, riscos e resultados indesejados.',
         required: true,
       },
       {
         key: 'gains',
         label: 'Ganhos esperados',
-        hint: 'Beneficios e resultados desejados.',
+        hint: 'Benefícios e resultados desejados.',
         required: true,
       },
       {
         key: 'productsServices',
-        label: 'Produtos e servicos',
+        label: 'Produtos e serviços',
         hint: 'Elementos da proposta oferecida.',
         required: true,
       },
       {
         key: 'painRelievers',
         label: 'Aliviadores de dor',
-        hint: 'Como a proposta reduz cada dor prioritaria.',
+        hint: 'Como a proposta reduz cada dor prioritária.',
         required: true,
       },
       {
@@ -362,7 +362,7 @@ export const FRAMEWORKS = {
   'design-sprint': {
     id: 'design-sprint',
     label: 'Design Sprint',
-    need: 'Responder rapidamente uma pergunta critica com prototipo e teste.',
+    need: 'Responder rapidamente uma pergunta crítica com protótipo e teste.',
     summary:
       'Estrutura desafio, ideias, decisão, protótipo e teste. Boa quando há pouco tempo e uma decisão de alto risco precisa de evidência.',
     fields: [
@@ -381,7 +381,7 @@ export const FRAMEWORKS = {
       {
         key: 'map',
         label: 'Mapa da jornada e alvo',
-        hint: 'Atores, inicio, fim e ponto focal do sprint.',
+        hint: 'Atores, início, fim e ponto focal do sprint.',
         required: true,
       },
       {
@@ -392,8 +392,8 @@ export const FRAMEWORKS = {
       },
       {
         key: 'prototype',
-        label: 'Prototipo e cenario de teste',
-        hint: 'O que sera simulado e qual tarefa o participante executa.',
+        label: 'Protótipo e cenário de teste',
+        hint: 'O que será simulado e qual tarefa o participante executa.',
         required: true,
       },
       {
@@ -421,13 +421,13 @@ export const FRAMEWORKS = {
       {
         key: 'segments',
         label: 'Segmentos e early adopters',
-        hint: 'Para quem e quem sente a dor primeiro.',
+        hint: 'Para quem é e quem sente a dor primeiro.',
         required: true,
       },
       {
         key: 'uniqueValueProposition',
         label: 'Proposta unica de valor',
-        hint: 'Beneficio central e por que e diferente.',
+        hint: 'Benefício central e por que é diferente.',
         required: true,
       },
       {
@@ -439,7 +439,7 @@ export const FRAMEWORKS = {
       {
         key: 'channels',
         label: 'Canais',
-        hint: 'Como alcancar e atender os segmentos.',
+        hint: 'Como alcançar e atender os segmentos.',
         required: true,
       },
       {
@@ -451,7 +451,7 @@ export const FRAMEWORKS = {
       {
         key: 'businessModel',
         label: 'Receita, custos e vantagem',
-        hint: 'Como se sustenta e o que e dificil de copiar.',
+        hint: 'Como se sustenta e o que é difícil de copiar.',
         required: true,
       },
     ],

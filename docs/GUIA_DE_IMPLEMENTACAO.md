@@ -111,8 +111,9 @@ Passos:
    o servidor de skills (`vite.config.js`). O proxy permite que a interface em
    `http://localhost:5173` chame `/api/ai/...` sem lidar com CORS.
 
-4. Crie `index.html` com a `div#root`, o `main.jsx` como modulo e o link da
-   fonte Inter.
+4. Crie `index.html` com a `div#root` e o `main.jsx` como módulo. Importe os
+   pesos da IBM Plex Sans pelo pacote `@fontsource/ibm-plex-sans`; a interface
+   não depende de uma fonte remota para renderizar.
 
 **Validação:** `npm run dev` sobe sem erro e serve a página em
 `http://localhost:5173`.
@@ -369,9 +370,9 @@ validação e (quando aplicável) skill.
    entrega da iniciativa (sem sobrescrever texto do PM), oferece sugestão por
    campo e "preencher vazios", roda a revisão e exige aprovação humana.
 6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
-   perguntas em aberto e referências, com chat de revisão (cada mensagem gera
-   uma nova versão), aprovar/reabrir, exportar Markdown, DOC compatível com
-   Google Docs, copiar formatado e imprimir.
+   perguntas em aberto e referências; abaixo do documento fica o chat de
+   revisão (cada mensagem gera uma nova versão), seguido de aprovar/reabrir,
+   exportar Markdown, DOC compatível com Google Docs, copiar formatado e imprimir.
 
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.

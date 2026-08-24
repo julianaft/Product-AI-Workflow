@@ -212,7 +212,7 @@ export function classifyInitiative({ product = {}, initiative = {} } = {}) {
 
   const signals = [];
   if (incrementalScore > 0) {
-    signals.push(`${incrementalScore} indicio(s) de expansao sobre algo que ja existe.`);
+    signals.push(`${incrementalScore} indício(s) de expansão sobre algo que já existe.`);
   }
   if (newScore > 0) {
     signals.push(`${newScore} indício(s) de construção inédita.`);
@@ -223,8 +223,8 @@ export function classifyInitiative({ product = {}, initiative = {} } = {}) {
 
   const reason =
     type === 'incremental'
-      ? 'O texto descreve mudanca sobre uma base existente, entao o caminho tende a ser incremental.'
-      : 'O texto descreve algo sem base anterior, entao o caminho tende a ser um fluxo novo.';
+      ? 'O texto descreve mudança sobre uma base existente, então o caminho tende a ser incremental.'
+      : 'O texto descreve algo sem base anterior, então o caminho tende a ser um fluxo novo.';
 
   return {
     type,
@@ -264,7 +264,7 @@ export function recommendDiscovery({
   } else if (initiativeType === 'new') {
     recommended = 'double-diamond';
     reason =
-      'A iniciativa foi classificada como fluxo novo e o escopo ainda e amplo, entao vale divergir antes de convergir.';
+      'A iniciativa foi classificada como fluxo novo e o escopo ainda é amplo, então vale divergir antes de convergir.';
   } else if (uncertainty > evidence) {
     recommended = 'csd';
     reason =
@@ -272,7 +272,7 @@ export function recommendDiscovery({
   } else {
     recommended = 'opportunity-tree';
     reason =
-      'A iniciativa expande algo existente e ja tem objetivo declarado, entao ligar objetivo, dores e experimentos e mais direto.';
+      'A iniciativa expande algo existente e já tem objetivo declarado, então ligar objetivo, dores e experimentos é mais direto.';
   }
 
   if (!availableFrameworks.includes(recommended)) {
@@ -314,13 +314,13 @@ function recommendationReason(frameworkId) {
     'assumption-mapping':
       'A iniciativa explicita riscos e hipóteses críticas; o Mapa de Suposições prioriza o que precisa ser validado primeiro.',
     'impact-mapping':
-      'A iniciativa parte de uma meta e envolve atores ou mudancas de comportamento; Impact Mapping conecta esses elementos as entregas.',
+      'A iniciativa parte de uma meta e envolve atores ou mudanças de comportamento; Impact Mapping conecta esses elementos às entregas.',
     'user-story-mapping':
-      'O fluxo e conhecido, mas precisa ser organizado e fatiado; User Story Mapping torna a jornada e os cortes de MVP visiveis.',
+      'O fluxo é conhecido, mas precisa ser organizado e fatiado; User Story Mapping torna a jornada e os cortes de MVP visíveis.',
     'service-blueprint':
       'A dor atravessa operação, canais ou sistemas; Service Blueprint evidencia frontstage, backstage, handoffs e pontos de falha.',
     'value-proposition-canvas':
-      'A incerteza esta no encaixe entre o segmento e a proposta; o Value Proposition Canvas cruza jobs, dores, ganhos e resposta de valor.',
+      'A incerteza está no encaixe entre o segmento e a proposta; o Value Proposition Canvas cruza jobs, dores, ganhos e resposta de valor.',
     'design-sprint':
       'Existe uma decisão de alto risco que precisa de protótipo e teste rápido; Design Sprint organiza essa validação.',
     'lean-canvas':
@@ -354,7 +354,7 @@ function alternativeReason(frameworkId) {
     case 'opportunity-tree':
       return 'Use se o objetivo já estiver claro e faltar apenas destrinchar dores e soluções.';
     case 'csd':
-      return 'Use se o time ainda discorda sobre o que e fato e o que e suposicao.';
+      return 'Use se o time ainda discorda sobre o que é fato e o que é suposição.';
     case 'double-diamond':
       return 'Use se o problema ainda pode mudar de forma durante a pesquisa.';
     case 'jtbd':
@@ -374,7 +374,7 @@ function alternativeReason(frameworkId) {
     case 'lean-canvas':
       return 'Use se produto, mercado ou modelo de negócio ainda forem hipóteses.';
     default:
-      return 'Alternativa disponivel.';
+      return 'Alternativa disponível.';
   }
 }
 
@@ -750,10 +750,10 @@ function openQuestions({ initiative = {} }) {
   const questions = [];
 
   if (isBlank(initiative.expectedOutcome)) {
-    questions.push('Qual numero muda se esta iniciativa der certo?');
+    questions.push('Qual número muda se esta iniciativa der certo?');
   }
   if (isBlank(initiative.audience)) {
-    questions.push('Quem exatamente e afetado por essa mudanca?');
+    questions.push('Quem exatamente é afetado por essa mudança?');
   }
   if (isBlank(initiative.problem) || isShallow(initiative.problem)) {
     questions.push('Qual comportamento atual do usuário precisa mudar, e por que ele acontece hoje?');
@@ -819,14 +819,14 @@ export function reviewDiscovery({ frameworkId, fields = {}, initiative = {} } = 
     const value = fields[field.key];
 
     if (field.required && isBlank(value)) {
-      gaps.push(`"${field.label}" esta vazio.`);
+      gaps.push(`"${field.label}" está vazio.`);
       continue;
     }
     if (!isBlank(value) && String(value).includes(PENDING)) {
       gaps.push(`"${field.label}" ainda contem o marcador ${PENDING}.`);
     }
     if (field.required && isShallow(value)) {
-      gaps.push(`"${field.label}" esta curto demais para sustentar uma secao do PRD.`);
+      gaps.push(`"${field.label}" está curto demais para sustentar uma seção do PRD.`);
     }
   }
 
