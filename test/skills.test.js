@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import {
   classifyInitiative,
+  draftDiscoveryFields,
   recommendDiscovery,
   reviewDiscovery,
 } from '../shared/discoverySkill.js';
@@ -102,6 +103,23 @@ test('skill recomenda frameworks diferentes conforme a necessidade', () => {
     assert.doesNotThrow(() => assertDiscoveryRecommendation(result));
     assert.ok(Object.keys(result.suggestedFields).length >= 3);
   }
+});
+
+test('rascunho de discovery reusa problema, dor e entrega da iniciativa', () => {
+  const fields = draftDiscoveryFields('opportunity-tree', {
+    product: {
+      businessContextSources: [
+        { type: 'file', title: 'contexto.txt', content: 'Campanhas do canal VD sao cadastradas manualmente no GCAM.' },
+      ],
+    },
+    initiative: incrementalInitiative,
+  });
+
+  assert.match(fields.outcome, /ticket medio/i);
+  assert.match(fields.opportunities, /faixa/);
+  assert.match(fields.opportunities, /contexto.txt|GCAM/i);
+  assert.match(fields.solutions, /Expandir a mecanica/);
+  assert.equal(Object.values(fields).includes('[a preencher]'), false);
 });
 
 test('revisao aponta campo obrigatorio vazio e bloqueia o PRD', () => {

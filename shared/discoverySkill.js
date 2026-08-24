@@ -302,7 +302,7 @@ export function recommendDiscovery({
     confidence,
     reason,
     alternatives,
-    suggestedFields: draftFields(recommended, { product, initiative }),
+    suggestedFields: draftDiscoveryFields(recommended, { product, initiative }),
     questions: openQuestions({ initiative }),
   };
 }
@@ -378,107 +378,360 @@ function alternativeReason(frameworkId) {
   }
 }
 
-const PENDING = '[a preencher]';
+export const PENDING = '[a preencher]';
+
+function textOf(value) {
+  return String(value ?? '').trim();
+}
+
+function joinBlocks(...parts) {
+  return parts.map((part) => textOf(part)).filter(Boolean).join('\n\n');
+}
+
+function knownOrPending(value, fallback) {
+  const current = textOf(value);
+  if (current) return current;
+  return fallback ? gapLine(fallback) : '';
+}
+
+function gapLine(prompt) {
+  return `A validar: ${prompt}`;
+}
+
+function businessContextFromProduct(product = {}) {
+  const parts = [];
+  if (textOf(product.businessContext)) parts.push(textOf(product.businessContext));
+
+  for (const source of product.businessContextSources ?? []) {
+    if (source?.type === 'file' && textOf(source.content)) {
+      parts.push(`${source.title || source.fileName || 'Arquivo'}: ${textOf(source.content)}`);
+    } else if (textOf(source?.title) || textOf(source?.url)) {
+      parts.push(`Fonte de negócio: ${textOf(source.title) || textOf(source.url)} (conteúdo não lido automaticamente).`);
+    }
+  }
+
+  return parts.join('\n\n');
+}
+
+function technicalContextFromProduct(product = {}) {
+  if (textOf(product.technicalContext)) return textOf(product.technicalContext);
+
+  const repositories = (product.repositories ?? []).filter((repository) => repository.selected);
+  if (!repositories.length) return '';
+
+  return [
+    'Repositórios selecionados:',
+    ...repositories.map((repository) => `- ${repository.fullName || repository.url}`),
+  ].join('\n');
+}
+
+function discoverySource({ product = {}, initiative = {} } = {}) {
+  return {
+    name: textOf(initiative.name),
+    problem: textOf(initiative.problem),
+    delivery: textOf(initiative.description),
+    outcome: textOf(initiative.expectedOutcome),
+    audience: textOf(initiative.audience),
+    constraints: textOf(initiative.constraints),
+    stakeholders: textOf(initiative.stakeholders),
+    okrCode: textOf(initiative.okrCode),
+    business: businessContextFromProduct(product),
+    technical: technicalContextFromProduct(product),
+  };
+}
 
 /**
- * Monta um rascunho por campo a partir do que ja foi informado.
- * Campos sem base viram um marcador explicito em vez de texto inventado.
+ * Monta um rascunho por campo a partir do problema, da dor e da entrega
+ * já descritos na iniciativa e no contexto do produto. Não inventa métrica
+ * nem evidência: o que não foi informado vira um gancho de validação.
  */
-function draftFields(frameworkId, { product = {}, initiative = {} }) {
+export function draftDiscoveryFields(frameworkId, context = {}) {
   const framework = getFramework(frameworkId);
   if (!framework) return {};
 
-  const outcome = initiative.expectedOutcome || PENDING;
-  const problem = initiative.problem || PENDING;
-  const description = initiative.description || PENDING;
-  const audience = initiative.audience || PENDING;
+  const source = discoverySource(context);
+  const problem = source.problem || PENDING;
+  const delivery = source.delivery || PENDING;
+  const outcome = source.outcome || PENDING;
+  const audience = source.audience || PENDING;
 
   const drafts = {
     'opportunity-tree': {
-      outcome,
-      opportunities:
-        problem === PENDING
-          ? PENDING
-          : `${problem}\n\nPublico afetado: ${audience}.\nEvidencia: ${PENDING}.`,
-      solutions: description,
-      experiments: `${PENDING} — definir um teste que valide a solução antes da construção completa.`,
+      outcome: knownOrPending(source.outcome, 'qual número de negócio esta iniciativa precisa mover?'),
+      opportunities: joinBlocks(
+        source.problem && `Dor: ${source.problem}`,
+        source.audience && `Quem sente: ${source.audience}`,
+        source.business && `Contexto observado:\n${source.business}`,
+        gapLine('qual evidência (dado, pesquisa ou observação) confirma essa dor?'),
+      ),
+      solutions: joinBlocks(
+        source.delivery && `Entrega proposta: ${source.delivery}`,
+        source.name && `Iniciativa: ${source.name}`,
+        gapLine('quais recortes ou alternativas de solução ficam de fora desta entrega?'),
+      ),
+      experiments: joinBlocks(
+        source.delivery &&
+          source.problem &&
+          `Hipótese de teste: se entregarmos "${source.delivery}", a dor "${source.problem}" reduz.`,
+        source.outcome && `Sinal de sucesso declarado: ${source.outcome}.`,
+        gapLine('qual experimento mínimo valida isso antes da construção completa?'),
+      ),
     },
     csd: {
-      certainties:
-        product.businessContext && !isBlank(product.businessContext)
-          ? `Contexto conhecido do produto: ${product.businessContext}`
-          : PENDING,
-      assumptions: problem === PENDING ? PENDING : `Acreditamos que: ${problem}`,
-      doubts: `Qual evidência sustenta o resultado esperado "${outcome}"?`,
+      certainties: joinBlocks(
+        source.business && `Contexto conhecido do produto:\n${source.business}`,
+        source.audience && `Público já identificado: ${source.audience}.`,
+        source.technical && `Escopo técnico informado:\n${source.technical}`,
+        !source.business && !source.audience && !source.technical
+          ? knownOrPending('', 'o que já está comprovado por dado ou operação atual?')
+          : gapLine('separar o que é fato observado do que ainda é interpretação.'),
+      ),
+      assumptions: joinBlocks(
+        source.problem && `Acreditamos que a dor principal é: ${source.problem}`,
+        source.delivery && `Acreditamos que a entrega "${source.delivery}" ataca essa dor.`,
+        source.outcome && `Acreditamos que o resultado "${source.outcome}" é o melhor comprovante.`,
+        gapLine('o que precisa ser verdade para essa aposta valer?'),
+      ),
+      doubts: joinBlocks(
+        source.outcome && `Qual evidência sustenta o resultado esperado "${source.outcome}"?`,
+        source.problem && `Como essa dor aparece hoje, passo a passo, para ${audience}?`,
+        gapLine('o que o time ainda não consegue responder com dado?'),
+      ),
     },
     'double-diamond': {
-      discover: `${PENDING} — listar pesquisas, entrevistas e dados ja levantados.`,
-      define: problem,
-      develop: description,
-      deliver: `${PENDING} — escolher o recorte de MVP.`,
+      discover: joinBlocks(
+        source.business && `O que já sabemos do contexto:\n${source.business}`,
+        source.audience && `Com quem investigar: ${source.audience}.`,
+        source.problem && `Sinal inicial da dor: ${source.problem}`,
+        gapLine('listar pesquisas, entrevistas e dados já levantados, sem concluir a solução.'),
+      ),
+      define: joinBlocks(
+        source.problem && `Problema escolhido neste momento: ${source.problem}`,
+        source.audience && `Recorte de público: ${source.audience}.`,
+        gapLine('confirmar se este é o problema certo antes de desenvolver solução.'),
+      ),
+      develop: joinBlocks(
+        source.delivery && `Caminho já descrito: ${source.delivery}`,
+        gapLine('quais alternativas de solução foram consideradas além desta entrega?'),
+      ),
+      deliver: joinBlocks(
+        source.delivery && `Recorte de entrega: ${source.delivery}`,
+        source.outcome && `Deve mover: ${source.outcome}.`,
+        source.constraints && `Restrições: ${source.constraints}.`,
+        gapLine('qual é o MVP desta entrega e o que fica para depois?'),
+      ),
     },
     jtbd: {
-      situation: `Publico: ${audience}. Contexto em que a necessidade aparece: ${PENDING}.`,
-      job: `Quando ${PENDING}, quero ${problem}, para ${outcome}.`,
-      currentAlternatives: `${PENDING} — como o público resolve esse problema hoje.`,
-      forces: `${PENDING} — pressao, atracao, ansiedade e habitos que influenciam a mudanca.`,
-      desiredOutcomes: outcome,
+      situation: joinBlocks(
+        source.audience && `Público: ${source.audience}.`,
+        source.business && `Contexto em que a necessidade aparece:\n${source.business}`,
+        source.problem && `Gatilho observado: ${source.problem}`,
+        gapLine('quando, onde e com qual pressão essa necessidade aparece?'),
+      ),
+      job: joinBlocks(
+        `Quando ${source.audience || PENDING}, quero resolver "${problem}", para chegar a "${outcome}".`,
+        gapLine('reescrever no formato: Quando [situação], quero [progresso], para [resultado].'),
+      ),
+      currentAlternatives: joinBlocks(
+        source.business && `Como parece ser resolvido hoje:\n${source.business}`,
+        gapLine('qual alternativa o público usa hoje (planilha, outro fluxo, contorno manual)?'),
+      ),
+      forces: joinBlocks(
+        source.problem && `Pressão para mudar: ${source.problem}`,
+        source.delivery && `Atração da proposta: ${source.delivery}`,
+        gapLine('quais hábitos, ansiedades ou regras travam a mudança?'),
+      ),
+      desiredOutcomes: knownOrPending(source.outcome, 'qual progresso o usuário considera sucesso?'),
     },
     'assumption-mapping': {
-      desirability: problem === PENDING ? PENDING : `Acreditamos que o público precisa resolver: ${problem}`,
-      viability: `${PENDING} — restrições de negócio, custo e operação.`,
-      feasibility: initiative.constraints || `${PENDING} — tecnologia, dados, prazo e dependencias.`,
-      riskiestAssumptions: `${PENDING} — ordenar por importância e falta de evidência.`,
-      validationPlan: `${PENDING} — experimento, evidência esperada e critério de sucesso.`,
+      desirability: joinBlocks(
+        source.problem && `Acreditamos que ${audience} precisa resolver: ${source.problem}`,
+        source.delivery && `Acreditamos que "${source.delivery}" é desejável para esse público.`,
+        gapLine('quem já demonstrou essa necessidade com evidência?'),
+      ),
+      viability: joinBlocks(
+        source.outcome && `Aposta de negócio: ${source.outcome}.`,
+        source.constraints && `Restrições informadas: ${source.constraints}.`,
+        gapLine('custo, operação e incentivo realmente sustentam essa entrega?'),
+      ),
+      feasibility: joinBlocks(
+        source.technical && `Viabilidade técnica a partir do escopo:\n${source.technical}`,
+        source.constraints && `Restrições: ${source.constraints}.`,
+        gapLine('tecnologia, dados, prazo e dependências permitem construir isso agora?'),
+      ),
+      riskiestAssumptions: joinBlocks(
+        source.problem && `Suposição de dor: ${source.problem}`,
+        source.delivery && `Suposição de solução: ${source.delivery} resolve essa dor.`,
+        source.outcome && `Suposição de impacto: ${source.outcome}.`,
+        gapLine('ordenar por importância e falta de evidência.'),
+      ),
+      validationPlan: joinBlocks(
+        source.delivery &&
+          source.problem &&
+          `Testar se "${source.delivery}" reduz "${source.problem}" para ${audience}.`,
+        source.outcome && `Critério declarado: ${source.outcome}.`,
+        gapLine('experimento, evidência esperada e critério de parada.'),
+      ),
     },
     'impact-mapping': {
-      goal: outcome,
-      actors: audience,
-      impacts: `${PENDING} — o que cada ator precisa fazer de forma diferente.`,
-      deliverables: description,
-      measures: `${PENDING} — medida do comportamento e da meta.`,
+      goal: joinBlocks(
+        source.okrCode && `Iniciativa OKR: ${source.okrCode}.`,
+        knownOrPending(source.outcome, 'qual meta de negócio esta entrega deve mover?'),
+      ),
+      actors: joinBlocks(
+        source.audience && `Quem opera ou é impactado: ${source.audience}.`,
+        source.stakeholders && `Outras pessoas envolvidas: ${source.stakeholders}.`,
+        gapLine('quem mais precisa mudar comportamento para a meta acontecer?'),
+      ),
+      impacts: joinBlocks(
+        source.problem && `Comportamento atual (dor): ${source.problem}`,
+        source.outcome && `Comportamento desejado ligado à meta: ${source.outcome}.`,
+        gapLine('o que cada ator precisa fazer de forma diferente?'),
+      ),
+      deliverables: joinBlocks(
+        source.delivery && `Entrega: ${source.delivery}`,
+        source.name && `Iniciativa: ${source.name}.`,
+        gapLine('o que de fato será construído nesta fatia?'),
+      ),
+      measures: joinBlocks(
+        source.outcome && `Medida declarada: ${source.outcome}.`,
+        gapLine('baseline AS IS e meta TO BE por ator ou solução.'),
+      ),
     },
     'user-story-mapping': {
-      personas: `${audience} — objetivo: ${outcome}.`,
-      backbone: `${PENDING} — atividades principais em ordem.`,
-      tasks: `${PENDING} — passos executados em cada atividade.`,
-      releaseSlices: `${PENDING} — corte do MVP e releases seguintes.`,
-      gaps: `${PENDING} — edge cases, dependencias e comportamentos ausentes.`,
+      personas: joinBlocks(
+        source.audience && `${source.audience} — objetivo: ${outcome}.`,
+        source.problem && `Dor que essa persona enfrenta: ${source.problem}`,
+        gapLine('há mais de um perfil com jornadas diferentes?'),
+      ),
+      backbone: joinBlocks(
+        source.delivery && `Jornada alvo desta entrega: ${source.delivery}`,
+        source.problem && `Ponto de dor no fluxo atual: ${source.problem}`,
+        gapLine('listar as atividades principais em ordem, do início ao resultado.'),
+      ),
+      tasks: joinBlocks(
+        source.problem && `Tarefas hoje, no fluxo com dor: ${source.problem}`,
+        source.delivery && `Tarefas que a entrega deve cobrir: ${source.delivery}`,
+        gapLine('passos concretos em cada atividade da jornada.'),
+      ),
+      releaseSlices: joinBlocks(
+        source.delivery && `Fatia desta iniciativa: ${source.delivery}`,
+        source.constraints && `Limites: ${source.constraints}.`,
+        gapLine('o que entra no MVP versus releases seguintes?'),
+      ),
+      gaps: joinBlocks(
+        source.constraints && `Restrições já visíveis: ${source.constraints}.`,
+        gapLine('edge cases, dependências e comportamentos ausentes nesta fatia.'),
+      ),
     },
     'service-blueprint': {
-      journey: `${PENDING} — etapas ponta a ponta do processo.`,
-      userActions: `${audience}: ${problem}`,
-      frontstage: `${PENDING} — telas, pessoas e respostas visiveis.`,
-      backstage: `${PENDING} — regras e processos internos.`,
-      supportSystems:
-        product.technicalContext || `${PENDING} — sistemas, dados, integrações e times.`,
-      failurePoints: `${problem}\nEvidencia: ${PENDING}.`,
+      journey: joinBlocks(
+        source.delivery && `Fluxo que a entrega pretende cobrir: ${source.delivery}`,
+        source.problem && `Onde o processo atual dói: ${source.problem}`,
+        gapLine('etapas ponta a ponta, do gatilho ao encerramento.'),
+      ),
+      userActions: joinBlocks(
+        source.audience && `${source.audience}:`,
+        source.problem && `Ação atual / dor: ${source.problem}`,
+        source.delivery && `Ação desejada com a entrega: ${source.delivery}`,
+      ),
+      frontstage: joinBlocks(
+        source.delivery && `O que o usuário passa a ver ou operar: ${source.delivery}`,
+        gapLine('telas, pessoas e respostas visíveis em cada etapa.'),
+      ),
+      backstage: joinBlocks(
+        source.business && `Processo interno conhecido:\n${source.business}`,
+        gapLine('regras, filas e trabalho humano que o usuário não vê.'),
+      ),
+      supportSystems: joinBlocks(
+        source.technical && source.technical,
+        source.constraints && `Dependências: ${source.constraints}.`,
+        gapLine('sistemas, dados, integrações e times de suporte.'),
+      ),
+      failurePoints: joinBlocks(
+        source.problem && `Falha / retrabalho atual: ${source.problem}`,
+        gapLine('em qual etapa isso quebra e qual evidência comprova?'),
+      ),
     },
     'value-proposition-canvas': {
-      customerJobs: problem,
-      pains: problem,
-      gains: outcome,
-      productsServices: description,
-      painRelievers: `${PENDING} — como a proposta reduz cada dor prioritaria.`,
-      gainCreators: `${PENDING} — como a proposta produz os ganhos esperados.`,
-      fitEvidence: `${PENDING} — evidências de encaixe e lacunas a validar.`,
+      customerJobs: joinBlocks(
+        source.problem && `Trabalho que o cliente tenta concluir: ${source.problem}`,
+        source.audience && `Segmento: ${source.audience}.`,
+      ),
+      pains: joinBlocks(
+        source.problem && `Dor: ${source.problem}`,
+        source.business && `Como isso aparece no contexto atual:\n${source.business}`,
+      ),
+      gains: knownOrPending(source.outcome, 'o que o cliente ganha se a dor sumir?'),
+      productsServices: joinBlocks(
+        source.delivery && `Oferta desta iniciativa: ${source.delivery}`,
+        source.name && `Nome: ${source.name}.`,
+      ),
+      painRelievers: joinBlocks(
+        source.delivery &&
+          source.problem &&
+          `"${source.delivery}" pretende aliviar: ${source.problem}`,
+        gapLine('como a proposta reduz cada dor prioritária, na prática?'),
+      ),
+      gainCreators: joinBlocks(
+        source.outcome && `Ganho declarado: ${source.outcome}.`,
+        source.delivery && `Mecanismo proposto: ${source.delivery}`,
+        gapLine('como a proposta produz esses ganhos de forma observável?'),
+      ),
+      fitEvidence: joinBlocks(
+        source.business && `Indício já registrado:\n${source.business}`,
+        gapLine('evidências de encaixe e lacunas a validar.'),
+      ),
     },
     'design-sprint': {
-      challenge: `${problem}\nObjetivo de longo prazo: ${outcome}.`,
-      sprintQuestions: `${PENDING} — o que precisa ser verdade para a solução funcionar.`,
-      map: `${audience} — inicio: ${PENDING}; fim: ${outcome}.`,
-      solutionIdeas: description,
-      prototype: `${PENDING} — recorte do prototipo e tarefa do teste.`,
-      testResults: `${PENDING} — padrões observados, critério e decisão.`,
+      challenge: joinBlocks(
+        source.problem && `Desafio: ${source.problem}`,
+        source.outcome && `Objetivo de longo prazo: ${source.outcome}.`,
+        source.audience && `Para: ${source.audience}.`,
+      ),
+      sprintQuestions: joinBlocks(
+        source.delivery && `A entrega "${source.delivery}" resolve a dor descrita?`,
+        source.outcome && `Conseguimos observar "${source.outcome}" neste recorte?`,
+        gapLine('o que precisa ser verdade para a solução funcionar?'),
+      ),
+      map: joinBlocks(
+        source.audience && `Quem: ${source.audience}.`,
+        source.problem && `Início (dor): ${source.problem}`,
+        source.outcome && `Fim desejado: ${source.outcome}.`,
+        gapLine('desenhar o mapa do fluxo atual até o resultado.'),
+      ),
+      solutionIdeas: joinBlocks(
+        source.delivery && `Ideia já descrita: ${source.delivery}`,
+        gapLine('quais outras ideias o time ainda deveria esboçar?'),
+      ),
+      prototype: joinBlocks(
+        source.delivery && `Recorte sugerido para prototipar: ${source.delivery}`,
+        gapLine('qual tarefa o participante executa no teste?'),
+      ),
+      testResults: joinBlocks(
+        gapLine('padrões observados, critério de sucesso e decisão após o teste.'),
+        source.outcome && `Comparar o resultado com: ${source.outcome}.`,
+      ),
     },
     'lean-canvas': {
-      problems: problem,
-      segments: audience,
-      uniqueValueProposition: `${outcome}\nDiferencial: ${PENDING}.`,
-      solution: description,
-      channels: `${PENDING} — como alcancar e atender o segmento.`,
-      metrics: outcome,
-      businessModel: `${PENDING} — receita, custos e vantagem dificil de copiar.`,
+      problems: knownOrPending(source.problem, 'quais dores deste segmento são prioritárias?'),
+      segments: knownOrPending(source.audience, 'quem é o early adopter?'),
+      uniqueValueProposition: joinBlocks(
+        source.outcome && `Promessa: ${source.outcome}`,
+        source.delivery && `Como: ${source.delivery}`,
+        gapLine('qual diferencial difícil de copiar?'),
+      ),
+      solution: knownOrPending(source.delivery, 'qual solução mínima ataca as dores principais?'),
+      channels: joinBlocks(
+        source.audience && `Público a alcançar: ${source.audience}.`,
+        source.business && `Canal / processo atual:\n${source.business}`,
+        gapLine('como alcançar e atender o segmento?'),
+      ),
+      metrics: knownOrPending(source.outcome, 'qual métrica indica que o canvas está funcionando?'),
+      businessModel: joinBlocks(
+        source.constraints && `Restrições de negócio: ${source.constraints}.`,
+        gapLine('receita, custos e vantagem difícil de copiar.'),
+      ),
     },
   };
 
@@ -486,7 +739,10 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
   const allowedKeys = framework.fields.map((field) => field.key);
 
   return Object.fromEntries(
-    Object.entries(draft).filter(([key]) => allowedKeys.includes(key)),
+    Object.entries(draft)
+      .filter(([key]) => allowedKeys.includes(key))
+      .map(([key, value]) => [key, textOf(value)])
+      .filter(([, value]) => value.length > 0),
   );
 }
 
@@ -521,16 +777,23 @@ export function suggestDiscoveryField({
   fieldKey,
   currentValue = '',
 } = {}) {
-  const drafts = draftFields(frameworkId, { product, initiative });
-  const suggestion = drafts[fieldKey] ?? PENDING;
+  const drafts = draftDiscoveryFields(frameworkId, { product, initiative });
+  const suggestion =
+    drafts[fieldKey] ??
+    gapLine('este campo ainda não tem base no problema, na dor ou na entrega descritos.');
 
   return {
     fieldKey,
     suggestion,
     rationale:
-      'Rascunho montado a partir do contexto do produto e da descrição da iniciativa. Revise antes de aceitar.',
+      'Rascunho montado a partir do problema, da dor e da entrega descritos na iniciativa. Revise antes de aceitar.',
     replacesContent: !isBlank(currentValue),
-    basedOn: ['product.businessContext', 'initiative.description', 'initiative.problem'],
+    basedOn: [
+      'initiative.problem',
+      'initiative.description',
+      'initiative.expectedOutcome',
+      'product.businessContextSources',
+    ],
   };
 }
 

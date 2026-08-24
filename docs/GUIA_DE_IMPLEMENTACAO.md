@@ -365,8 +365,9 @@ validação e (quando aplicável) skill.
    exibe motivo, alternativas e perguntas, e deixa o PM escolher qualquer um dos
    frameworks disponíveis.
 5. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
-   a partir dos metadados, oferece sugestão por campo e "preencher vazios",
-   roda a revisão e exige aprovação humana.
+   a partir dos metadados, já traz rascunho baseado no problema, na dor e na
+   entrega da iniciativa (sem sobrescrever texto do PM), oferece sugestão por
+   campo e "preencher vazios", roda a revisão e exige aprovação humana.
 6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
    perguntas em aberto e referências, com chat de revisão (cada mensagem gera
    uma nova versão), aprovar/reabrir, exportar Markdown, DOC compatível com
