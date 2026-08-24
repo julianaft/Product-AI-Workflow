@@ -45,7 +45,7 @@ export const STEPS = [
     key: 'prd',
     phase: 'Entrega',
     title: 'PRD',
-    description: 'Documento gerado a partir do discovery aprovado.',
+    description: 'Documento gerado, revisado no chat e aprovado pelo PM.',
     accent: 'blue',
   },
 ];

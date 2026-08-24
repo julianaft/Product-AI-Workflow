@@ -5,11 +5,13 @@ import {
   suggestDiscoveryField as mockSuggestField,
 } from '../../shared/discoverySkill.js';
 import { generatePrd as mockGeneratePrd } from '../../shared/prdSkill.js';
+import { revisePrd as mockRevisePrd } from '../../shared/prdRevision.js';
 import {
   assertClassification,
   assertDiscoveryRecommendation,
   assertDiscoveryReview,
   assertPrd,
+  assertPrdRevision,
 } from '../../shared/contracts.js';
 
 /**
@@ -95,5 +97,14 @@ export function generatePrd(payload) {
     payload,
     mock: mockGeneratePrd,
     assert: assertPrd,
+  });
+}
+
+export function revisePrd(payload) {
+  return callSkill({
+    endpoint: 'revise-prd',
+    payload,
+    mock: mockRevisePrd,
+    assert: assertPrdRevision,
   });
 }

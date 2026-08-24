@@ -57,6 +57,8 @@ export function createJourney() {
       document: null,
       status: 'not-generated',
       approvedAt: null,
+      chat: [],
+      answers: [],
     },
 
     links: [],
@@ -104,7 +106,12 @@ export function mergeJourney(stored) {
     initiative: { ...base.initiative, ...(stored.initiative ?? {}) },
     classification: { ...base.classification, ...(stored.classification ?? {}) },
     discovery: { ...base.discovery, ...(stored.discovery ?? {}) },
-    prd: { ...base.prd, ...(stored.prd ?? {}) },
+    prd: {
+      ...base.prd,
+      ...(stored.prd ?? {}),
+      chat: Array.isArray(stored.prd?.chat) ? stored.prd.chat : [],
+      answers: Array.isArray(stored.prd?.answers) ? stored.prd.answers : [],
+    },
     links: Array.isArray(stored.links) ? stored.links : [],
   };
 }

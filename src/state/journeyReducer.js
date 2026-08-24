@@ -158,7 +158,38 @@ export function journeyReducer(state, action) {
     case 'setPrd':
       return {
         ...state,
-        prd: { document: action.document, status: 'draft', approvedAt: null },
+        prd: {
+          ...state.prd,
+          document: action.document,
+          status: 'draft',
+          approvedAt: null,
+          answers: action.answers ?? state.prd.answers ?? [],
+        },
+      };
+
+    case 'appendPrdChat':
+      return {
+        ...state,
+        prd: {
+          ...state.prd,
+          chat: [...(state.prd.chat ?? []), action.message],
+        },
+      };
+
+    case 'applyPrdRevision':
+      if (!action.document) return state;
+      return {
+        ...state,
+        prd: {
+          ...state.prd,
+          document: action.document,
+          status: 'draft',
+          approvedAt: null,
+          answers: action.answers ?? state.prd.answers ?? [],
+          chat: action.message
+            ? [...(state.prd.chat ?? []), action.message]
+            : (state.prd.chat ?? []),
+        },
       };
 
     case 'updatePrdSection':

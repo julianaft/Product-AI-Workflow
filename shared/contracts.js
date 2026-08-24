@@ -70,10 +70,18 @@ export function assertPrd(value) {
 
   const missing = PRD_SECTION_KEYS.filter((key) => typeof value.sections[key] !== 'string');
   if (missing.length > 0) {
-    throw new ContractError(`PRD: secoes ausentes ou invalidas — ${missing.join(', ')}.`);
+    throw new ContractError(`PRD: seções ausentes ou inválidas — ${missing.join(', ')}.`);
   }
 
   requireArray(value.openQuestions ?? [], 'PRD.openQuestions');
+  return value;
+}
+
+export function assertPrdRevision(value) {
+  requireObject(value, 'revisão de PRD');
+  requireString(value.reply, 'revisão.reply');
+  assertPrd(value.prd);
+  requireArray(value.appliedChanges ?? [], 'revisão.appliedChanges');
   return value;
 }
 
