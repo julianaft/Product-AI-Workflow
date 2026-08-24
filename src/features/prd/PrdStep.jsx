@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 import { PRD_SECTIONS, prdToMarkdown } from '../../../shared/prdSkill.js';
 import { HumanGate, SkillPanel } from '../../components/SkillPanel.jsx';
+import { PrdRevisionChat, createMessage } from '../../components/PrdRevisionChat.jsx';
 import { BUTTON, INPUT, classNames } from '../../components/ui.js';
 import { useSkill } from '../../hooks/useSkill.js';
-import { generatePrd } from '../../services/aiClient.js';
+import { generatePrd, revisePrd } from '../../services/aiClient.js';
 import { buildPrdPayload } from '../../services/prdPayload.js';
 import { copyPrdForGoogleDocs, downloadPrdDoc } from '../../services/prdExport.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
@@ -23,6 +24,11 @@ function downloadMarkdown(prd) {
 export function PrdStep() {
   const { journey, dispatch } = useJourney();
   const { run, loading, error } = useSkill(generatePrd);
+  const {
+    run: runRevision,
+    loading: revisionLoading,
+    error: revisionError,
+  } = useSkill(revisePrd);
   const [copyStatus, setCopyStatus] = useState('');
 
   const document = journey.prd.document;
@@ -35,6 +41,30 @@ export function PrdStep() {
       dispatch({ type: 'setPrd', document: result });
     }
   }, [dispatch, journey, run]);
+
+  const sendRevision = useCallback(
+    async (content) => {
+      const userMessage = createMessage('user', content);
+      dispatch({ type: 'appendPrdChat', message: userMessage });
+
+      const result = await runRevision({
+        payload: buildPrdPayload(journey),
+        currentPrd: journey.prd.document,
+        instruction: content,
+        conversation: [...(journey.prd.chat ?? []), userMessage],
+      });
+
+      if (result?.prd) {
+        dispatch({
+          type: 'applyPrdRevision',
+          document: result.prd,
+          answers: result.answers,
+          message: createMessage('assistant', result.reply, { revision: result.prd.revision }),
+        });
+      }
+    },
+    [dispatch, journey, runRevision],
+  );
 
   async function copyForGoogleDocs() {
     try {
@@ -54,12 +84,14 @@ export function PrdStep() {
         onRun={generate}
         loading={loading}
         error={error}
-        disabled={approved}
+        disabled={approved || revisionLoading}
       >
         {document ? (
           <p className="text-sm">
-            Gerado em {new Date(document.generatedAt).toLocaleString('pt-BR')} a partir de{' '}
-            {document.traceability?.framework}.
+            Versão {document.revision ?? 1} gerada em{' '}
+            {new Date(document.generatedAt).toLocaleString('pt-BR')} a partir de{' '}
+            {document.traceability?.framework}. Use o chat ao lado para responder perguntas
+            ou pedir alterações sem perder o restante do documento.
           </p>
         ) : (
           <p className="text-sm">Nenhum PRD gerado ainda.</p>
@@ -74,9 +106,13 @@ export function PrdStep() {
 
       {document ? (
         <>
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.9fr)] items-start">
           <div className="print-area border border-line rounded-2xl p-5 md:p-8 mb-6">
             <h3 className="text-2xl md:text-3xl font-extrabold border-b border-line pb-3 mb-5">
               {document.title}
+              <span className="block text-sm font-bold text-blue mt-2">
+                Versão {document.revision ?? 1}
+              </span>
             </h3>
 
             <MetadataTable metadata={document.metadata} />
@@ -132,6 +168,17 @@ export function PrdStep() {
                 </ul>
               </section>
             ) : null}
+          </div>
+
+          <PrdRevisionChat
+            document={document}
+            chat={journey.prd.chat}
+            openQuestions={document.openQuestions}
+            disabled={approved}
+            loading={revisionLoading}
+            error={revisionError}
+            onSend={sendRevision}
+          />
           </div>
 
           <HumanGate>

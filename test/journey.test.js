@@ -134,6 +134,25 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
   assert.equal(isStepComplete(1, filled), true);
 });
 
+test('revisão do PRD pelo chat preserva o histórico e atualiza o documento', () => {
+  const journey = reduce(
+    createJourney(),
+    { type: 'setPrd', document: { title: 'PRD', sections: {}, revision: 1 } },
+    { type: 'appendPrdChat', message: { id: 'u1', role: 'user', content: 'Inclua o código OKR I-9.' } },
+    {
+      type: 'applyPrdRevision',
+      document: { title: 'PRD', sections: {}, revision: 2 },
+      answers: [{ question: 'OKR', answer: 'I-9', sectionKey: 'okrInitiative' }],
+      message: { id: 'a1', role: 'assistant', content: 'Versão 2 gerada.', revision: 2 },
+    },
+  );
+
+  assert.equal(journey.prd.document.revision, 2);
+  assert.equal(journey.prd.chat.length, 2);
+  assert.equal(journey.prd.answers[0].answer, 'I-9');
+  assert.equal(journey.prd.status, 'draft');
+});
+
 test('o discovery so libera o PRD depois de aprovado', () => {
   const journey = reduce(
     createJourney(),

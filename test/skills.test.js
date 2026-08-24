@@ -7,6 +7,7 @@ import {
   reviewDiscovery,
 } from '../shared/discoverySkill.js';
 import { PRD_SECTION_KEYS, generatePrd, prdToMarkdown } from '../shared/prdSkill.js';
+import { revisePrd } from '../shared/prdRevision.js';
 import { assertPrd, assertDiscoveryRecommendation } from '../shared/contracts.js';
 import { FRAMEWORKS, FRAMEWORK_IDS } from '../shared/frameworks.js';
 import { prdToDocumentHtml } from '../src/services/prdExport.js';
@@ -273,4 +274,49 @@ test('exportação DOC gera HTML compatível com editores de documento', () => {
   assert.match(html, /<h1>Lucro Extra Progressivo<\/h1>/);
   assert.match(html, /<h2>Contextualização<\/h2>/);
   assert.match(html, /charset="utf-8"/);
+});
+
+test('chat de revisão incorpora resposta e gera nova versão do PRD', () => {
+  const first = generatePrd({
+    productContext: product,
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+
+  const revision = revisePrd({
+    payload: {
+      productContext: product,
+      initiative: incrementalInitiative,
+      discovery: { framework: 'opportunity-tree', fields: {} },
+    },
+    currentPrd: first,
+    instruction:
+      'PERGUNTA: O que explicitamente fica fora desta entrega?\nRESPOSTA: Não inclui o aplicativo mobile nesta fase.',
+  });
+
+  assert.equal(revision.prd.revision, 2);
+  assert.match(revision.prd.sections.outOfScope, /aplicativo mobile/);
+  assert.equal(
+    revision.prd.openQuestions.includes('O que explicitamente fica fora desta entrega?'),
+    false,
+  );
+  assert.match(revision.reply, /versão 2/);
+});
+
+test('pedido de alteração na seção reescreve o trecho sem inventar o restante', () => {
+  const first = generatePrd({
+    productContext: product,
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+  const originalProblem = first.sections.problem;
+
+  const revision = revisePrd({
+    payload: {},
+    currentPrd: first,
+    instruction: 'Adicione na seção Riscos: dependência da janela de campanha do canal VD.',
+  });
+
+  assert.match(revision.prd.sections.risks, /janela de campanha/);
+  assert.equal(revision.prd.sections.problem, originalProblem);
 });

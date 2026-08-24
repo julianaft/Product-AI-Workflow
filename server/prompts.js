@@ -129,7 +129,7 @@ Formato de saida:
   "generatedAt": ""
 }
 
-Todas as chaves de sections sao obrigatorias e recebem string.
+Todas as chaves de sections são obrigatórias e recebem string.
 
 Formatos internos das secoes:
 - hypotheses: blocos H1, H2... com Dor / Hipótese / Decisão
@@ -137,5 +137,30 @@ Formatos internos das secoes:
 - solutions: por solução, com Aplicável a, Jornada AS IS, Jornada TO BE,
   Descrição, Mudanças necessárias
 - acceptanceCriteria: por solução, CAn numerados e verificáveis
+`;
+
+export const PRD_REVISION_PROMPT = `
+Você revisa um PRD já gerado com base na mensagem do Product Manager.
+O payload traz o documento atual (currentPrd), o contexto original, o histórico
+do chat e a instrução nova.
+
+Tarefa:
+- Incorporar respostas às perguntas em aberto.
+- Aplicar modificações pedidas (trocar, acrescentar, remover trechos).
+- Gerar uma nova versão completa do PRD, não um diff.
+- Manter seções que o PM não citou, inclusive edições manuais já presentes.
+- Não inventar métrica, sistema, prazo ou evidência que a mensagem não trouxe.
+- Perguntas respondidas saem de openQuestions. As demais permanecem.
+- Incremente revision. Atualize generatedAt.
+
+${SHARED_RULES}
+
+Formato de saída:
+{
+  "prd": { MESMO CONTRATO DE generate-prd, incluindo revision },
+  "reply": "Resumo em português do que mudou nesta versão.",
+  "appliedChanges": [{"key":"","action":"replace|append|answer","text":""}],
+  "answers": [{"question":"","answer":"","sectionKey":""}]
+}
 `;
 

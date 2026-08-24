@@ -6,14 +6,16 @@ import {
   suggestDiscoveryField,
 } from '../shared/discoverySkill.js';
 import { generatePrd } from '../shared/prdSkill.js';
+import { revisePrd } from '../shared/prdRevision.js';
 import {
   assertClassification,
   assertDiscoveryRecommendation,
   assertDiscoveryReview,
   assertPrd,
+  assertPrdRevision,
 } from '../shared/contracts.js';
 import { isProviderConfigured, runPrompt } from './provider.js';
-import { DISCOVERY_PROMPT, PRD_PROMPT } from './prompts.js';
+import { DISCOVERY_PROMPT, PRD_PROMPT, PRD_REVISION_PROMPT } from './prompts.js';
 
 const PORT = Number(process.env.PORT ?? 8787);
 const MAX_BODY_BYTES = 512 * 1024;
@@ -50,6 +52,11 @@ const ROUTES = {
     prompt: () => PRD_PROMPT,
     fallback: generatePrd,
     assert: assertPrd,
+  },
+  'revise-prd': {
+    prompt: () => PRD_REVISION_PROMPT,
+    fallback: revisePrd,
+    assert: assertPrdRevision,
   },
 };
 

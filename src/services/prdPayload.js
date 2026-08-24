@@ -91,5 +91,7 @@ export function buildPrdPayload(journey) {
           url: repository.url,
         })),
     ],
+    prdAnswers: journey.prd?.answers ?? [],
+    currentPrd: journey.prd?.document,
   };
 }

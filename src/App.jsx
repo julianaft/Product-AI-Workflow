@@ -32,7 +32,9 @@ function summaryFor(stepId, journey) {
     case 5:
       return journey.discovery.approved ? 'Discovery aprovado.' : 'Discovery em rascunho.';
     case 6:
-      return journey.prd.status === 'approved' ? 'PRD aprovado.' : 'PRD em rascunho.';
+      if (journey.prd.status === 'approved') return 'PRD aprovado.';
+      if (journey.prd.document?.revision) return `PRD versão ${journey.prd.document.revision}.`;
+      return journey.prd.status === 'not-generated' ? null : 'PRD em rascunho.';
     default:
       return null;
   }
