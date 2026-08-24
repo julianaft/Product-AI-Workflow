@@ -38,13 +38,45 @@ export function ProductContextStep({ onNext }) {
           placeholder="GCAM"
         />
         <TextField
+          label="Diretoria"
+          value={journey.product.directorate}
+          onChange={update('directorate')}
+          placeholder="Tech Experiencia"
+        />
+        <TextField
           label="Tribo"
           value={journey.product.tribe}
           onChange={update('tribe')}
           placeholder="RGM"
         />
         <TextField
-          label="Responsaveis"
+          label="PM / GPM"
+          value={journey.product.pm}
+          onChange={update('pm')}
+        />
+        <TextField
+          label="PD"
+          value={journey.product.pd}
+          onChange={update('pd')}
+        />
+        <TextField
+          label="TM"
+          value={journey.product.tm}
+          onChange={update('tm')}
+        />
+        <TextField
+          label="TL"
+          value={journey.product.tl}
+          onChange={update('tl')}
+        />
+        <TextField
+          label="Redatores"
+          hint="Separe os nomes por virgula."
+          value={journey.product.writers}
+          onChange={update('writers')}
+        />
+        <TextField
+          label="Responsaveis da squad"
           hint="Separe os nomes por virgula."
           value={journey.product.owners}
           onChange={update('owners')}

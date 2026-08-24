@@ -38,7 +38,7 @@ export function PrdStep() {
     <>
       <SkillPanel
         title="Construcao do PRD"
-        description="A skill so usa o que veio do contexto, da iniciativa e do discovery aprovado. O que faltar vira pergunta em aberto, nunca texto inventado."
+        description="A skill monta um PRD no formato de produto: OKR, pessoas por area, hipoteses com decisao, metricas AS IS/TO BE, jornada por solucao e criterios de aceite verificaveis. O que faltar vira pergunta em aberto."
         runLabel={document ? 'Gerar novamente' : 'Gerar PRD'}
         onRun={generate}
         loading={loading}
@@ -72,12 +72,16 @@ export function PrdStep() {
 
             {PRD_SECTIONS.map((section) => (
               <section key={section.key} className="mb-6">
-                <h4 className="font-extrabold border-b border-line pb-1 mb-2">{section.label}</h4>
+                <h4 className="font-extrabold border-b border-line pb-1 mb-1">{section.label}</h4>
+                {section.quality ? <p className="text-sm text-blue mb-2">{section.quality}</p> : null}
                 <textarea
                   aria-label={section.label}
                   className={classNames(INPUT, 'resize-y')}
-                  rows={Math.min(12, Math.max(3, String(document.sections[section.key]).split('\n').length + 1))}
-                  value={document.sections[section.key]}
+                  rows={Math.min(
+                    16,
+                    Math.max(4, String(document.sections[section.key] ?? '').split('\n').length + 1),
+                  )}
+                  value={document.sections[section.key] ?? ''}
                   disabled={approved}
                   onChange={(event) =>
                     dispatch({
@@ -105,7 +109,7 @@ export function PrdStep() {
 
             {document.references?.length ? (
               <section>
-                <h4 className="font-extrabold border-b border-line pb-1 mb-2">Referencias</h4>
+                <h4 className="font-extrabold border-b border-line pb-1 mb-2">Links importantes</h4>
                 <ul className="text-sm space-y-1">
                   {document.references.map((reference) => (
                     <li key={reference.url}>
@@ -160,10 +164,16 @@ export function PrdStep() {
 
 function MetadataTable({ metadata = {} }) {
   const rows = [
+    ['Dir.', metadata.directorate],
     ['Produto', metadata.product],
     ['Tribo', metadata.tribe],
     ['Squad', metadata.squad],
-    ['Responsaveis', (metadata.owners ?? []).join(', ')],
+    ['PM / GPM', metadata.pm],
+    ['PD', metadata.pd],
+    ['Redatores', (metadata.writers ?? []).join(', ')],
+    ['TM', metadata.tm],
+    ['TL', metadata.tl],
+    ['Iniciativa OKR', metadata.okrCode],
     ['Tipo da iniciativa', metadata.initiativeType === 'new' ? 'Novo fluxo' : 'Incremental'],
     ['Discovery', metadata.discoveryFramework],
   ];

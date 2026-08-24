@@ -16,9 +16,15 @@ export function buildPrdPayload(journey) {
   return {
     productContext: {
       name: journey.product.name,
+      directorate: journey.product.directorate,
       tribe: journey.product.tribe,
       squad: journey.product.squad,
       owners: ownersToList(journey.product.owners),
+      pm: journey.product.pm,
+      pd: journey.product.pd,
+      writers: journey.product.writers,
+      tm: journey.product.tm,
+      tl: journey.product.tl,
       businessContext: journey.product.businessContext,
       technicalContext: journey.product.technicalContext,
     },

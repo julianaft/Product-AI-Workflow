@@ -1,5 +1,5 @@
 import { TOTAL_STEPS } from '../data/steps.js';
-import { createJourney } from './journeyModel.js';
+import { createJourney, mergeJourney } from './journeyModel.js';
 
 function clampStep(step) {
   return Math.min(Math.max(step, 1), TOTAL_STEPS);
@@ -32,7 +32,7 @@ function invalidateDiscoveryApproval(state) {
 export function journeyReducer(state, action) {
   switch (action.type) {
     case 'hydrate':
-      return { ...createJourney(), ...action.journey };
+      return mergeJourney(action.journey);
 
     case 'reset':
       return createJourney();
