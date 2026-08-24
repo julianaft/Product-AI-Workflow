@@ -9,6 +9,8 @@ import {
 import { PRD_SECTION_KEYS, generatePrd, prdToMarkdown } from '../shared/prdSkill.js';
 import { assertPrd, assertDiscoveryRecommendation } from '../shared/contracts.js';
 import { FRAMEWORKS, FRAMEWORK_IDS } from '../shared/frameworks.js';
+import { prdToDocumentHtml } from '../src/services/prdExport.js';
+import { buildPrdPayload } from '../src/services/prdPayload.js';
 
 const product = {
   name: 'GCAM',
@@ -19,7 +21,7 @@ const product = {
 const incrementalInitiative = {
   name: 'Lucro Extra Progressivo',
   description: 'Expandir a mecanica atual de comissao com novas faixas.',
-  problem: 'A revendedora nao ve quanto falta para a proxima faixa durante o pedido.',
+  problem: 'A revendedora não vê quanto falta para a próxima faixa durante o pedido.',
   audience: 'Revendedoras do canal VD',
   expectedOutcome: 'Aumentar 15% o ticket medio no trimestre',
 };
@@ -156,7 +158,7 @@ test('secao sem insumo vira pergunta em aberto em vez de texto inventado', () =>
   });
 
   assert.ok(prd.openQuestions.length > 0);
-  assert.ok(prd.sections.problem.includes('Nao informado'));
+  assert.ok(prd.sections.problem.includes('Não informado'));
 });
 
 test('exportacao em markdown inclui titulo e secoes', () => {
@@ -169,8 +171,8 @@ test('exportacao em markdown inclui titulo e secoes', () => {
   const markdown = prdToMarkdown(prd);
 
   assert.ok(markdown.startsWith('# Lucro Extra Progressivo'));
-  assert.ok(markdown.includes('## Metricas de impacto'));
-  assert.ok(markdown.includes('## Criterios de aceite'));
+  assert.ok(markdown.includes('## Métricas de impacto'));
+  assert.ok(markdown.includes('## Critérios de aceite'));
 });
 
 test('PRD detalha hipoteses no formato Hn e pede AS IS / TO BE quando falta numero', () => {
@@ -205,7 +207,7 @@ test('varias solucoes no discovery viram blocos separados no PRD', () => {
       framework: 'opportunity-tree',
       fields: {
         outcome: 'Reduzir horas de cadastro manual.',
-        opportunities: 'Cadastro unitario nao cabe na janela da rodada.',
+        opportunities: 'Cadastro unitário não cabe na janela da rodada.',
         solutions:
           'Solucao 1: IA para campos descritivos\nSugestao de nome, descricao e texto legal.\nSolucao 2: Subida massiva\nUpload da planilha e planejamento em lote.',
         experiments: 'Piloto em uma rodada.',
@@ -217,4 +219,58 @@ test('varias solucoes no discovery viram blocos separados no PRD', () => {
   assert.match(prd.sections.solutions, /Solucao 2/);
   assert.match(prd.sections.solutions, /Jornada AS IS/);
   assert.match(prd.sections.acceptanceCriteria, /CA1:/);
+});
+
+test('payload usa somente repositórios selecionados e inclui conteúdo de arquivo', () => {
+  const journey = {
+    product: {
+      name: 'Produto',
+      businessContextSources: [
+        { id: '1', type: 'file', title: 'contexto.txt', content: 'Processo atual documentado.' },
+        { id: '2', type: 'notebooklm', title: 'Pesquisa', url: 'https://notebooklm.google.com/' },
+      ],
+      repositories: [
+        {
+          id: 1,
+          fullName: 'empresa/frontend',
+          url: 'https://github.com/empresa/frontend',
+          defaultBranch: 'main',
+          selected: true,
+        },
+        {
+          id: 2,
+          fullName: 'empresa/irrelevante',
+          url: 'https://github.com/empresa/irrelevante',
+          defaultBranch: 'main',
+          selected: false,
+        },
+      ],
+    },
+    initiative: {},
+    classification: {},
+    discovery: { framework: null, fieldsByFramework: {}, approved: false },
+    links: [],
+  };
+
+  const payload = buildPrdPayload(journey);
+
+  assert.match(payload.productContext.businessContext, /Processo atual documentado/);
+  assert.match(payload.productContext.technicalContext, /empresa\/frontend/);
+  assert.doesNotMatch(payload.productContext.technicalContext, /irrelevante/);
+  assert.equal(payload.productContext.repositories.length, 1);
+});
+
+test('exportação DOC gera HTML compatível com editores de documento', () => {
+  const prd = generatePrd({
+    productContext: product,
+    initiative: incrementalInitiative,
+    discovery: { framework: 'opportunity-tree', fields: {} },
+  });
+
+  const html = prdToDocumentHtml(prd);
+
+  assert.match(html, /<!doctype html>/);
+  assert.match(html, /<h1>Lucro Extra Progressivo<\/h1>/);
+  assert.match(html, /<h2>Contextualização<\/h2>/);
+  assert.match(html, /charset="utf-8"/);
 });

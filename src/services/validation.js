@@ -7,8 +7,6 @@ function blank(value) {
 
 const PRODUCT_RULES = [
   ['name', 'Informe o nome do produto.'],
-  ['squad', 'Informe a squad responsavel.'],
-  ['businessContext', 'Descreva o contexto de negocio.'],
 ];
 
 const INITIATIVE_RULES = [
@@ -37,6 +35,13 @@ export function validateStep(stepId, journey) {
   switch (stepId) {
     case 1: {
       const errors = applyRules(journey.product, PRODUCT_RULES);
+      if (!journey.product.businessContextSources?.length) {
+        errors.businessContextSources =
+          'Adicione uma fonte de contexto de negócio pelo NotebookLM ou por arquivo.';
+      }
+      if (!journey.product.repositories?.some((repository) => repository.selected)) {
+        errors.repositories = 'Selecione pelo menos um repositório para esta iniciativa.';
+      }
       return { errors, blockers: [] };
     }
 
@@ -51,7 +56,7 @@ export function validateStep(stepId, journey) {
         blockers.push('Escolha entre iniciativa incremental ou fluxo novo.');
       }
       if (!journey.classification.confirmedAt) {
-        blockers.push('Confirme a classificacao para seguir.');
+        blockers.push('Confirme a classificação para seguir.');
       }
       return { errors: {}, blockers };
     }
@@ -70,13 +75,13 @@ export function validateStep(stepId, journey) {
 
       for (const key of getRequiredFieldKeys(journey.discovery.framework)) {
         if (blank(fields[key])) {
-          errors[key] = 'Campo obrigatorio para gerar o PRD.';
+          errors[key] = 'Campo obrigatório para gerar o PRD.';
         }
       }
 
       const blockers = [];
       if (!journey.discovery.approved) {
-        blockers.push('Aprove o discovery para liberar a geracao do PRD.');
+        blockers.push('Aprove o discovery para liberar a geração do PRD.');
       }
 
       return { errors, blockers };

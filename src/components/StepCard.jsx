@@ -86,7 +86,7 @@ export function StepCard({ step, status, summary, onEdit, children }) {
 
             {status === 'pending' ? (
               <p className="text-sm font-semibold text-blue">
-                Etapa bloqueada ate a conclusao da anterior.
+                Etapa bloqueada até a conclusão da anterior.
               </p>
             ) : null}
           </div>

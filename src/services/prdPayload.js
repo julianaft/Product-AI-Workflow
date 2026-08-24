@@ -7,9 +7,38 @@ function ownersToList(value) {
     .filter(Boolean);
 }
 
+function businessContextFromSources(product) {
+  const sources = product.businessContextSources ?? [];
+  const extracted = sources.map((source) => {
+    if (source.type === 'file') {
+      return `Fonte: ${source.title}\n${source.content}`;
+    }
+    return `Fonte externa: ${source.title} (${source.url}). Conteúdo não lido automaticamente.`;
+  });
+
+  if (product.businessContext?.trim()) {
+    extracted.unshift(product.businessContext.trim());
+  }
+
+  return extracted.join('\n\n');
+}
+
+function technicalContextFromRepositories(product) {
+  const repositories = (product.repositories ?? []).filter((repository) => repository.selected);
+  if (!repositories.length) return '';
+
+  return [
+    'Repositórios selecionados para esta iniciativa:',
+    ...repositories.map(
+      (repository) =>
+        `- ${repository.fullName} (${repository.url}) — branch padrão: ${repository.defaultBranch}`,
+    ),
+  ].join('\n');
+}
+
 /**
  * Monta o payload da skill de PRD.
- * Somente conteudo aprovado entra: se o discovery nao foi aprovado, a flag vai
+ * Somente conteúdo aprovado entra: se o discovery não foi aprovado, a flag vai
  * como false e a skill trata o documento como rascunho sem respaldo.
  */
 export function buildPrdPayload(journey) {
@@ -25,8 +54,11 @@ export function buildPrdPayload(journey) {
       writers: journey.product.writers,
       tm: journey.product.tm,
       tl: journey.product.tl,
-      businessContext: journey.product.businessContext,
-      technicalContext: journey.product.technicalContext,
+      businessContext: businessContextFromSources(journey.product),
+      technicalContext: technicalContextFromRepositories(journey.product),
+      repositories: (journey.product.repositories ?? []).filter(
+        (repository) => repository.selected,
+      ),
     },
     initiative: { ...journey.initiative },
     initiativeClassification: {
@@ -38,10 +70,26 @@ export function buildPrdPayload(journey) {
       fields: discoveryFields(journey),
       approved: journey.discovery.approved,
     },
-    referenceLinks: journey.links.map((link) => ({
-      type: link.type,
-      title: link.title,
-      url: link.url,
-    })),
+    referenceLinks: [
+      ...journey.links.map((link) => ({
+        type: link.type,
+        title: link.title,
+        url: link.url,
+      })),
+      ...(journey.product.businessContextSources ?? [])
+        .filter((source) => source.url)
+        .map((source) => ({
+          type: source.type,
+          title: source.title,
+          url: source.url,
+        })),
+      ...(journey.product.repositories ?? [])
+        .filter((repository) => repository.selected)
+        .map((repository) => ({
+          type: 'github',
+          title: repository.fullName,
+          url: repository.url,
+        })),
+    ],
   };
 }

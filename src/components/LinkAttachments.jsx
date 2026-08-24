@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { BUTTON, INPUT, classNames } from './ui.js';
 
 /**
- * Ferramentas externas entram como referencia, nao como integracao.
- * Guardamos titulo, tipo e URL; nenhum conteudo e lido automaticamente.
+ * Ferramentas externas entram como referência, não como integração.
+ * Guardamos título, tipo e URL; nenhum conteúdo é lido automaticamente.
  */
 export const LINK_TYPES = [
   { value: 'miro', label: 'Miro' },
@@ -38,11 +38,11 @@ export function LinkAttachments({ links, onAdd, onRemove, scope }) {
     event.preventDefault();
 
     if (!title.trim()) {
-      setError('Informe um titulo para o link.');
+      setError('Informe um título para o link.');
       return;
     }
     if (!isValidUrl(url)) {
-      setError('Informe uma URL valida comecando com http ou https.');
+      setError('Informe uma URL válida começando com http ou https.');
       return;
     }
 
@@ -61,10 +61,10 @@ export function LinkAttachments({ links, onAdd, onRemove, scope }) {
 
   return (
     <div className="border border-line rounded-2xl p-5 mb-6">
-      <h3 className="font-extrabold mb-1">Links de referencia</h3>
+      <h3 className="font-extrabold mb-1">Links de referência</h3>
       <p className="text-sm mb-4">
-        Miro, NotebookLM e Docs entram apenas como link. A skill recebe titulo e endereco, nunca o
-        conteudo do quadro ou do documento.
+        Miro, NotebookLM e Docs entram apenas como link. A skill recebe título e endereço, nunca o
+        conteúdo do quadro ou do documento.
       </p>
 
       {visible.length > 0 ? (
@@ -112,9 +112,9 @@ export function LinkAttachments({ links, onAdd, onRemove, scope }) {
         </select>
 
         <input
-          aria-label="Titulo do link"
+          aria-label="Título do link"
           className={INPUT}
-          placeholder="Titulo"
+          placeholder="Título"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />

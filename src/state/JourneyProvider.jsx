@@ -14,7 +14,7 @@ export function JourneyProvider({ children }) {
   const [journey, dispatch] = useReducer(journeyReducer, undefined, init);
   const timerRef = useRef(null);
 
-  // Autosave com debounce: digitar num textarea nao deve escrever no storage
+  // Autosave com debounce: digitar num textarea não deve escrever no storage
   // a cada tecla.
   useEffect(() => {
     clearTimeout(timerRef.current);

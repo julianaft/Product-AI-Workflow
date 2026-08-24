@@ -1,8 +1,8 @@
-# Guia de implementacao — PM Builder (do input da iniciativa ao PRD)
+# Guia de implementação — PM Builder (do input da iniciativa ao PRD)
 
 Documento passo a passo para reconstruir ou dar manutencao no projeto. Descreve a
 ordem de trabalho, o que cada arquivo faz e como validar cada bloco. O escopo
-termina na aprovacao do PRD; o fluxo tecnico posterior fica fora desta entrega.
+termina na aprovação do PRD; o fluxo técnico posterior fica fora desta entrega.
 
 Stack: React 19 + Vite, JavaScript puro (sem TypeScript), Tailwind CSS v4,
 servidor de skills em Node com o modulo `http` nativo e testes com `node:test`.
@@ -19,7 +19,7 @@ servidor de skills em Node com o modulo `http` nativo e testes com `node:test`.
 6. [Bloco 3 — Skills deterministicas](#6-bloco-3--skills-deterministicas)
 7. [Bloco 4 — Contratos de saida](#7-bloco-4--contratos-de-saida)
 8. [Bloco 5 — Estado da jornada](#8-bloco-5--estado-da-jornada)
-9. [Bloco 6 — Servicos (IA, validacao, storage)](#9-bloco-6--servicos-ia-validacao-storage)
+9. [Bloco 6 — Serviços (IA, validação, storage)](#9-bloco-6--servicos-ia-validacao-storage)
 10. [Bloco 7 — Componentes de interface](#10-bloco-7--componentes-de-interface)
 11. [Bloco 8 — As seis etapas](#11-bloco-8--as-seis-etapas)
 12. [Bloco 9 — Montagem da pagina](#12-bloco-9--montagem-da-pagina)
@@ -40,7 +40,7 @@ Tres camadas, com uma regra de dependencia clara:
   React (src/)                Servidor (server/)
   ├── interface e estado      ├── rotas HTTP das skills
   ├── deriva tudo do estado   ├── prompts das skills
-  └── chama aiClient          └── integracao com o provedor de IA
+  └── chama aiClient          └── integração com o provedor de IA
         │                            │
         └──────────┬─────────────────┘
                    ▼
@@ -51,20 +51,20 @@ Tres camadas, com uma regra de dependencia clara:
            └── gerador de PRD
 ```
 
-Principios que orientam todo o codigo:
+Princípios que orientam todo o código:
 
-- **A interface e funcao do estado.** Nada de `getElementById`, `innerHTML` ou
+- **A interface é função do estado.** Nada de `getElementById`, `innerHTML` ou
   `classList` manual. Uma maquina de estados (reducer) descreve a jornada; os
   componentes apenas a renderizam.
 - **Contrato antes de modelo.** As skills tem um formato de saida fixo, validado
-  antes de chegar na tela. Trocar a implementacao deterministica por um LLM nao
+  antes de chegar na tela. Trocar a implementação determinística por um LLM não
   muda a interface.
 - **Nada inventado.** Onde falta insumo, o texto vira pergunta em aberto marcada
-  com `[a preencher]`, nunca conteudo plausivel.
-- **Cor imposta pela build.** A paleta padrao do Tailwind e zerada; so as dez
+  com `[a preencher]`, nunca conteúdo plausível.
+- **Cor imposta pela build.** A paleta padrão do Tailwind é zerada; só as dez
   cores aprovadas existem.
 
-Ordem de construcao recomendada: de dentro para fora. Primeiro `shared/`, depois
+Ordem de construção recomendada: de dentro para fora. Primeiro `shared/`, depois
 `src/state`, depois `src/services`, depois componentes e etapas, e por fim o
 servidor. Cada bloco abaixo segue essa ordem.
 
@@ -114,25 +114,25 @@ Passos:
 4. Crie `index.html` com a `div#root`, o `main.jsx` como modulo e o link da
    fonte Inter.
 
-**Validacao:** `npm run dev` sobe sem erro e serve a pagina em
+**Validação:** `npm run dev` sobe sem erro e serve a página em
 `http://localhost:5173`.
 
 ---
 
 ## 4. Bloco 1 — Paleta e tema travados
 
-**Objetivo:** impedir por construcao qualquer cor fora da lista.
+**Objetivo:** impedir por construção qualquer cor fora da lista.
 
 Arquivo: `src/index.css`.
 
-A tecnica central e, dentro do bloco `@theme` do Tailwind v4, resetar toda a
+A técnica central é, dentro do bloco `@theme` do Tailwind v4, resetar toda a
 paleta e declarar apenas as dez cores:
 
 ```css
 @import 'tailwindcss';
 
 @theme {
-  --color-*: initial;      /* apaga slate, gray, red padrao etc. */
+  --color-*: initial;      /* apaga slate, gray, red padrão etc. */
 
   --color-lime: #d4e137;
   --color-green: #8bc34a;
@@ -148,12 +148,12 @@ paleta e declarar apenas as dez cores:
 ```
 
 Depois disso, `bg-slate-300` deixa de gerar CSS. Quem tentar usar uma cor fora da
-paleta simplesmente nao ve efeito, e a auditoria do Bloco 12 acusa.
+paleta simplesmente não vê efeito, e a auditoria do Bloco 12 acusa.
 
 Inclua tambem as regras de `@media print` para o PRD (esconder o que tiver a
 classe `no-print` e remover bordas/altura do `print-area`).
 
-**Validacao:** apos o primeiro componente existir, `npm run build` e a auditoria
+**Validação:** após o primeiro componente existir, `npm run build` e a auditoria
 de cores (Bloco 12) devem mostrar somente as dez cores.
 
 ---
@@ -173,11 +173,11 @@ Modele cada framework com `id`, `label`, `summary` e uma lista de `fields`
 - `double-diamond`: discover, define, develop, deliver.
 
 Exporte helpers: `getFramework(id)` e `getRequiredFieldKeys(id)`. A interface usa
-esses metadados para renderizar os formularios automaticamente, e a validacao os
+esses metadados para renderizar os formulários automaticamente, e a validação os
 usa para saber quais campos sao obrigatorios. Definir o campo em um so lugar
 evita divergencia entre tela e regra.
 
-**Validacao:** `node -e "import('./shared/frameworks.js').then(m => console.log(m.FRAMEWORK_IDS))"`
+**Validação:** `node -e "import('./shared/frameworks.js').then(m => console.log(m.FRAMEWORK_IDS))"`
 imprime os tres ids.
 
 ---
@@ -188,37 +188,37 @@ imprime os tres ids.
 
 ### 6.1 Skill de discovery (`shared/discoverySkill.js`)
 
-Quatro funcoes, cada uma com entrada e saida no formato do contrato:
+Quatro funções, cada uma com entrada e saída no formato do contrato:
 
 - `classifyInitiative({ product, initiative })` — conta sinais textuais de
-  "expansao" versus "construcao inedita" e devolve `incremental` ou `new`, com
+  "expansão" versus "construção inédita" e devolve `incremental` ou `new`, com
   confianca, motivo e `needsConfirmation: true`.
 - `recommendDiscovery({ initiative, initiativeType, availableFrameworks })` —
-  aplica regras: fluxo novo tende a double-diamond; muita hipotese e pouca
-  evidencia tende a CSD; incremental com objetivo claro tende a
+  aplica regras: fluxo novo tende a double-diamond; muita hipótese e pouca
+  evidência tende a CSD; incremental com objetivo claro tende a
   opportunity-tree. Retorna framework recomendado, alternativas, um rascunho de
   campos (`suggestedFields`) e perguntas em aberto.
 - `suggestDiscoveryField({ ... })` — devolve um rascunho para um unico campo.
 - `reviewDiscovery({ frameworkId, fields })` — aponta campos vazios, marcadores
   `[a preencher]` remanescentes, textos curtos demais e contradicoes (ex.: uma
-  "certeza" escrita com linguagem de hipotese).
+  "certeza" escrita com linguagem de hipótese).
 
 Regra que atravessa todas: quando falta insumo, use a constante `PENDING`
 (`[a preencher]`); nunca gere texto plausivel.
 
 ### 6.2 Skill de PRD (`shared/prdSkill.js`)
 
-- Exporte `PRD_SECTIONS` (chave + rotulo) como fonte unica da ordem das secoes.
+- Exporte `PRD_SECTIONS` (chave + rótulo) como fonte única da ordem das seções.
 - `normalizeDiscovery(discovery)` traduz qualquer framework do catalogo para um
-  formato comum (problema, solucao, experimentos, etc.), para o gerador nao
+  formato comum (problema, solução, experimentos, etc.), para o gerador não
   precisar conhecer cada formato.
-- `generatePrd(payload)` monta titulo, metadados, todas as secoes,
-  `openQuestions` e rastreabilidade. Secao sem insumo recebe a constante
+- `generatePrd(payload)` monta título, metadados, todas as seções,
+  `openQuestions` e rastreabilidade. Seção sem insumo recebe a constante
   `MISSING` e alimenta as perguntas em aberto.
-- `regeneratePrdSection(payload, key)` regenera uma unica secao.
+- `regeneratePrdSection(payload, key)` regenera uma única seção.
 - `prdToMarkdown(prd)` serializa para exportacao.
 
-**Validacao:** os testes do Bloco 11 cobrem estas funcoes; rode-os assim que
+**Validação:** os testes do Bloco 11 cobrem estas funções; rode-os assim que
 existirem.
 
 ---
@@ -241,7 +241,7 @@ Escreva validadores que lancam `ContractError` com mensagem legivel:
 Esses validadores rodam tanto no modo mock quanto sobre a resposta do LLM. E a
 peca que transforma "modelo devolveu algo estranho" em erro tratado na tela.
 
-**Validacao:** um teste que passa um objeto incompleto e espera `ContractError`.
+**Validação:** um teste que passa um objeto incompleto e espera `ContractError`.
 
 ---
 
@@ -255,13 +255,13 @@ peca que transforma "modelo devolveu algo estranho" em erro tratado na tela.
 `product`, `initiative`, `classification`, `discovery` e `prd`, alem de `links`.
 
 Ponto importante: o discovery guarda `fieldsByFramework`, um objeto por
-framework. Assim, trocar de metodo nao apaga o que foi escrito no anterior. O
+framework. Assim, trocar de método não apaga o que foi escrito no anterior. O
 helper `discoveryFields(journey)` devolve os campos do framework ativo.
 
 ### 8.2 Reducer (`src/state/journeyReducer.js`)
 
-Implemente as acoes de navegacao (`nextStep`, `previousStep`, `goToStep`), de
-edicao de cada secao, e as de skill (`setClassificationSuggestion`,
+Implemente as ações de navegação (`nextStep`, `previousStep`, `goToStep`), de
+edição de cada seção, e as de skill (`setClassificationSuggestion`,
 `setDiscoveryRecommendation`, `applySuggestedFields`, `setDiscoveryReview`,
 `setPrd`, `updatePrdSection`).
 
@@ -275,12 +275,12 @@ Quatro regras de coerencia que precisam existir:
    PM.
 4. Navegacao respeita os limites (1 a 6).
 
-**Validacao:** os testes de `test/journey.test.js` cobrem exatamente essas
+**Validação:** os testes de `test/journey.test.js` cobrem exatamente essas
 regras.
 
 ---
 
-## 9. Bloco 6 — Servicos (IA, validacao, storage)
+## 9. Bloco 6 — Serviços (IA, validação, storage)
 
 **Objetivo:** isolar IA, regras de avanco e persistencia do resto do app.
 
@@ -288,11 +288,11 @@ regras.
 
 Um unico ponto que decide, por `VITE_AI_MODE`, entre chamar o servidor (`http`)
 ou a skill deterministica local (`mock`). Nos dois casos, a resposta passa pelo
-validador de contrato antes de retornar. Exporte uma funcao por operacao
+validador de contrato antes de retornar. Exporte uma função por operação
 (`classifyInitiative`, `recommendDiscovery`, `suggestDiscoveryField`,
 `reviewDiscovery`, `generatePrd`) e `getAiMode()` para a interface exibir o modo.
 
-### 9.2 Validacao (`src/services/validation.js`)
+### 9.2 Validação (`src/services/validation.js`)
 
 `validateStep(stepId, journey)` devolve `{ errors, blockers }`: `errors` por
 campo (mostrados junto ao input) e `blockers` gerais (mostrados perto do botao
@@ -310,7 +310,7 @@ em componente.
 `buildPrdPayload(journey)` monta o objeto enviado a skill de PRD, convertendo
 `owners` de texto para lista e incluindo o flag `approved` do discovery.
 
-**Validacao:** o adaptador funciona no modo mock assim que as skills existirem;
+**Validação:** o adaptador funciona no modo mock assim que as skills existirem;
 teste chamando `generatePrd` com um journey de exemplo.
 
 ---
@@ -323,7 +323,7 @@ Arquivos em `src/components/`:
 
 - `ui.js` — constantes de classe (botoes, card, input, mapas de cor por acento).
   As classes ficam escritas por extenso de proposito: o Tailwind so gera o que
-  enxerga no codigo, entao concatenar cor em runtime produziria classe
+  enxerga no código, então concatenar cor em runtime produziria classe
   inexistente.
 - `Field.jsx` — `TextField` e `TextAreaField` com label, hint, erro e `onBlur`.
 - `ProgressHeader.jsx` — barra de progresso fixa, botao voltar e reiniciar.
@@ -332,16 +332,16 @@ Arquivos em `src/components/`:
 - `OptionCard.jsx` — cartao selecionavel com selo "Sugerido".
 - `SkillPanel.jsx` — moldura das skills; deixa explicito que a saida e sugestao.
   Exporta tambem `HumanGate` para os avisos de intervencao humana.
-- `StepActions.jsx` — area de botoes com lista de bloqueios.
+- `StepActions.jsx` — área de botões com lista de bloqueios.
 - `LinkAttachments.jsx` — anexos de links externos (Miro, NotebookLM, Docs) por
-  escopo, com validacao de URL.
+  escopo, com validação de URL.
 
 Hooks em `src/hooks/`:
 
 - `useSkill.js` — encapsula `loading`/`error`/`run` de uma chamada de skill.
-- `useTouched.js` — mostra erro de campo obrigatorio so depois do primeiro blur.
+- `useTouched.js` — mostra erro de campo obrigatório só depois do primeiro blur.
 
-**Validacao:** componentes renderizam isoladamente; a checagem real vem na
+**Validação:** componentes renderizam isoladamente; a checagem real vem na
 montagem das etapas.
 
 ---
@@ -349,30 +349,30 @@ montagem das etapas.
 ## 11. Bloco 8 — As seis etapas
 
 **Objetivo:** uma pasta por etapa em `src/features/`, cada uma consumindo estado,
-validacao e (quando aplicavel) skill.
+validação e (quando aplicável) skill.
 
-1. **`product-context/ProductContextStep.jsx`** — formulario de contexto do
-   produto. Campos obrigatorios: produto, squad, contexto de negocio. Inclui
-   anexos de link com escopo `product`.
-2. **`initiative/InitiativeStep.jsx`** — nome, descricao, problema, publico,
-   resultado esperado e restricoes.
-3. **`initiative/ClassificationStep.jsx`** — dispara a skill de classificacao ao
-   abrir (com `useRef` para nao repetir a chamada em remontagem), mostra a
-   sugestao e exige confirmacao humana via `OptionCard` + botao confirmar.
-4. **`discovery/DiscoverySelectionStep.jsx`** — dispara a skill de recomendacao,
+1. **`product-context/ProductContextStep.jsx`** — formulário com Produto, PM,
+   PD, TM e TL; fonte de contexto de negócio por NotebookLM ou TXT/DOC; e seleção
+   explícita dos repositórios GitHub relevantes para a iniciativa.
+2. **`initiative/InitiativeStep.jsx`** — nome, descrição, problema, público,
+   resultado esperado e restrições.
+3. **`initiative/ClassificationStep.jsx`** — dispara a skill de classificação ao
+   abrir (com `useRef` para não repetir a chamada em remontagem), mostra a
+   sugestão e exige confirmação humana via `OptionCard` + botão confirmar.
+4. **`discovery/DiscoverySelectionStep.jsx`** — dispara a skill de recomendação,
    exibe motivo, alternativas e perguntas, e deixa o PM escolher qualquer um dos
-   frameworks disponiveis.
+   frameworks disponíveis.
 5. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
-   a partir dos metadados, oferece sugestao por campo e "preencher vazios",
-   roda a revisao e exige aprovacao humana.
-6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e secoes editaveis,
-   perguntas em aberto e referencias, com aprovar/reabrir, exportar Markdown e
-   imprimir.
+   a partir dos metadados, oferece sugestão por campo e "preencher vazios",
+   roda a revisão e exige aprovação humana.
+6. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
+   perguntas em aberto e referências, com aprovar/reabrir, exportar Markdown,
+   DOC compatível com Google Docs, copiar formatado e imprimir.
 
-Padrao comum: cada etapa recebe `onNext`, le `validateStep`, exibe bloqueios em
+Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.
 
-**Validacao:** com o dev server rodando, percorra as seis etapas manualmente
+**Validação:** com o dev server rodando, percorra as seis etapas manualmente
 (roteiro no Bloco 16).
 
 ---
@@ -383,14 +383,14 @@ Padrao comum: cada etapa recebe `onNext`, le `validateStep`, exibe bloqueios em
 
 - `main.jsx` monta `JourneyProvider` em volta de `App` dentro de `StrictMode`.
 - `JourneyProvider` (`src/state/JourneyProvider.jsx`) cria o reducer, hidrata do
-  storage e faz autosave com debounce de 400ms (digitar num textarea nao deve
+  storage e faz autosave com debounce de 400ms (digitar num textarea não deve
   escrever a cada tecla).
 - `App.jsx` renderiza o cabecalho, a linha do tempo (linha de fundo + linha
   preenchida por CSS, sem calculo manual de altura), e mapeia `STEPS` para
   `StepCard`, decidindo o status de cada etapa e o resumo exibido quando
   concluida.
 
-**Validacao:** recarregar a pagina mantem a jornada; o indicador de modo mostra
+**Validação:** recarregar a página mantém a jornada; o indicador de modo mostra
 "deterministico local".
 
 ---
@@ -409,13 +409,13 @@ Arquivos em `server/`:
 - `provider.js` — unico ponto de contato com o provedor de IA. `runPrompt({
   system, payload })` faz a chamada com timeout via `AbortController`, pede
   `response_format: json_object` e extrai JSON mesmo se vier dentro de bloco de
-  codigo. `isProviderConfigured()` checa as tres variaveis de ambiente.
+  código. `isProviderConfigured()` checa as três variáveis de ambiente.
 - `prompts.js` — as instrucoes das duas skills. E a parte "treinada" no MVP:
-  comportamento vem de instrucao especializada + contrato verificado, nao de
-  fine-tuning. Contem as regras compartilhadas (nao inventar, separar fato de
-  hipotese, links so como referencia, responder so JSON).
+  comportamento vem de instrução especializada + contrato verificado, não de
+  fine-tuning. Contém as regras compartilhadas (não inventar, separar fato de
+  hipótese, links só como referência, responder só JSON).
 
-**Validacao:**
+**Validação:**
 
 ```bash
 npm run server
@@ -434,12 +434,12 @@ Deve responder um JSON com `recommendedFramework`.
 
 Arquivos em `test/`, com `node:test`:
 
-- `skills.test.js` — classificacao incremental vs novo fluxo; recomendacao por
-  tipo; revisao apontando lacuna; contradicao na CSD; PRD com todas as secoes;
-  secao sem insumo virando pergunta; export Markdown; e conformidade com os
+- `skills.test.js` — classificação incremental vs novo fluxo; recomendação por
+  tipo; revisão apontando lacuna; contradição na CSD; PRD com todas as seções;
+  seção sem insumo virando pergunta; export Markdown; e conformidade com os
   contratos.
-- `journey.test.js` — troca de framework preservando conteudo; edicao derrubando
-  aprovacao; PRD marcado como `stale`; sugestao nao sobrescrevendo texto do PM;
+- `journey.test.js` — troca de framework preservando conteúdo; edição derrubando
+  aprovação; PRD marcado como `stale`; sugestão não sobrescrevendo texto do PM;
   limites de navegacao; regras de avanco por etapa.
 
 Rode com:
@@ -474,13 +474,13 @@ Com `npm run dev` no ar:
 1. **Etapa 1:** tentar avancar vazio mostra erros; preencher produto, squad e
    contexto libera o avanco.
 2. **Etapa 2:** preencher a iniciativa e avancar.
-3. **Etapa 3:** a sugestao de classificacao aparece sozinha; confirmar libera o
+3. **Etapa 3:** a sugestão de classificação aparece sozinha; confirmar libera o
    avanco.
 4. **Etapa 4:** a recomendacao aparece; trocar de framework e voltar preserva o
-   conteudo digitado.
-5. **Etapa 5:** usar "sugerir conteudo" nao sobrescreve texto ja escrito; a
+   conteúdo digitado.
+5. **Etapa 5:** usar "sugerir conteúdo" não sobrescreve texto já escrito; a
    revisao lista lacunas; aprovar libera o PRD.
-6. **Etapa 6:** gerar, editar uma secao, aprovar, exportar Markdown e imprimir.
+6. **Etapa 6:** gerar, editar uma seção, aprovar, exportar DOC ou Markdown, copiar para Google Docs e imprimir.
 7. **Persistencia:** recarregar a pagina mantem tudo.
 8. **Coerencia:** voltar e editar a iniciativa marca o PRD como desatualizado.
 
@@ -507,12 +507,12 @@ Sem mudar nenhuma linha de interface:
    VITE_AI_MODE=http npm run dev
    ```
 
-4. Compare a saida com a versao deterministica. Como o contrato e o mesmo, a
-   tela nao muda; o que muda e a qualidade do texto.
+4. Compare a saída com a versão determinística. Como o contrato é o mesmo, a
+   tela não muda; o que muda é a qualidade do texto.
 
 Para "treinar" as skills no MVP, refine `server/prompts.js` e adicione exemplos
 de bons PRDs. Fine-tuning so vale a pena depois de acumular PRDs reais aprovados
-e identificar o que a instrucao nao resolve.
+e identificar o que a instrução não resolve.
 
 ---
 
@@ -520,13 +520,13 @@ e identificar o que a instrucao nao resolve.
 
 Depois do MVP funcional:
 
-1. Conectar um provedor real e comparar com a versao deterministica.
+1. Conectar um provedor real e comparar com a versão determinística.
 2. Reunir PRDs aprovados como exemplos nas instrucoes das skills.
 3. Backend com banco, autenticacao e historico de versoes (trocar o
    `localStorage` pelos endpoints, mantendo o `storageService` como fronteira).
 4. Comentarios de revisores dentro do documento.
 5. Exportacao para DOCX alem de Markdown e impressao.
 
-Fora deste MVP por dependerem de backend, credenciais e permissoes: integracao
-nativa com Miro, Google Docs e BusinessMap, leitura automatica de repositorios e
-todo o fluxo tecnico posterior ao PRD.
+Fora deste MVP por dependerem de backend, credenciais e permissões: integração
+nativa com NotebookLM, Miro e BusinessMap, leitura automática dos repositórios
+selecionados e todo o fluxo técnico posterior ao PRD.

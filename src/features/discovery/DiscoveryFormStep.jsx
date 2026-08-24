@@ -100,7 +100,7 @@ export function DiscoveryFormStep({ onNext }) {
             disabled={suggest.loading}
             className="no-print text-sm font-bold text-blue -mt-3 mb-5"
           >
-            {suggest.loading ? 'Gerando...' : 'Sugerir conteudo para este campo'}
+            {suggest.loading ? 'Gerando...' : 'Sugerir conteúdo para este campo'}
           </button>
         </div>
       ))}
@@ -119,8 +119,8 @@ export function DiscoveryFormStep({ onNext }) {
       />
 
       <SkillPanel
-        title="Revisao do discovery"
-        description="A skill aponta lacunas, contradicoes e perguntas em aberto antes do PRD. Ela nao aprova o discovery."
+        title="Revisão do discovery"
+        description="A skill aponta lacunas, contradições e perguntas em aberto antes do PRD. Ela não aprova o discovery."
         runLabel="Revisar discovery"
         onRun={runReview}
         loading={review.loading}
@@ -129,14 +129,14 @@ export function DiscoveryFormStep({ onNext }) {
         {reviewResult ? (
           <div className="space-y-4">
             <p className="font-extrabold">
-              Campos obrigatorios preenchidos: {Math.round((reviewResult.completeness ?? 0) * 100)}%
+              Campos obrigatórios preenchidos: {Math.round((reviewResult.completeness ?? 0) * 100)}%
             </p>
 
             <ReviewList title="Lacunas" items={reviewResult.gaps} emptyLabel="Nenhuma lacuna encontrada." />
             <ReviewList
-              title="Contradicoes"
+              title="Contradições"
               items={reviewResult.contradictions}
-              emptyLabel="Nenhuma contradicao encontrada."
+              emptyLabel="Nenhuma contradição encontrada."
             />
             <ReviewList
               title="Perguntas em aberto"
@@ -145,7 +145,7 @@ export function DiscoveryFormStep({ onNext }) {
             />
           </div>
         ) : (
-          <p className="text-sm">Rode a revisao antes de aprovar.</p>
+          <p className="text-sm">Rode a revisão antes de aprovar.</p>
         )}
       </SkillPanel>
 

@@ -1,13 +1,13 @@
 /**
  * Skill de discovery — implementacao deterministica.
  *
- * Esta versao nao chama modelo de linguagem: ela aplica regras explicitas sobre
+ * Esta versão não chama modelo de linguagem: ela aplica regras explícitas sobre
  * o texto que o PM escreveu. Serve para dois papeis:
  *   1. modo mock da interface, para desenvolver o fluxo sem custo nem credencial;
  *   2. fallback do servidor quando nenhum provedor de IA esta configurado.
  *
  * O contrato de entrada e de saida e o mesmo nos dois casos, entao trocar a
- * implementacao por uma chamada real de LLM nao muda a interface.
+ * implementação por uma chamada real de LLM não muda a interface.
  */
 
 import { FRAMEWORK_IDS, getFramework, getRequiredFieldKeys } from './frameworks.js';
@@ -199,7 +199,7 @@ function initiativeText(initiative = {}) {
 
 /**
  * Classifica a iniciativa como incremental ou novo fluxo.
- * A decisao sempre volta marcada como pendente de confirmacao humana.
+ * A decisão sempre volta marcada como pendente de confirmação humana.
  */
 export function classifyInitiative({ product = {}, initiative = {} } = {}) {
   const text = `${initiativeText(initiative)} \n ${product.businessContext ?? ''}`;
@@ -215,10 +215,10 @@ export function classifyInitiative({ product = {}, initiative = {} } = {}) {
     signals.push(`${incrementalScore} indicio(s) de expansao sobre algo que ja existe.`);
   }
   if (newScore > 0) {
-    signals.push(`${newScore} indicio(s) de construcao inedita.`);
+    signals.push(`${newScore} indício(s) de construção inédita.`);
   }
   if (signals.length === 0) {
-    signals.push('Nenhum indicio forte encontrado no texto: a classificacao e um chute conservador.');
+    signals.push('Nenhum indício forte encontrado no texto: a classificação é um chute conservador.');
   }
 
   const reason =
@@ -268,7 +268,7 @@ export function recommendDiscovery({
   } else if (uncertainty > evidence) {
     recommended = 'csd';
     reason =
-      'A descricao tem mais hipoteses do que evidencias, entao separar certezas, suposicoes e duvidas vem antes de desenhar solucao.';
+      'A descrição tem mais hipóteses do que evidências, então separar certezas, suposições e dúvidas vem antes de desenhar solução.';
   } else {
     recommended = 'opportunity-tree';
     reason =
@@ -277,7 +277,7 @@ export function recommendDiscovery({
 
   if (!availableFrameworks.includes(recommended)) {
     recommended = availableFrameworks[0];
-    reason = 'Framework recomendado indisponivel na configuracao atual; primeira opcao aplicada.';
+    reason = 'Framework recomendado indisponível na configuração atual; primeira opção aplicada.';
   }
 
   const confidence = clampConfidence(0.55 + Math.abs(uncertainty - evidence) * 0.08);
@@ -310,21 +310,21 @@ export function recommendDiscovery({
 function recommendationReason(frameworkId) {
   const reasons = {
     jtbd:
-      'A principal incerteza esta no comportamento e na motivacao do usuario; Jobs To Be Done ajuda a entender o progresso buscado antes de escolher a solucao.',
+      'A principal incerteza está no comportamento e na motivação do usuário; Jobs To Be Done ajuda a entender o progresso buscado antes de escolher a solução.',
     'assumption-mapping':
-      'A iniciativa explicita riscos e hipoteses criticas; o Mapa de Suposicoes prioriza o que precisa ser validado primeiro.',
+      'A iniciativa explicita riscos e hipóteses críticas; o Mapa de Suposições prioriza o que precisa ser validado primeiro.',
     'impact-mapping':
       'A iniciativa parte de uma meta e envolve atores ou mudancas de comportamento; Impact Mapping conecta esses elementos as entregas.',
     'user-story-mapping':
       'O fluxo e conhecido, mas precisa ser organizado e fatiado; User Story Mapping torna a jornada e os cortes de MVP visiveis.',
     'service-blueprint':
-      'A dor atravessa operacao, canais ou sistemas; Service Blueprint evidencia frontstage, backstage, handoffs e pontos de falha.',
+      'A dor atravessa operação, canais ou sistemas; Service Blueprint evidencia frontstage, backstage, handoffs e pontos de falha.',
     'value-proposition-canvas':
       'A incerteza esta no encaixe entre o segmento e a proposta; o Value Proposition Canvas cruza jobs, dores, ganhos e resposta de valor.',
     'design-sprint':
-      'Existe uma decisao de alto risco que precisa de prototipo e teste rapido; Design Sprint organiza essa validacao.',
+      'Existe uma decisão de alto risco que precisa de protótipo e teste rápido; Design Sprint organiza essa validação.',
     'lean-canvas':
-      'A iniciativa envolve um novo produto, mercado ou modelo de negocio; Lean Canvas estrutura as hipoteses de negocio antes do investimento.',
+      'A iniciativa envolve um novo produto, mercado ou modelo de negócio; Lean Canvas estrutura as hipóteses de negócio antes do investimento.',
   };
   return reasons[frameworkId] ?? 'O contexto informado corresponde a necessidade deste framework.';
 }
@@ -352,27 +352,27 @@ function rankAlternatives({
 function alternativeReason(frameworkId) {
   switch (frameworkId) {
     case 'opportunity-tree':
-      return 'Use se o objetivo ja estiver claro e faltar apenas destrinchar dores e solucoes.';
+      return 'Use se o objetivo já estiver claro e faltar apenas destrinchar dores e soluções.';
     case 'csd':
       return 'Use se o time ainda discorda sobre o que e fato e o que e suposicao.';
     case 'double-diamond':
       return 'Use se o problema ainda pode mudar de forma durante a pesquisa.';
     case 'jtbd':
-      return 'Use se a maior duvida for por que o usuario muda de comportamento ou contrata uma solucao.';
+      return 'Use se a maior dúvida for por que o usuário muda de comportamento ou contrata uma solução.';
     case 'assumption-mapping':
-      return 'Use se ja ha uma solucao e o risco esta nas suposicoes sem evidencia.';
+      return 'Use se já há uma solução e o risco está nas suposições sem evidência.';
     case 'impact-mapping':
       return 'Use se for preciso alinhar meta, atores, impactos e entregas.';
     case 'user-story-mapping':
-      return 'Use se a jornada estiver clara, mas o MVP e as releases ainda nao.';
+      return 'Use se a jornada estiver clara, mas o MVP e as releases ainda não.';
     case 'service-blueprint':
-      return 'Use se a experiencia depender de operacao, handoffs ou varios sistemas.';
+      return 'Use se a experiência depender de operação, handoffs ou vários sistemas.';
     case 'value-proposition-canvas':
       return 'Use se o encaixe entre segmento, dores e proposta de valor estiver incerto.';
     case 'design-sprint':
-      return 'Use se uma decisao critica precisar de prototipo e teste rapido.';
+      return 'Use se uma decisão crítica precisar de protótipo e teste rápido.';
     case 'lean-canvas':
-      return 'Use se produto, mercado ou modelo de negocio ainda forem hipoteses.';
+      return 'Use se produto, mercado ou modelo de negócio ainda forem hipóteses.';
     default:
       return 'Alternativa disponivel.';
   }
@@ -401,7 +401,7 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
           ? PENDING
           : `${problem}\n\nPublico afetado: ${audience}.\nEvidencia: ${PENDING}.`,
       solutions: description,
-      experiments: `${PENDING} — definir um teste que valide a solucao antes da construcao completa.`,
+      experiments: `${PENDING} — definir um teste que valide a solução antes da construção completa.`,
     },
     csd: {
       certainties:
@@ -409,7 +409,7 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
           ? `Contexto conhecido do produto: ${product.businessContext}`
           : PENDING,
       assumptions: problem === PENDING ? PENDING : `Acreditamos que: ${problem}`,
-      doubts: `Qual evidencia sustenta o resultado esperado "${outcome}"?`,
+      doubts: `Qual evidência sustenta o resultado esperado "${outcome}"?`,
     },
     'double-diamond': {
       discover: `${PENDING} — listar pesquisas, entrevistas e dados ja levantados.`,
@@ -420,16 +420,16 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
     jtbd: {
       situation: `Publico: ${audience}. Contexto em que a necessidade aparece: ${PENDING}.`,
       job: `Quando ${PENDING}, quero ${problem}, para ${outcome}.`,
-      currentAlternatives: `${PENDING} — como o publico resolve esse problema hoje.`,
+      currentAlternatives: `${PENDING} — como o público resolve esse problema hoje.`,
       forces: `${PENDING} — pressao, atracao, ansiedade e habitos que influenciam a mudanca.`,
       desiredOutcomes: outcome,
     },
     'assumption-mapping': {
-      desirability: problem === PENDING ? PENDING : `Acreditamos que o publico precisa resolver: ${problem}`,
-      viability: `${PENDING} — restricoes de negocio, custo e operacao.`,
+      desirability: problem === PENDING ? PENDING : `Acreditamos que o público precisa resolver: ${problem}`,
+      viability: `${PENDING} — restrições de negócio, custo e operação.`,
       feasibility: initiative.constraints || `${PENDING} — tecnologia, dados, prazo e dependencias.`,
-      riskiestAssumptions: `${PENDING} — ordenar por importancia e falta de evidencia.`,
-      validationPlan: `${PENDING} — experimento, evidencia esperada e criterio de sucesso.`,
+      riskiestAssumptions: `${PENDING} — ordenar por importância e falta de evidência.`,
+      validationPlan: `${PENDING} — experimento, evidência esperada e critério de sucesso.`,
     },
     'impact-mapping': {
       goal: outcome,
@@ -451,7 +451,7 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
       frontstage: `${PENDING} — telas, pessoas e respostas visiveis.`,
       backstage: `${PENDING} — regras e processos internos.`,
       supportSystems:
-        product.technicalContext || `${PENDING} — sistemas, dados, integracoes e times.`,
+        product.technicalContext || `${PENDING} — sistemas, dados, integrações e times.`,
       failurePoints: `${problem}\nEvidencia: ${PENDING}.`,
     },
     'value-proposition-canvas': {
@@ -461,15 +461,15 @@ function draftFields(frameworkId, { product = {}, initiative = {} }) {
       productsServices: description,
       painRelievers: `${PENDING} — como a proposta reduz cada dor prioritaria.`,
       gainCreators: `${PENDING} — como a proposta produz os ganhos esperados.`,
-      fitEvidence: `${PENDING} — evidencias de encaixe e lacunas a validar.`,
+      fitEvidence: `${PENDING} — evidências de encaixe e lacunas a validar.`,
     },
     'design-sprint': {
       challenge: `${problem}\nObjetivo de longo prazo: ${outcome}.`,
-      sprintQuestions: `${PENDING} — o que precisa ser verdade para a solucao funcionar.`,
+      sprintQuestions: `${PENDING} — o que precisa ser verdade para a solução funcionar.`,
       map: `${audience} — inicio: ${PENDING}; fim: ${outcome}.`,
       solutionIdeas: description,
       prototype: `${PENDING} — recorte do prototipo e tarefa do teste.`,
-      testResults: `${PENDING} — padroes observados, criterio e decisao.`,
+      testResults: `${PENDING} — padrões observados, critério e decisão.`,
     },
     'lean-canvas': {
       problems: problem,
@@ -500,19 +500,19 @@ function openQuestions({ initiative = {} }) {
     questions.push('Quem exatamente e afetado por essa mudanca?');
   }
   if (isBlank(initiative.problem) || isShallow(initiative.problem)) {
-    questions.push('Qual comportamento atual do usuario precisa mudar, e por que ele acontece hoje?');
+    questions.push('Qual comportamento atual do usuário precisa mudar, e por que ele acontece hoje?');
   }
   if (isBlank(initiative.constraints)) {
-    questions.push('Existe restricao de prazo, sistema legado ou dependencia externa?');
+    questions.push('Existe restrição de prazo, sistema legado ou dependência externa?');
   }
 
-  questions.push('Qual evidencia sustenta o problema descrito?');
+  questions.push('Qual evidência sustenta o problema descrito?');
 
   return questions;
 }
 
 /**
- * Sugere conteudo para um unico campo do discovery.
+ * Sugere conteúdo para um único campo do discovery.
  */
 export function suggestDiscoveryField({
   product = {},
@@ -528,7 +528,7 @@ export function suggestDiscoveryField({
     fieldKey,
     suggestion,
     rationale:
-      'Rascunho montado a partir do contexto do produto e da descricao da iniciativa. Revise antes de aceitar.',
+      'Rascunho montado a partir do contexto do produto e da descrição da iniciativa. Revise antes de aceitar.',
     replacesContent: !isBlank(currentValue),
     basedOn: ['product.businessContext', 'initiative.description', 'initiative.problem'],
   };
@@ -569,11 +569,11 @@ export function reviewDiscovery({ frameworkId, fields = {}, initiative = {} } = 
 
   const allText = Object.values(fields).join(' ');
   if (countSignals(allText, EVIDENCE_SIGNALS) === 0) {
-    questions.push('Nenhuma evidencia citada no discovery. Qual dado sustenta o problema?');
+    questions.push('Nenhuma evidência citada no discovery. Qual dado sustenta o problema?');
   }
   if (frameworkId === 'csd' && countSignals(fields.certainties ?? '', UNCERTAINTY_SIGNALS) > 0) {
     contradictions.push(
-      'O campo Certezas usa linguagem de hipotese ("acreditamos", "talvez"). Mova esse conteudo para Suposicoes.',
+      'O campo Certezas usa linguagem de hipótese ("acreditamos", "talvez"). Mova esse conteúdo para Suposições.',
     );
   }
 

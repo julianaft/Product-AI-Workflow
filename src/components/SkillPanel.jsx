@@ -2,7 +2,7 @@ import { BUTTON, classNames } from './ui.js';
 
 /**
  * Moldura comum das duas skills. Deixa explicito na tela que a saida e uma
- * sugestao e que a decisao continua sendo do PM.
+ * sugestão e que a decisão continua sendo do PM.
  */
 export function SkillPanel({
   title,
@@ -50,7 +50,7 @@ export function SkillPanel({
 export function HumanGate({ children }) {
   return (
     <p className="border border-orange rounded-xl px-4 py-3 text-sm font-bold text-black mb-6">
-      Intervencao humana: {children}
+      Intervenção humana: {children}
     </p>
   );
 }

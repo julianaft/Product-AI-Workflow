@@ -11,7 +11,7 @@ function reduce(state, ...actions) {
 
 test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
   const merged = mergeJourney({
-    product: { name: 'GCAM', squad: 'GCAM' },
+    product: { name: 'GCAM', squad: 'GCAM', businessContext: 'Contexto anterior.' },
     initiative: { name: 'Input Output' },
   });
 
@@ -19,6 +19,7 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
   assert.equal(merged.product.directorate, '');
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
+  assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
 });
 
 
@@ -74,7 +75,7 @@ test('mudanca de insumo marca o PRD como desatualizado', () => {
   assert.equal(changed.prd.approvedAt, null);
 });
 
-test('sugestao da skill nao sobrescreve texto escrito pelo PM', () => {
+test('sugestão da skill não sobrescreve texto escrito pelo PM', () => {
   const journey = reduce(
     createJourney(),
     { type: 'selectFramework', framework: 'opportunity-tree' },
@@ -91,7 +92,7 @@ test('sugestao da skill nao sobrescreve texto escrito pelo PM', () => {
   assert.equal(fields.solutions, 'Sugestao aceita');
 });
 
-test('a navegacao nao ultrapassa a ultima etapa nem volta antes da primeira', () => {
+test('a navegação não ultrapassa a última etapa nem volta antes da primeira', () => {
   let journey = createJourney();
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'nextStep' });
@@ -104,15 +105,30 @@ test('a navegacao nao ultrapassa a ultima etapa nem volta antes da primeira', ()
   assert.equal(journey.activeStep, 1);
 });
 
-test('a etapa de contexto exige produto, squad e contexto de negocio', () => {
+test('a etapa de contexto exige produto, fonte de negócio e repositório selecionado', () => {
   const empty = createJourney();
   assert.equal(isStepComplete(1, empty), false);
 
   const filled = reduce(
     empty,
     { type: 'updateProduct', field: 'name', value: 'GCAM' },
-    { type: 'updateProduct', field: 'squad', value: 'GCAM' },
-    { type: 'updateProduct', field: 'businessContext', value: 'Cadastro manual de campanhas.' },
+    {
+      type: 'updateProduct',
+      field: 'businessContextSources',
+      value: [{ id: 'source-1', type: 'file', title: 'contexto.txt', content: 'Contexto' }],
+    },
+    {
+      type: 'updateProduct',
+      field: 'repositories',
+      value: [
+        {
+          id: 1,
+          fullName: 'empresa/produto',
+          url: 'https://github.com/empresa/produto',
+          selected: true,
+        },
+      ],
+    },
   );
 
   assert.equal(isStepComplete(1, filled), true);

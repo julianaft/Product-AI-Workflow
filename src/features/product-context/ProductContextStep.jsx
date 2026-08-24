@@ -1,5 +1,6 @@
-import { TextAreaField, TextField } from '../../components/Field.jsx';
-import { LinkAttachments } from '../../components/LinkAttachments.jsx';
+import { BusinessContextSources } from '../../components/BusinessContextSources.jsx';
+import { TextField } from '../../components/Field.jsx';
+import { GithubRepositorySelector } from '../../components/GithubRepositorySelector.jsx';
 import { StepActions } from '../../components/StepActions.jsx';
 import { useTouched } from '../../hooks/useTouched.js';
 import { validateStep } from '../../services/validation.js';
@@ -26,31 +27,10 @@ export function ProductContextStep({ onNext }) {
           error={errorFor(errors, 'name')}
           onBlur={markTouched('name')}
           onChange={update('name')}
-          placeholder="GCAM"
+          placeholder="Nome do produto"
         />
         <TextField
-          label="Squad"
-          required
-          value={journey.product.squad}
-          error={errorFor(errors, 'squad')}
-          onBlur={markTouched('squad')}
-          onChange={update('squad')}
-          placeholder="GCAM"
-        />
-        <TextField
-          label="Diretoria"
-          value={journey.product.directorate}
-          onChange={update('directorate')}
-          placeholder="Tech Experiencia"
-        />
-        <TextField
-          label="Tribo"
-          value={journey.product.tribe}
-          onChange={update('tribe')}
-          placeholder="RGM"
-        />
-        <TextField
-          label="PM / GPM"
+          label="PM"
           value={journey.product.pm}
           onChange={update('pm')}
         />
@@ -69,44 +49,20 @@ export function ProductContextStep({ onNext }) {
           value={journey.product.tl}
           onChange={update('tl')}
         />
-        <TextField
-          label="Redatores"
-          hint="Separe os nomes por virgula."
-          value={journey.product.writers}
-          onChange={update('writers')}
-        />
-        <TextField
-          label="Responsaveis da squad"
-          hint="Separe os nomes por virgula."
-          value={journey.product.owners}
-          onChange={update('owners')}
-        />
       </div>
 
-      <TextAreaField
-        label="Contexto de negocio"
-        hint="O que o produto faz hoje, para quem, e quais processos existem."
-        required
-        rows={5}
-        value={journey.product.businessContext}
-        error={errorFor(errors, 'businessContext')}
-        onBlur={markTouched('businessContext')}
-        onChange={update('businessContext')}
+      <BusinessContextSources
+        sources={journey.product.businessContextSources}
+        onChange={update('businessContextSources')}
+        error={errors.businessContextSources}
       />
 
-      <TextAreaField
-        label="Contexto tecnico resumido"
-        hint="Sistemas envolvidos e integracoes conhecidas."
-        rows={4}
-        value={journey.product.technicalContext}
-        onChange={update('technicalContext')}
-      />
-
-      <LinkAttachments
-        scope="product"
-        links={journey.links}
-        onAdd={(link) => dispatch({ type: 'addLink', link })}
-        onRemove={(id) => dispatch({ type: 'removeLink', id })}
+      <GithubRepositorySelector
+        owner={journey.product.githubOwner}
+        repositories={journey.product.repositories}
+        onOwnerChange={update('githubOwner')}
+        onRepositoriesChange={update('repositories')}
+        error={errors.repositories}
       />
 
       <StepActions blockers={blockers} onNext={onNext} nextLabel="Salvar contexto e seguir" />

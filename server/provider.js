@@ -33,7 +33,7 @@ function extractJson(content) {
 
 export async function runPrompt({ system, payload }) {
   if (!isProviderConfigured()) {
-    throw new Error('Provedor de IA nao configurado.');
+    throw new Error('Provedor de IA não configurado.');
   }
 
   const controller = new AbortController();

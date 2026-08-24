@@ -16,7 +16,7 @@ export function useSkill(skillFn) {
       try {
         return await skillFn(payload);
       } catch (caught) {
-        setError(caught?.message ?? 'A skill nao respondeu como esperado.');
+        setError(caught?.message ?? 'A skill não respondeu como esperado.');
         return null;
       } finally {
         setLoading(false);

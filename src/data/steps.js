@@ -5,7 +5,7 @@ export const STEPS = [
     phase: 'Setup',
     title: 'Contexto do produto',
     description:
-      'Informacoes estaveis do produto, usadas como base para todas as iniciativas da squad.',
+      'Informações estáveis do produto, usadas como base para todas as iniciativas.',
     accent: 'lime',
   },
   {
@@ -20,7 +20,7 @@ export const STEPS = [
     id: 3,
     key: 'classification',
     phase: 'Upstream',
-    title: 'Classificacao da iniciativa',
+    title: 'Classificação da iniciativa',
     description: 'A skill sugere incremental ou novo fluxo. O PM confirma.',
     accent: 'orange',
   },
@@ -37,7 +37,7 @@ export const STEPS = [
     key: 'discoveryForm',
     phase: 'Discovery',
     title: 'Preenchimento do discovery',
-    description: 'Conteudo sugerido pela skill e revisado pelo PM.',
+    description: 'Conteúdo sugerido pela skill e revisado pelo PM.',
     accent: 'ember',
   },
   {

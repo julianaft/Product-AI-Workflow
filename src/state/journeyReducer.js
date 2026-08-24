@@ -17,7 +17,7 @@ function withStep(state, step) {
 /**
  * Sempre que o insumo de uma etapa muda, o que foi derivado depois dela
  * deixa de ser confiavel. Estas funcoes invalidam o trecho seguinte da jornada
- * em vez de deixar um PRD apontando para um discovery que nao existe mais.
+ * em vez de deixar um PRD apontando para um discovery que não existe mais.
  */
 function invalidatePrd(state) {
   if (state.prd.status === 'not-generated') return state.prd;
@@ -114,7 +114,7 @@ export function journeyReducer(state, action) {
       const current = state.discovery.fieldsByFramework[framework] ?? {};
       const merged = { ...current };
 
-      // Sugestao nunca sobrescreve texto escrito pelo PM.
+      // Sugestão nunca sobrescreve texto escrito pelo PM.
       for (const [key, value] of Object.entries(action.fields ?? {})) {
         if (!String(current[key] ?? '').trim()) {
           merged[key] = value;

@@ -2,11 +2,11 @@
  * Skill de PRD — implementacao deterministica.
  *
  * O documento segue o modelo de PRDs reais de produto: iniciativa OKR,
- * pessoas por area, hipoteses com dor/decisao, metricas AS IS/TO BE,
- * solucoes com jornada, CAs agrupados, permissao, regras de campo, erros,
+ * pessoas por área, hipóteses com dor/decisão, métricas AS IS/TO BE,
+ * soluções com jornada, CAs agrupados, permissão, regras de campo, erros,
  * fora de escopo, dependencias e epicos.
  *
- * Regra central: so usa informacao do payload. O que falta vira pergunta
+ * Regra central: só usa informação do payload. O que falta vira pergunta
  * em aberto, nunca texto inventado.
  */
 
@@ -22,7 +22,7 @@ import { getFramework } from './frameworks.js';
 
 export { PRD_SECTION_KEYS, PRD_SECTIONS };
 
-const MISSING = 'Nao informado no discovery. Ver perguntas em aberto.';
+const MISSING = 'Não informado no discovery. Ver perguntas em aberto.';
 
 function text(value) {
   return String(value ?? '').trim();
@@ -308,8 +308,8 @@ function formatHypotheses({ discovery, initiative }) {
       return [
         `H${index + 1}: ${line.slice(0, 80)}`,
         `Dor: ${line}`,
-        'Hipotese: Se [acao], entao [resultado mensuravel] — [a preencher]',
-        'Decisao: [a preencher]',
+        'Hipótese: Se [ação], então [resultado mensurável] — [a preencher]',
+        'Decisão: [a preencher]',
       ].join('\n');
     })
     .join('\n\n');
@@ -322,13 +322,13 @@ function formatImpactMetrics({ initiative, discovery }) {
   }
 
   return [
-    'Solucao 1: [nome da solucao — a confirmar]',
+    'Solução 1: [nome da solução — a confirmar]',
     `- Resultado esperado informado: ${text(outcome)}`,
     '- Cobertura: [a preencher]',
     '- Volume: [a preencher]',
     '- AS IS: [tempo ou esforco atual — a preencher]',
     '- TO BE: [tempo ou esforco esperado — a preencher]',
-    '- Reducao / impacto: [delta — a preencher se nao estiver no resultado esperado]',
+    '- Redução / impacto: [delta — a preencher se não estiver no resultado esperado]',
   ].join('\n');
 }
 
@@ -342,7 +342,7 @@ function formatSolutions({ discovery, initiative }) {
     .map((block, index) => {
       const title = /^solu[cç][aã]o\s*\d+/i.test(block)
         ? block.split('\n')[0]
-        : `Solucao ${index + 1}: ${initiative.name || 'sem titulo'}`;
+        : `Solução ${index + 1}: ${initiative.name || 'sem título'}`;
       const body = /^solu[cç][aã]o\s*\d+/i.test(block)
         ? block.split('\n').slice(1).join('\n').trim()
         : block;
@@ -354,7 +354,7 @@ function formatSolutions({ discovery, initiative }) {
         '- [a preencher]',
         'Jornada TO BE:',
         '- [a preencher]',
-        `Descricao: ${body || MISSING}`,
+        `Descrição: ${body || MISSING}`,
         'Mudancas necessarias:',
         '- [a preencher]',
       ].join('\n');
@@ -372,10 +372,10 @@ function formatAcceptanceCriteria({ discovery, initiative }) {
     .map((block, index) => {
       const name = /^solu[cç][aã]o\s*\d+/i.test(block)
         ? block.split('\n')[0]
-        : `Solucao ${index + 1}`;
+        : `Solução ${index + 1}`;
       return [
         name,
-        'CA1: Dado [contexto], quando [acao], entao [resultado observavel] — [a preencher]',
+        'CA1: Dado [contexto], quando [ação], então [resultado observável] — [a preencher]',
       ].join('\n');
     })
     .join('\n\n');
@@ -416,25 +416,25 @@ function buildOpenQuestions({ product, initiative, discovery, sections }) {
     questions.push('Qual e o codigo da iniciativa OKR?');
   }
   if (isBlank(initiative.expectedOutcome) && isBlank(discovery.outcome)) {
-    questions.push('Qual metrica de negocio comprova o sucesso, com baseline AS IS e meta TO BE?');
+    questions.push('Qual métrica de negócio comprova o sucesso, com baseline AS IS e meta TO BE?');
   }
   if (isBlank(discovery.problem) && isBlank(initiative.problem)) {
-    questions.push('Qual problema, com evidencia, esta iniciativa resolve?');
+    questions.push('Qual problema, com evidência, esta iniciativa resolve?');
   }
   if (isBlank(discovery.solution) && isBlank(initiative.description)) {
-    questions.push('Quais solucoes entram nesta entrega e para que recorte cada uma vale?');
+    questions.push('Quais soluções entram nesta entrega e para que recorte cada uma vale?');
   }
   if (!text(sections.solutions).includes('Jornada AS IS') || text(sections.solutions).includes('[a preencher]')) {
-    questions.push('A jornada AS IS e TO BE de cada solucao foi descrita passo a passo?');
+    questions.push('A jornada AS IS e TO BE de cada solução foi descrita passo a passo?');
   }
   if (text(sections.acceptanceCriteria).includes('[a preencher]') || sections.acceptanceCriteria === MISSING) {
-    questions.push('Os criterios de aceite estao escritos de forma verificavel por solucao?');
+    questions.push('Os critérios de aceite estão escritos de forma verificável por solução?');
   }
-  if (sections.outOfScope === MISSING || /nao definido/i.test(sections.outOfScope)) {
+  if (sections.outOfScope === MISSING || /n[aã]o definido/i.test(sections.outOfScope)) {
     questions.push('O que explicitamente fica fora desta entrega?');
   }
   if (isBlank(product.pm) && listPeople(product.owners).length === 0) {
-    questions.push('Quem sao as pessoas envolvidas, agrupadas por area?');
+    questions.push('Quem são as pessoas envolvidas, agrupadas por área?');
   }
 
   for (const section of PRD_SECTIONS) {
@@ -480,7 +480,7 @@ export function generatePrd(payload = {}) {
   const owners = listPeople(product.owners);
 
   return {
-    title: text(initiative.name) || 'PRD sem titulo',
+    title: text(initiative.name) || 'PRD sem título',
     metadata: {
       directorate: text(product.directorate),
       product: text(product.name),
@@ -536,13 +536,9 @@ export function prdToMarkdown(prd) {
   const metadata = prd.metadata ?? {};
 
   lines.push('| Campo | Valor |', '| --- | --- |');
-  lines.push(`| Dir. | ${metadata.directorate || '-'} |`);
   lines.push(`| Produto | ${metadata.product || '-'} |`);
-  lines.push(`| Tribo | ${metadata.tribe || '-'} |`);
-  lines.push(`| Squad | ${metadata.squad || '-'} |`);
-  lines.push(`| PM / GPM | ${metadata.pm || '-'} |`);
+  lines.push(`| PM | ${metadata.pm || '-'} |`);
   lines.push(`| PD | ${metadata.pd || '-'} |`);
-  lines.push(`| Redatores | ${(metadata.writers ?? []).join(', ') || '-'} |`);
   lines.push(`| TM | ${metadata.tm || '-'} |`);
   lines.push(`| TL | ${metadata.tl || '-'} |`);
   lines.push(`| Iniciativa OKR | ${metadata.okrCode || '-'} |`);
@@ -571,9 +567,9 @@ export function prdToMarkdown(prd) {
   }
 
   if (metadata.reviewers?.length) {
-    lines.push('## Revisores', '', '| Participante | Status da analise |', '| --- | --- |');
+    lines.push('## Revisores', '', '| Participante | Status da análise |', '| --- | --- |');
     for (const reviewer of metadata.reviewers) {
-      lines.push(`| ${reviewer.name || reviewer} | ${reviewer.status || 'Nao iniciada'} |`);
+      lines.push(`| ${reviewer.name || reviewer} | ${reviewer.status || 'Não iniciada'} |`);
     }
     lines.push('');
   }

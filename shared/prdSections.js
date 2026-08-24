@@ -1,10 +1,10 @@
 /**
  * Modelo de PRD usado pela skill, pela interface e pelo prompt.
  *
- * A estrutura veio de PRDs reais de produto (iniciativa OKR, hipoteses com
- * decisao, metricas AS IS/TO BE por solucao, jornada, CAs agrupados,
- * permissionamento, defaults, erros, epicos e revisores). Os rotulos e o
- * guia de qualidade sao agnosticos: nenhum produto especifico entra aqui.
+ * A estrutura veio de PRDs reais de produto (iniciativa OKR, hipóteses com
+ * decisão, métricas AS IS/TO BE por solução, jornada, CAs agrupados,
+ * permissionamento, defaults, erros, épicos e revisores). Os rótulos e o
+ * guia de qualidade são agnósticos: nenhum produto específico entra aqui.
  */
 
 export const PRD_SECTIONS = [
@@ -12,93 +12,93 @@ export const PRD_SECTIONS = [
     key: 'okrInitiative',
     label: 'Iniciativa OKR',
     quality:
-      'Codigo da iniciativa + titulo. Sem codigo, registrar como pendente.',
+      'Código da iniciativa + título. Sem código, registrar como pendente.',
   },
   {
     key: 'stakeholders',
     label: 'Principais pessoas envolvidas',
     quality:
-      'Agrupar por area (squad, parceiros, areas consumidoras), nao uma lista solta.',
+      'Agrupar por área (squad, parceiros, áreas consumidoras), não uma lista solta.',
   },
   {
     key: 'context',
-    label: 'Contextualizacao',
+    label: 'Contextualização',
     quality:
-      'Volume atual, processo AS IS, evidencia numerica e o que muda agora. Fato, nao slogan.',
+      'Volume atual, processo AS IS, evidência numérica e o que muda agora. Fato, não slogan.',
   },
   {
     key: 'problem',
     label: 'Necessidade',
     quality:
-      'Uma frase com a dor, o numero que a sustenta e o prazo que a torna urgente.',
+      'Uma frase com a dor, o número que a sustenta e o prazo que a torna urgente.',
   },
   {
     key: 'audience',
-    label: 'Publico afetado',
-    quality: 'Quem opera, quem decide e quem e impactado na ponta.',
+    label: 'Público afetado',
+    quality: 'Quem opera, quem decide e quem é impactado na ponta.',
   },
   {
     key: 'hypotheses',
-    label: 'Hipoteses',
+    label: 'Hipóteses',
     quality:
-      'Cada hipotese no formato Hn: Dor + Hipotese (Se... entao...) + Decisao. Nao misturar solucao pronta com hipotese.',
+      'Cada hipótese no formato Hn: Dor + Hipótese (Se... então...) + Decisão. Não misturar solução pronta com hipótese.',
   },
   {
     key: 'impactMetrics',
-    label: 'Metricas de impacto',
+    label: 'Métricas de impacto',
     quality:
-      'Por solucao: cobertura, volume, AS IS, TO BE e reducao. Numero sem baseline vira pergunta em aberto.',
+      'Por solução: cobertura, volume, AS IS, TO BE e redução. Número sem baseline vira pergunta em aberto.',
   },
   {
     key: 'solutions',
-    label: 'Detalhamento das solucoes',
+    label: 'Detalhamento das soluções',
     quality:
-      'Por solucao: aplicavel a, jornada AS IS, jornada TO BE, descricao, mudancas, Figma/links. Uma solucao por bloco.',
+      'Por solução: aplicável a, jornada AS IS, jornada TO BE, descrição, mudanças, Figma/links. Uma solução por bloco.',
   },
   {
     key: 'permissions',
     label: 'Permissionamento',
     quality:
-      'Permissao nova ou existente, quem ve, quem e bloqueado. Se nao houver mudanca de acesso, dizer isso.',
+      'Permissão nova ou existente, quem vê, quem é bloqueado. Se não houver mudança de acesso, dizer isso.',
   },
   {
     key: 'fieldRules',
-    label: 'Regras de campos, defaults e validacoes',
+    label: 'Regras de campos, defaults e validações',
     quality:
-      'Obrigatorios, defaults quando vazios, formatos, agrupadores e regras de negocio que a interface ja aplica.',
+      'Obrigatórios, defaults quando vazios, formatos, agrupadores e regras de negócio que a interface já aplica.',
   },
   {
     key: 'errorHandling',
     label: 'Tratamento de erros',
     quality:
-      'O que o usuario ve, o que pode exportar, sucesso parcial vs. falha total, persistencia de estado.',
+      'O que o usuário vê, o que pode exportar, sucesso parcial vs. falha total, persistência de estado.',
   },
   {
     key: 'acceptanceCriteria',
-    label: 'Criterios de aceite',
+    label: 'Critérios de aceite',
     quality:
-      'CAs numerados por solucao, verificaveis sem interpretacao. Um CA = um comportamento observavel.',
+      'CAs numerados por solução, verificáveis sem interpretação. Um CA = um comportamento observável.',
   },
   {
     key: 'outOfScope',
     label: 'Fora do escopo',
     quality:
-      'Lista explicita do que esta entrega nao faz, com motivo. Vazio e um risco.',
+      'Lista explícita do que esta entrega não faz, com motivo. Vazio é um risco.',
   },
   {
     key: 'dependencies',
-    label: 'Principais dependencias',
-    quality: 'Planilha, sistema, area, documento ou permissao sem os quais a entrega nao fecha.',
+    label: 'Principais dependências',
+    quality: 'Planilha, sistema, área, documento ou permissão sem os quais a entrega não fecha.',
   },
   {
     key: 'epics',
-    label: 'Epicos',
-    quality: 'Um epico por solucao ou entrega rastreavel no backlog.',
+    label: 'Épicos',
+    quality: 'Um épico por solução ou entrega rastreável no backlog.',
   },
   {
     key: 'risks',
     label: 'Riscos',
-    quality: 'Risco + condicao que o torna real. Sem chute de probabilidade.',
+    quality: 'Risco + condição que o torna real. Sem chute de probabilidade.',
   },
   {
     key: 'assumptions',
@@ -108,34 +108,34 @@ export const PRD_SECTIONS = [
   {
     key: 'experiments',
     label: 'Experimentos',
-    quality: 'Como validar antes da construcao completa. Se nao houver, marcar pendente.',
+    quality: 'Como validar antes da construção completa. Se não houver, marcar pendente.',
   },
 ];
 
 export const PRD_SECTION_KEYS = PRD_SECTIONS.map((section) => section.key);
 
-export const HYPOTHESIS_TEMPLATE = `H1: [titulo curto]
-Dor: [o que dói hoje, com evidencia se houver]
-Hipotese: Se [acao], entao [resultado mensuravel]
-Decisao: [o que o time ja decidiu a partir desta hipotese]`;
+export const HYPOTHESIS_TEMPLATE = `H1: [título curto]
+Dor: [o que dói hoje, com evidência se houver]
+Hipótese: Se [ação], então [resultado mensurável]
+Decisão: [o que o time já decidiu a partir desta hipótese]`;
 
-export const METRIC_TEMPLATE = `Solucao 1: [nome]
+export const METRIC_TEMPLATE = `Solução 1: [nome]
 - Cobertura: [o que entra nesta entrega]
 - Volume: [quantidade afetada]
-- AS IS: [tempo ou esforco atual]
-- TO BE: [tempo ou esforco esperado]
-- Reducao / impacto: [delta]`;
+- AS IS: [tempo ou esforço atual]
+- TO BE: [tempo ou esforço esperado]
+- Redução / impacto: [delta]`;
 
-export const SOLUTION_TEMPLATE = `Solucao 1: [nome]
-Aplicavel a: [recorte]
+export const SOLUTION_TEMPLATE = `Solução 1: [nome]
+Aplicável a: [recorte]
 Jornada AS IS:
 - [passo atual]
 Jornada TO BE:
 - [passo futuro]
-Descricao: [o que o sistema passa a fazer]
-Mudancas necessarias:
-- [mudanca de fluxo, tela ou regra]`;
+Descrição: [o que o sistema passa a fazer]
+Mudanças necessárias:
+- [mudança de fluxo, tela ou regra]`;
 
-export const ACCEPTANCE_TEMPLATE = `Solucao 1: [nome]
-CA1: Dado [contexto], quando [acao], entao [resultado observavel]
+export const ACCEPTANCE_TEMPLATE = `Solução 1: [nome]
+CA1: Dado [contexto], quando [ação], então [resultado observável]
 CA2: ...`;

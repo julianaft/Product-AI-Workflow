@@ -105,7 +105,7 @@ async function handleSkill(route, payload) {
 
 const server = createServer(async (request, response) => {
   if (request.method !== 'POST' || !request.url?.startsWith('/api/ai/')) {
-    sendJson(response, 404, { error: 'Rota nao encontrada.' });
+    sendJson(response, 404, { error: 'Rota não encontrada.' });
     return;
   }
 
@@ -113,7 +113,7 @@ const server = createServer(async (request, response) => {
   const route = ROUTES[name];
 
   if (!route) {
-    sendJson(response, 404, { error: `Skill "${name}" nao existe.` });
+    sendJson(response, 404, { error: `Skill "${name}" não existe.` });
     return;
   }
 
