@@ -29,6 +29,11 @@ function invalidateDiscoveryApproval(state) {
   return { ...state.discovery, approved: false };
 }
 
+function invalidateBusinessmap(state) {
+  if (!state.businessmap?.card) return state.businessmap;
+  return { ...state.businessmap, stale: true };
+}
+
 const PRD_IRRELEVANT_PRODUCT_FIELDS = new Set([
   'businessmapBoardUrl',
   'businessmapApiKey',
@@ -58,6 +63,9 @@ export function journeyReducer(state, action) {
         prd: PRD_IRRELEVANT_PRODUCT_FIELDS.has(action.field)
           ? state.prd
           : invalidatePrd(state),
+        businessmap: PRD_IRRELEVANT_PRODUCT_FIELDS.has(action.field)
+          ? state.businessmap
+          : invalidateBusinessmap(state),
       };
 
     case 'updateInitiative':
@@ -66,6 +74,7 @@ export function journeyReducer(state, action) {
         initiative: { ...state.initiative, [action.field]: action.value },
         classification: { ...state.classification, suggestion: null },
         prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
       };
 
     case 'setClassificationSuggestion':
@@ -83,6 +92,8 @@ export function journeyReducer(state, action) {
         ...state,
         classification: { ...state.classification, type: action.value, confirmedAt: null },
         discovery: { ...state.discovery, recommendation: null },
+        prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
       };
 
     case 'confirmClassification':
@@ -111,6 +122,7 @@ export function journeyReducer(state, action) {
           review: null,
         },
         prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
       };
     }
 
@@ -134,6 +146,8 @@ export function journeyReducer(state, action) {
           ...state.discovery,
           fieldsByFramework: { ...state.discovery.fieldsByFramework, [framework]: merged },
         },
+        prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
       };
     }
 
@@ -153,6 +167,7 @@ export function journeyReducer(state, action) {
           },
         },
         prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
       };
     }
 
@@ -172,6 +187,7 @@ export function journeyReducer(state, action) {
           approvedAt: null,
           answers: action.answers ?? state.prd.answers ?? [],
         },
+        businessmap: invalidateBusinessmap(state),
       };
 
     case 'appendPrdChat':
@@ -197,6 +213,7 @@ export function journeyReducer(state, action) {
             ? [...(state.prd.chat ?? []), action.message]
             : (state.prd.chat ?? []),
         },
+        businessmap: invalidateBusinessmap(state),
       };
 
     case 'updatePrdSection':
@@ -211,6 +228,7 @@ export function journeyReducer(state, action) {
             sections: { ...state.prd.document.sections, [action.section]: action.value },
           },
         },
+        businessmap: invalidateBusinessmap(state),
       };
 
     case 'approvePrd':
@@ -226,7 +244,7 @@ export function journeyReducer(state, action) {
     case 'setBusinessmapCard':
       return {
         ...state,
-        businessmap: { ...state.businessmap, card: action.card },
+        businessmap: { ...state.businessmap, card: action.card, stale: false },
       };
 
     case 'addLink':

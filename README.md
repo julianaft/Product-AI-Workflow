@@ -119,6 +119,10 @@ da aprovação do PRD, a etapa opcional:
 4. cria o card com contexto, história do usuário, requisitos, links, critérios
    de aceite, dependências/restrições e cenários de teste.
 
+A iniciativa guarda o ID retornado. Se o PRD mudar depois da criação, o card
+externo é preservado e marcado como desatualizado na plataforma, evitando a
+criação silenciosa de uma Story duplicada.
+
 A chave passa pelo servidor Node; ela nunca é enviada diretamente do React para
 o domínio do Businessmap. Neste MVP ela ainda fica no `localStorage` do
 navegador porque o login é mockado. Isso não é adequado para produção: com SSO

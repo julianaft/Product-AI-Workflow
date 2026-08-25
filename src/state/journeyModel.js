@@ -72,6 +72,7 @@ export function createJourney(product = {}) {
 
     businessmap: {
       card: null,
+      stale: false,
     },
 
     links: [],

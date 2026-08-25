@@ -41,6 +41,12 @@ export function BusinessmapStep() {
         <p className="text-sm mb-5">
           ID {createdCard.customId || createdCard.cardId} · tipo Story
         </p>
+        {journey.businessmap.stale ? (
+          <p className="border border-orange rounded-xl p-3 text-sm font-semibold mb-5">
+            O PRD mudou depois da criação desta Story. O card externo foi
+            preservado, mas precisa ser atualizado manualmente no Businessmap.
+          </p>
+        ) : null}
         <div className="flex flex-wrap gap-3">
           <a
             href={createdCard.boardUrl}

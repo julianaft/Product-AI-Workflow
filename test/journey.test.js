@@ -24,6 +24,7 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
   assert.equal(merged.product.directorate, '');
   assert.equal(merged.product.businessmapBoardUrl, '');
   assert.equal(merged.product.businessmapApiKey, '');
+  assert.equal(merged.businessmap.stale, false);
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
   assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
@@ -172,6 +173,31 @@ test('alterar a integração do Businessmap não desatualiza o PRD', () => {
   });
 
   assert.equal(updated.prd.status, 'approved');
+});
+
+test('alterar o PRD marca a Story já criada como desatualizada', () => {
+  const withCard = reduce(
+    createJourney(),
+    {
+      type: 'setPrd',
+      document: { title: 'PRD', sections: { context: 'Contexto original' } },
+    },
+    { type: 'approvePrd' },
+    {
+      type: 'setBusinessmapCard',
+      card: { cardId: 123, title: 'Story original' },
+    },
+  );
+  assert.equal(withCard.businessmap.stale, false);
+
+  const changed = journeyReducer(withCard, {
+    type: 'updatePrdSection',
+    section: 'context',
+    value: 'Contexto revisado',
+  });
+
+  assert.equal(changed.businessmap.card.cardId, 123);
+  assert.equal(changed.businessmap.stale, true);
 });
 
 test('workspace separa setup geral das iniciativas', () => {

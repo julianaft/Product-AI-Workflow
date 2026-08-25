@@ -39,7 +39,9 @@ function summaryFor(stepId, journey) {
       return journey.prd.status === 'not-generated' ? null : 'PRD em rascunho.';
     case 7:
       if (!journey.businessmap.card) return null;
-      return `Story ${journey.businessmap.card.customId || journey.businessmap.card.cardId} criada.`;
+      return `Story ${journey.businessmap.card.customId || journey.businessmap.card.cardId} criada${
+        journey.businessmap.stale ? ' (desatualizada)' : ''
+      }.`;
     default:
       return null;
   }
