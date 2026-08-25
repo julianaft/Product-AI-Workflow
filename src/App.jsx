@@ -9,6 +9,7 @@ import { PrdStep } from './features/prd/PrdStep.jsx';
 import { MockLoginPage } from './features/auth/MockLoginPage.jsx';
 import { ProjectSetupPage } from './features/workspace/ProjectSetupPage.jsx';
 import { WorkspaceDashboard } from './features/workspace/WorkspaceDashboard.jsx';
+import { BusinessmapStep } from './features/businessmap/BusinessmapStep.jsx';
 import { getAiMode } from './services/aiClient.js';
 import { useJourney } from './state/JourneyProvider.jsx';
 import { FRAMEWORKS } from '../shared/frameworks.js';
@@ -36,6 +37,9 @@ function summaryFor(stepId, journey) {
       if (journey.prd.status === 'approved') return 'PRD aprovado.';
       if (journey.prd.document?.revision) return `PRD versão ${journey.prd.document.revision}.`;
       return journey.prd.status === 'not-generated' ? null : 'PRD em rascunho.';
+    case 7:
+      if (!journey.businessmap.card) return null;
+      return `Story ${journey.businessmap.card.customId || journey.businessmap.card.cardId} criada.`;
     default:
       return null;
   }
@@ -52,7 +56,9 @@ function renderStep(stepId, onNext) {
     case 5:
       return <DiscoveryFormStep onNext={onNext} />;
     case 6:
-      return <PrdStep />;
+      return <PrdStep onNext={onNext} />;
+    case 7:
+      return <BusinessmapStep />;
     default:
       return null;
   }
@@ -94,10 +100,13 @@ export default function App() {
         <span className="inline-block bg-blue text-white text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
           {workspace.setup.projectName}
         </span>
-        <h1 className="text-3xl md:text-5xl font-extrabold mb-3">Do input da iniciativa ao PRD</h1>
+        <h1 className="text-3xl md:text-5xl font-extrabold mb-3">
+          Da iniciativa à entrega
+        </h1>
         <p className="max-w-3xl">
-          Cinco etapas específicas desta iniciativa. Membros, contexto de negócio e repositórios
-          vêm da configuração geral do projeto.
+          Seis etapas específicas desta iniciativa. A criação da Story no
+          Businessmap é opcional. Membros, contexto de negócio, repositórios e
+          integrações vêm da configuração geral do projeto.
         </p>
         <p className="text-sm font-bold text-blue mt-3">
           Modo das skills: {getAiMode() === 'http' ? 'servidor' : 'deterministico local'}

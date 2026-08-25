@@ -1,4 +1,5 @@
 import { getRequiredFieldKeys } from '../../shared/frameworks.js';
+import { validateBusinessmapConfig } from '../../shared/businessmap.js';
 import { discoveryFields } from '../state/journeyModel.js';
 
 function blank(value) {
@@ -43,6 +44,13 @@ export function validateStep(stepId, journey) {
       if (!journey.product.repositories?.some((repository) => repository.selected)) {
         errors.repositories = 'Selecione pelo menos um repositório do projeto.';
       }
+      Object.assign(
+        errors,
+        validateBusinessmapConfig({
+          boardUrl: journey.product.businessmapBoardUrl,
+          apiKey: journey.product.businessmapApiKey,
+        }),
+      );
       return { errors, blockers: [] };
     }
 

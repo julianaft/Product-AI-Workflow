@@ -22,6 +22,8 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
 
   assert.equal(merged.product.name, 'GCAM');
   assert.equal(merged.product.directorate, '');
+  assert.equal(merged.product.businessmapBoardUrl, '');
+  assert.equal(merged.product.businessmapApiKey, '');
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
   assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
@@ -97,12 +99,12 @@ test('sugestão da skill não sobrescreve texto escrito pelo PM', () => {
   assert.equal(fields.solutions, 'Sugestao aceita');
 });
 
-test('a navegação da iniciativa vai da primeira etapa até o PRD', () => {
+test('a navegação da iniciativa vai da primeira etapa até o Businessmap', () => {
   let journey = createJourney();
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'nextStep' });
   }
-  assert.equal(journey.activeStep, 6);
+  assert.equal(journey.activeStep, 7);
 
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'previousStep' });
@@ -138,6 +140,38 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
   );
 
   assert.equal(isStepComplete(1, filled), true);
+});
+
+test('configuração parcial do Businessmap bloqueia o setup', () => {
+  const journey = createJourney({
+    projectName: 'Projeto GCAM',
+    name: 'GCAM',
+    businessContextSources: [{ id: 'fonte' }],
+    repositories: [{ id: 1, selected: true }],
+    businessmapBoardUrl:
+      'https://grupoboticario.kanbanize.com/ctrl_board/379',
+  });
+
+  assert.equal(isStepComplete(1, journey), false);
+  assert.equal(
+    validateStep(1, journey).errors.businessmapApiKey,
+    'Informe a chave de API.',
+  );
+});
+
+test('alterar a integração do Businessmap não desatualiza o PRD', () => {
+  const approved = reduce(
+    createJourney(),
+    { type: 'setPrd', document: { title: 'PRD', sections: {} } },
+    { type: 'approvePrd' },
+  );
+  const updated = journeyReducer(approved, {
+    type: 'updateProduct',
+    field: 'businessmapBoardUrl',
+    value: 'https://grupoboticario.kanbanize.com/ctrl_board/379',
+  });
+
+  assert.equal(updated.prd.status, 'approved');
 });
 
 test('workspace separa setup geral das iniciativas', () => {

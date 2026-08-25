@@ -1,12 +1,9 @@
-# PM Builder — do input da iniciativa ao PRD
+# PM Builder — da iniciativa à entrega
 
 Aplicação React para Product Managers, com login Google mockado, configuração
 reutilizável do projeto/time e jornadas independentes por iniciativa. Cada
-iniciativa percorre cinco etapas até um PRD revisado e aprovado. Escrita em
-JavaScript puro, sem TypeScript.
-
-O escopo termina no PRD. O fluxo técnico (design doc, tarefas, pull requests)
-fica fora desta entrega.
+iniciativa percorre seis etapas até um PRD revisado e, opcionalmente, uma Story
+criada no Businessmap. Escrita em JavaScript puro, sem TypeScript.
 
 > Para reconstruir ou dar manutencao no projeto passo a passo, veja
 > [`docs/GUIA_DE_IMPLEMENTACAO.md`](docs/GUIA_DE_IMPLEMENTACAO.md).
@@ -19,17 +16,18 @@ fica fora desta entrega.
 
 ```bash
 npm install
-npm run dev          # interface em http://localhost:5173
+npm run dev          # interface + servidor de integração
 ```
 
 As skills de IA rodam por padrão em modo determinístico dentro do navegador,
 então não é preciso chave de API para percorrer a jornada inteira.
 
-Para usar o servidor de skills:
+`npm run dev` sobe a interface em `http://localhost:5173` e o servidor em
+`http://localhost:8787`. Para subir somente uma das partes:
 
 ```bash
 npm run server       # http://localhost:8787
-VITE_AI_MODE=http npm run dev
+npm run dev:web      # http://localhost:5173
 ```
 
 Outros comandos:
@@ -44,7 +42,8 @@ npm run build        # build de producao
 1. **Login mockado:** o e-mail simula a identidade Google e separa os dados
    locais de cada pessoa.
 2. **Setup do projeto/time:** membros, documentação geral de negócio e
-   repositórios são cadastrados uma vez.
+   repositórios são cadastrados uma vez. Link do board e chave de API do
+   Businessmap são opcionais.
 3. **Iniciativas:** o dashboard permite criar e retomar vários discoveries,
    todos herdando o setup.
 
@@ -55,6 +54,7 @@ npm run build        # build de producao
 | 3 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
 | 4 | Preenchimento do discovery | Rascunho automático a partir da dor e da entrega, revisão e aprovação |
 | 5 | PRD | Documento gerado, revisado por chat, aprovável e exportável em DOC |
+| 6 | Story no Businessmap | Criação opcional de card do tipo Story a partir do PRD aprovado |
 
 Frameworks disponiveis:
 
@@ -105,6 +105,24 @@ O contexto de negócio aceita link do NotebookLM ou arquivo TXT/DOC baseado em t
 O conteúdo do NotebookLM não é lido nativamente; o link identifica a fonte. O
 contexto técnico usa os repositórios GitHub selecionados no setup do projeto.
 Miro e outros materiais continuam entrando apenas como links de referência.
+
+### Businessmap
+
+O setup aceita o link do board corporativo no formato
+`https://grupoboticario.kanbanize.com/ctrl_board/379` e a chave de API. Depois
+da aprovação do PRD, a etapa opcional:
+
+1. consulta a estrutura do board;
+2. encontra o workflow de cards, a primeira lane e a primeira coluna
+   `Requested` disponível;
+3. resolve o tipo `Story` habilitado no board;
+4. cria o card com contexto, história do usuário, requisitos, links, critérios
+   de aceite, dependências/restrições e cenários de teste.
+
+A chave passa pelo servidor Node; ela nunca é enviada diretamente do React para
+o domínio do Businessmap. Neste MVP ela ainda fica no `localStorage` do
+navegador porque o login é mockado. Isso não é adequado para produção: com SSO
+real, a chave deve ficar em um cofre de segredos acessível apenas pelo backend.
 
 ## Tipografia
 
@@ -170,5 +188,5 @@ Antes de ampliar escopo:
 5. Exportacao para DOCX nativo, alem do DOC atual.
 
 Fora deste MVP por dependerem de backend, credenciais e permissões: integração
-nativa com NotebookLM, Miro e BusinessMap, acesso a repositórios privados e
-todo o fluxo técnico posterior ao PRD.
+nativa com NotebookLM e Miro, acesso a repositórios privados, armazenamento
+seguro da chave do Businessmap e o restante do fluxo técnico posterior à Story.

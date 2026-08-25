@@ -1,7 +1,7 @@
 # Jornada do usuário — PM Builder
 
-Persona principal: **Product Manager**. O MVP simula o login Google e termina
-na aprovação/exportação do PRD.
+Persona principal: **Product Manager**. O MVP simula o login Google, gera o PRD
+e permite criar uma Story no Businessmap como etapa final opcional.
 
 ## Visão da plataforma
 
@@ -14,7 +14,10 @@ flowchart LR
   classify --> method[3. Framework]
   method --> discovery[4. Discovery]
   discovery --> prd[5. PRD]
-  prd --> dashboard
+  prd --> businessmap{Criar Story?}
+  businessmap -->|Sim| story[6. Story no Businessmap]
+  businessmap -->|Agora não| dashboard
+  story --> dashboard
   dashboard --> initiative
 ```
 
@@ -33,7 +36,8 @@ Antes da primeira iniciativa, o PM cadastra uma única vez:
 - projeto/espaço do time e produto;
 - PM, PD, TM, TL e time/squad;
 - documentação geral de negócio por arquivo ou link do NotebookLM;
-- repositórios públicos que formam o contexto técnico.
+- repositórios públicos que formam o contexto técnico;
+- opcionalmente, link do board e chave de API do Businessmap.
 
 O setup pode ser editado no dashboard. Alterações passam a valer para todas as
 iniciativas e deixam PRDs derivados como desatualizados.
@@ -54,6 +58,9 @@ o setup geral.
    o PM revisa e aprova.
 5. **PRD:** gera o documento, permite edição e conversa no chat para responder
    perguntas ou pedir novas versões; depois aprova e exporta em DOC/Google Docs.
+6. **Story no Businessmap (opcional):** mostra a prévia no template do time e
+   cria o card sempre com o tipo `Story`, no workflow de cards e na coluna
+   `Requested` do board configurado. O PM também pode pular e voltar depois.
 
 ## Regras transversais
 
@@ -63,3 +70,5 @@ o setup geral.
 - A IA sugere; classificação, discovery e PRD mantêm gates humanos.
 - Lacunas viram perguntas em aberto, não conteúdo inventado.
 - Miro e NotebookLM entram como links; o conteúdo desses links não é lido.
+- A chave do Businessmap fica no `localStorage` somente neste MVP. Em produção,
+  precisa ser migrada para um cofre de segredos no backend.

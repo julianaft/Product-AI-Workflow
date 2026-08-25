@@ -29,6 +29,11 @@ function invalidateDiscoveryApproval(state) {
   return { ...state.discovery, approved: false };
 }
 
+const PRD_IRRELEVANT_PRODUCT_FIELDS = new Set([
+  'businessmapBoardUrl',
+  'businessmapApiKey',
+]);
+
 export function journeyReducer(state, action) {
   switch (action.type) {
     case 'hydrate':
@@ -50,7 +55,9 @@ export function journeyReducer(state, action) {
       return {
         ...state,
         product: { ...state.product, [action.field]: action.value },
-        prd: invalidatePrd(state),
+        prd: PRD_IRRELEVANT_PRODUCT_FIELDS.has(action.field)
+          ? state.prd
+          : invalidatePrd(state),
       };
 
     case 'updateInitiative':
@@ -215,6 +222,12 @@ export function journeyReducer(state, action) {
 
     case 'reopenPrd':
       return { ...state, prd: { ...state.prd, status: 'draft', approvedAt: null } };
+
+    case 'setBusinessmapCard':
+      return {
+        ...state,
+        businessmap: { ...state.businessmap, card: action.card },
+      };
 
     case 'addLink':
       return { ...state, links: [...state.links, action.link] };

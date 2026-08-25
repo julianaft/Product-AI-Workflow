@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Jornada de produto do input da iniciativa ate o PRD aprovado",
   "scripts": {
-    "dev": "vite",
+    "dev": "node server/dev.js",
+    "dev:web": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
