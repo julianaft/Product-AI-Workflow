@@ -12,10 +12,17 @@ const store = new Map();
 let server;
 let App;
 let JourneyProvider;
+let BusinessmapStep;
 
 function render() {
   return renderToString(
     createElement(JourneyProvider, null, createElement(App)),
+  );
+}
+
+function renderInsideJourney(Component) {
+  return renderToString(
+    createElement(JourneyProvider, null, createElement(Component)),
   );
 }
 
@@ -38,6 +45,9 @@ before(async () => {
   ({ default: App } = await server.ssrLoadModule('/src/App.jsx'));
   ({ JourneyProvider } = await server.ssrLoadModule(
     '/src/state/JourneyProvider.jsx',
+  ));
+  ({ BusinessmapStep } = await server.ssrLoadModule(
+    '/src/features/businessmap/BusinessmapStep.jsx',
   ));
 });
 
@@ -74,6 +84,50 @@ test('com setup completo a aplicação renderiza o painel de iniciativas', () =>
   );
 
   assert.match(render(), /Iniciativa A/);
+});
+
+test('etapa final renderiza a prévia da Story configurada', () => {
+  store.set(
+    'pm-builder:workspace:pm%40empresa.com',
+    JSON.stringify({
+      version: 2,
+      setup: {
+        projectName: 'Projeto',
+        name: 'Produto',
+        businessContextSources: [{ id: '1', content: 'contexto' }],
+        repositories: [{ name: 'repo', selected: true }],
+        businessmapBoardUrl:
+          'https://grupoboticario.kanbanize.com/ctrl_board/379',
+        businessmapApiKey: 'chave-local-de-teste',
+      },
+      initiatives: [
+        {
+          id: 'i1',
+          activeStep: 7,
+          maxRevealedStep: 7,
+          initiative: {
+            name: 'Iniciativa A',
+            audience: 'cliente',
+            description: 'concluir a compra',
+            expectedOutcome: 'reduzir abandono',
+          },
+          prd: {
+            status: 'approved',
+            document: {
+              title: 'PRD A',
+              sections: { context: 'Contexto da iniciativa.' },
+            },
+          },
+        },
+      ],
+      activeInitiativeId: 'i1',
+    }),
+  );
+
+  const html = renderInsideJourney(BusinessmapStep);
+  assert.match(html, /Prévia do card/);
+  assert.match(html, /Tipo: Story/);
+  assert.match(html, /Criar Story no Businessmap/);
 });
 
 test('workspace corrompido não derruba a aplicação', () => {
