@@ -22,6 +22,11 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
 
   assert.equal(merged.product.name, 'GCAM');
   assert.equal(merged.product.directorate, '');
+  assert.equal(merged.product.businessmapBoardUrl, '');
+  assert.equal(merged.product.businessmapApiKey, '');
+  assert.equal(merged.businessmap.stale, false);
+  assert.deepEqual(merged.discovery.evidenceSources, []);
+  assert.deepEqual(merged.discovery.evidenceAppliedSourceIds, []);
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
   assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
@@ -97,12 +102,12 @@ test('sugestão da skill não sobrescreve texto escrito pelo PM', () => {
   assert.equal(fields.solutions, 'Sugestao aceita');
 });
 
-test('a navegação da iniciativa vai da primeira etapa até o PRD', () => {
+test('a navegação da iniciativa vai da primeira etapa até o Businessmap', () => {
   let journey = createJourney();
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'nextStep' });
   }
-  assert.equal(journey.activeStep, 6);
+  assert.equal(journey.activeStep, 7);
 
   for (let index = 0; index < 20; index += 1) {
     journey = journeyReducer(journey, { type: 'previousStep' });
@@ -138,6 +143,63 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
   );
 
   assert.equal(isStepComplete(1, filled), true);
+});
+
+test('configuração parcial do Businessmap bloqueia o setup', () => {
+  const journey = createJourney({
+    projectName: 'Projeto GCAM',
+    name: 'GCAM',
+    businessContextSources: [{ id: 'fonte' }],
+    repositories: [{ id: 1, selected: true }],
+    businessmapBoardUrl:
+      'https://grupoboticario.kanbanize.com/ctrl_board/379',
+  });
+
+  assert.equal(isStepComplete(1, journey), false);
+  assert.equal(
+    validateStep(1, journey).errors.businessmapApiKey,
+    'Informe a chave de API.',
+  );
+});
+
+test('alterar a integração do Businessmap não desatualiza o PRD', () => {
+  const approved = reduce(
+    createJourney(),
+    { type: 'setPrd', document: { title: 'PRD', sections: {} } },
+    { type: 'approvePrd' },
+  );
+  const updated = journeyReducer(approved, {
+    type: 'updateProduct',
+    field: 'businessmapBoardUrl',
+    value: 'https://grupoboticario.kanbanize.com/ctrl_board/379',
+  });
+
+  assert.equal(updated.prd.status, 'approved');
+});
+
+test('alterar o PRD marca a Story já criada como desatualizada', () => {
+  const withCard = reduce(
+    createJourney(),
+    {
+      type: 'setPrd',
+      document: { title: 'PRD', sections: { context: 'Contexto original' } },
+    },
+    { type: 'approvePrd' },
+    {
+      type: 'setBusinessmapCard',
+      card: { cardId: 123, title: 'Story original' },
+    },
+  );
+  assert.equal(withCard.businessmap.stale, false);
+
+  const changed = journeyReducer(withCard, {
+    type: 'updatePrdSection',
+    section: 'context',
+    value: 'Contexto revisado',
+  });
+
+  assert.equal(changed.businessmap.card.cardId, 123);
+  assert.equal(changed.businessmap.stale, true);
 });
 
 test('workspace separa setup geral das iniciativas', () => {
@@ -209,4 +271,48 @@ test('o discovery so libera o PRD depois de aprovado', () => {
 
   const approved = journeyReducer(journey, { type: 'approveDiscovery' });
   assert.equal(isStepComplete(5, approved), true);
+});
+
+test('novas evidências exigem atualização do template antes da aprovação', () => {
+  const journey = reduce(
+    createJourney(),
+    { type: 'selectFramework', framework: 'csd' },
+    {
+      type: 'setDiscoveryEvidenceSources',
+      sources: [
+        {
+          id: 'meeting-1',
+          type: 'transcript',
+          title: 'reuniao.vtt',
+          content: 'Registro da reunião',
+        },
+      ],
+    },
+  );
+
+  assert.match(
+    validateStep(5, journey).blockers.join(' '),
+    /Atualize o template/,
+  );
+
+  const refreshed = journeyReducer(journey, {
+    type: 'applyDiscoveryEvidence',
+    framework: 'csd',
+    result: {
+      fields: {
+        certainties: 'Registro incorporado',
+        assumptions: 'Hipótese',
+        doubts: 'Dúvida',
+      },
+      sourceIds: ['meeting-1'],
+      updatedAt: '2026-08-25T00:00:00.000Z',
+    },
+  });
+
+  assert.equal(refreshed.discovery.evidenceAppliedAt, '2026-08-25T00:00:00.000Z');
+  assert.deepEqual(refreshed.discovery.evidenceAppliedSourceIds, ['meeting-1']);
+  assert.doesNotMatch(
+    validateStep(5, refreshed).blockers.join(' '),
+    /Atualize o template/,
+  );
 });

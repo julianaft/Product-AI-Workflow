@@ -1,8 +1,8 @@
-# Guia de implementação — PM Builder (do input da iniciativa ao PRD)
+# Guia de implementação — PM Builder (da iniciativa à entrega)
 
-Documento passo a passo para reconstruir ou dar manutencao no projeto. Descreve a
-ordem de trabalho, o que cada arquivo faz e como validar cada bloco. O escopo
-termina na aprovação do PRD; o fluxo técnico posterior fica fora desta entrega.
+Documento passo a passo para reconstruir ou dar manutenção no projeto. Descreve
+a ordem de trabalho, o que cada arquivo faz e como validar cada bloco. Depois do
+PRD, o MVP oferece a criação opcional de uma Story no Businessmap.
 
 Stack: React 19 + Vite, JavaScript puro (sem TypeScript), Tailwind CSS v4,
 servidor de skills em Node com o modulo `http` nativo e testes com `node:test`.
@@ -40,7 +40,8 @@ Tres camadas, com uma regra de dependencia clara:
   React (src/)                Servidor (server/)
   ├── interface e estado      ├── rotas HTTP das skills
   ├── deriva tudo do estado   ├── prompts das skills
-  └── chama aiClient          └── integração com o provedor de IA
+  └── chama serviços          ├── integração com o provedor de IA
+                              └── proxy seguro para o Businessmap
         │                            │
         └──────────┬─────────────────┘
                    ▼
@@ -48,7 +49,8 @@ Tres camadas, com uma regra de dependencia clara:
            ├── frameworks de discovery
            ├── skills deterministicas
            ├── contratos de saida
-           └── gerador de PRD
+           ├── gerador de PRD
+           └── template da Story
 ```
 
 Princípios que orientam todo o código:
@@ -74,8 +76,8 @@ servidor. Cada bloco abaixo segue essa ordem.
 
 - Node 20 ou superior (o projeto usa `node:test` e `fetch` nativo).
 - npm 10 ou superior.
-- Nenhuma chave de API e necessaria: o fluxo roda inteiro em modo
-  deterministico.
+- Nenhuma chave de API é necessária para discovery e PRD. A criação opcional da
+  Story exige uma chave do Businessmap configurada pelo usuário.
 
 ---
 
@@ -98,7 +100,8 @@ Passos:
    ```json
    {
      "scripts": {
-       "dev": "vite",
+      "dev": "node server/dev.js",
+      "dev:web": "vite",
        "build": "vite build",
        "preview": "vite preview",
        "server": "node server/index.js",
@@ -108,15 +111,16 @@ Passos:
    ```
 
 3. Configure o Vite com os plugins de React e Tailwind e um proxy de `/api` para
-   o servidor de skills (`vite.config.js`). O proxy permite que a interface em
-   `http://localhost:5173` chame `/api/ai/...` sem lidar com CORS.
+   o servidor (`vite.config.js`). O proxy permite que a interface em
+   `http://localhost:5173` chame `/api/ai/...` e `/api/businessmap/...` sem
+   lidar com CORS ou enviar a chave diretamente ao serviço externo.
 
 4. Crie `index.html` com a `div#root` e o `main.jsx` como módulo. Importe os
    pesos da IBM Plex Sans pelo pacote `@fontsource/ibm-plex-sans`; a interface
    não depende de uma fonte remota para renderizar.
 
-**Validação:** `npm run dev` sobe sem erro e serve a página em
-`http://localhost:5173`.
+**Validação:** `npm run dev` sobe sem erro, serve a página em
+`http://localhost:5173` e o backend em `http://localhost:8787`.
 
 ---
 
@@ -360,7 +364,8 @@ montagem das etapas.
 2. **`workspace/ProjectSetupPage.jsx`** — envolve o formulário de contexto com
    Produto, PM,
    PD, TM e TL; fonte de contexto de negócio por NotebookLM ou TXT/DOC; e seleção
-   dos repositórios do projeto. Esse setup é reaproveitado.
+   dos repositórios do projeto. Link e chave do Businessmap são opcionais. Esse
+   setup é reaproveitado.
 3. **`workspace/WorkspaceDashboard.jsx`** — lista somente as iniciativas da
    conta ativa e permite criar ou retomar cada fluxo.
 4. **`initiative/InitiativeStep.jsx`** — nome, descrição, problema, público,
@@ -374,11 +379,17 @@ montagem das etapas.
 7. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
    a partir dos metadados, já traz rascunho baseado no problema, na dor e na
    entrega da iniciativa (sem sobrescrever texto do PM), oferece sugestão por
-   campo e "preencher vazios", roda a revisão e exige aprovação humana.
+   campo e "preencher vazios", aceita documentos/transcrições por iniciativa,
+   atualiza o template com fontes identificadas, roda a revisão e exige
+   aprovação humana. `DiscoveryEvidenceSources.jsx` extrai DOCX com `mammoth` e
+   lê TXT, MD, DOC/HTML, SRT e VTT diretamente no navegador.
 8. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
    perguntas em aberto e referências; abaixo do documento fica o chat de
    revisão (cada mensagem gera uma nova versão), seguido de aprovar/reabrir,
    exportar DOC compatível com Google Docs e copiar o conteúdo formatado.
+9. **`businessmap/BusinessmapStep.jsx`** — etapa opcional marcada como WIP, com
+   logo oficial, que mostra a prévia do template e chama o backend para criar um
+   card sempre do tipo `Story`.
 
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.
@@ -406,7 +417,7 @@ um projeto e crie duas iniciativas sem repetir o setup.
 
 ---
 
-## 13. Bloco 10 — Servidor de skills
+## 13. Bloco 10 — Servidor de skills e integrações
 
 **Objetivo:** um servidor onde ficam credenciais e prompts, sem dependencia
 externa.
@@ -417,7 +428,13 @@ Arquivos em `server/`:
   `recommend-discovery`, `suggest-discovery-field`, `review-discovery`, `generate-prd`,
   `revise-prd`), le o corpo com limite de tamanho, e para cada rota decide entre
   provedor real (se configurado) e fallback deterministico. Valida a saida pelo
-  contrato antes de responder. Erro vira `502` com mensagem, detalhe fica no log.
+  contrato antes de responder. Também expõe `POST /api/businessmap/stories`.
+  Erro vira `502` com mensagem, detalhe fica no log.
+- `businessmap.js` — valida o domínio corporativo para evitar SSRF, consulta a
+  estrutura do board e os tipos disponíveis, encontra o workflow de cards, a
+  primeira lane e uma folha da seção `Requested`, resolve o tipo `Story` e cria
+  o card. A chave fica somente no header `apikey` enviado pelo backend.
+- `dev.js` — sobe servidor e Vite juntos, inclusive no Windows.
 - `provider.js` — unico ponto de contato com o provedor de IA. `runPrompt({
   system, payload })` faz a chamada com timeout via `AbortController`, pede
   `response_format: json_object` e extrai JSON mesmo se vier dentro de bloco de
@@ -453,6 +470,8 @@ Arquivos em `test/`, com `node:test`:
 - `journey.test.js` — troca de framework preservando conteúdo; edição derrubando
   aprovação; PRD marcado como `stale`; sugestão não sobrescrevendo texto do PM;
   limites de navegacao; regras de avanco por etapa.
+- `businessmap.test.js` — valida URL/configuração, template da Story, resolução
+  de workflow/lane/coluna/tipo e contrato HTTP com respostas simuladas.
 
 Rode com:
 
@@ -494,8 +513,10 @@ Com `npm run dev` no ar:
    revisao lista lacunas; aprovar libera o PRD.
 6. **Etapa 6:** gerar, editar uma seção, conversar no chat de revisão até sair uma
    nova versão, aprovar, exportar DOC e copiar para Google Docs.
-7. **Persistencia:** recarregar a pagina mantem tudo.
-8. **Coerencia:** voltar e editar a iniciativa marca o PRD como desatualizado.
+7. **Etapa 7:** conferir a prévia da Story, criar no Businessmap ou pular por
+   agora. Sem configuração, a etapa deve oferecer acesso ao setup do projeto.
+8. **Persistência:** recarregar a página mantém tudo, inclusive o ID da Story.
+9. **Coerência:** voltar e editar a iniciativa marca o PRD como desatualizado.
 
 ---
 
@@ -541,5 +562,5 @@ Depois do MVP funcional:
 5. Exportacao para DOCX nativo, alem do DOC atual.
 
 Fora deste MVP por dependerem de backend, credenciais e permissões: integração
-nativa com NotebookLM, Miro e BusinessMap, leitura automática dos repositórios
-selecionados e todo o fluxo técnico posterior ao PRD.
+nativa com NotebookLM e Miro, leitura automática dos repositórios selecionados,
+cofre de segredos para a chave do Businessmap e o restante do fluxo técnico.

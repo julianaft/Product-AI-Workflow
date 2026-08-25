@@ -1,4 +1,5 @@
 import { BusinessContextSources } from '../../components/BusinessContextSources.jsx';
+import { BusinessmapBrand } from '../../components/BusinessmapBrand.jsx';
 import { TextField } from '../../components/Field.jsx';
 import { GithubRepositorySelector } from '../../components/GithubRepositorySelector.jsx';
 import { StepActions } from '../../components/StepActions.jsx';
@@ -79,6 +80,43 @@ export function ProductContextStep({ onNext }) {
         onRepositoriesChange={update('repositories')}
         error={errors.repositories}
       />
+
+      <section className="border border-line rounded-2xl p-5 mb-6">
+        <BusinessmapBrand />
+        <p className="text-xs font-extrabold uppercase tracking-widest text-blue mt-4 mb-1">
+          Integração opcional em desenvolvimento
+        </p>
+        <h3 className="text-xl font-extrabold mb-2">Criação de Story</h3>
+        <p className="text-sm mb-5">
+          Configure o board uma vez para poder criar uma Story ao final de cada
+          PRD. Se não quiser usar a integração, deixe os dois campos vazios.
+        </p>
+
+        <TextField
+          label="Link do board"
+          hint="Ex.: https://grupoboticario.kanbanize.com/ctrl_board/379"
+          value={journey.product.businessmapBoardUrl}
+          error={errorFor(errors, 'businessmapBoardUrl')}
+          onBlur={markTouched('businessmapBoardUrl')}
+          onChange={update('businessmapBoardUrl')}
+          placeholder="https://grupoboticario.kanbanize.com/ctrl_board/379"
+        />
+        <TextField
+          label="Chave de API"
+          hint="No MVP, a chave fica no armazenamento local deste navegador e é enviada somente ao servidor da aplicação."
+          value={journey.product.businessmapApiKey}
+          error={errorFor(errors, 'businessmapApiKey')}
+          onBlur={markTouched('businessmapApiKey')}
+          onChange={update('businessmapApiKey')}
+          placeholder="Cole a chave de API do Businessmap"
+          type="password"
+          autoComplete="off"
+        />
+        <p className="text-xs border border-orange rounded-xl p-3">
+          Não use esta estratégia em produção. Com SSO real, a chave deve ficar
+          em um cofre de segredos no backend, nunca no navegador.
+        </p>
+      </section>
 
       <StepActions blockers={blockers} onNext={onNext} nextLabel="Salvar configuração do projeto" />
     </>

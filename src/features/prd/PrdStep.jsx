@@ -9,7 +9,7 @@ import { buildPrdPayload } from '../../services/prdPayload.js';
 import { copyPrdForGoogleDocs, downloadPrdDoc } from '../../services/prdExport.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
 
-export function PrdStep() {
+export function PrdStep({ onNext }) {
   const { journey, dispatch } = useJourney();
   const { run, loading, error } = useSkill(generatePrd);
   const {
@@ -175,13 +175,22 @@ export function PrdStep() {
 
           <div className="no-print flex flex-wrap gap-3">
             {approved ? (
-              <button
-                type="button"
-                className={BUTTON.secondary}
-                onClick={() => dispatch({ type: 'reopenPrd' })}
-              >
-                Reabrir para edição
-              </button>
+              <>
+                <button
+                  type="button"
+                  className={BUTTON.secondary}
+                  onClick={() => dispatch({ type: 'reopenPrd' })}
+                >
+                  Reabrir para edição
+                </button>
+                <button
+                  type="button"
+                  className={BUTTON.success}
+                  onClick={onNext}
+                >
+                  Continuar para Businessmap (opcional)
+                </button>
+              </>
             ) : (
               <button
                 type="button"

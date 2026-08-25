@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import {
   classifyInitiative,
   draftDiscoveryFields,
+  refreshDiscoveryWithEvidence,
   recommendDiscovery,
   reviewDiscovery,
 } from '../shared/discoverySkill.js';
@@ -120,6 +121,87 @@ test('rascunho de discovery reusa problema, dor e entrega da iniciativa', () => 
   assert.match(fields.opportunities, /contexto.txt|GCAM/i);
   assert.match(fields.solutions, /Expandir a mecanica/);
   assert.equal(Object.values(fields).includes('[a preencher]'), false);
+});
+
+test('documentos e transcrições atualizam o discovery sem apagar texto do PM', () => {
+  const first = refreshDiscoveryWithEvidence('opportunity-tree', {
+    product,
+    initiative: incrementalInitiative,
+    currentFields: {
+      outcome: 'Outcome escrito manualmente pelo PM.',
+      opportunities: 'Dor já revisada pelo PM.',
+    },
+    evidenceSources: [
+      {
+        id: 'doc-1',
+        type: 'document',
+        title: 'Pesquisa com revendedoras.docx',
+        content: 'Sete revendedoras relataram dificuldade para enxergar a próxima faixa.',
+      },
+      {
+        id: 'meeting-1',
+        type: 'transcript',
+        title: 'Reunião de discovery.vtt',
+        content:
+          '00:00:01.000 --> 00:00:04.000\nA equipe observou abandono antes de concluir o pedido.',
+      },
+    ],
+  });
+
+  assert.equal(first.fields.outcome, 'Outcome escrito manualmente pelo PM.');
+  assert.match(first.fields.opportunities, /Dor já revisada pelo PM/);
+  assert.match(first.fields.opportunities, /Pesquisa com revendedoras\.docx/);
+  assert.match(first.fields.opportunities, /Sete revendedoras/);
+  assert.match(first.fields.opportunities, /A equipe observou abandono/);
+  assert.doesNotMatch(first.fields.opportunities, /00:00:01/);
+  assert.ok(first.fields.solutions);
+  assert.deepEqual(first.sourceIds, ['doc-1', 'meeting-1']);
+
+  const repeated = refreshDiscoveryWithEvidence('opportunity-tree', {
+    product,
+    initiative: incrementalInitiative,
+    currentFields: first.fields,
+    evidenceSources: [
+      {
+        id: 'doc-1',
+        type: 'document',
+        title: 'Pesquisa com revendedoras.docx',
+        content: 'Sete revendedoras relataram dificuldade para enxergar a próxima faixa.',
+      },
+    ],
+  });
+  assert.equal(
+    repeated.fields.opportunities.match(
+      /Evidências incorporadas automaticamente/g,
+    ).length,
+    1,
+  );
+});
+
+test('transcrição entra como suposição na CSD, não como certeza automática', () => {
+  const result = refreshDiscoveryWithEvidence('csd', {
+    initiative: incrementalInitiative,
+    currentFields: {
+      certainties: 'Dado validado anteriormente pelo PM.',
+      assumptions: 'Hipótese existente.',
+      doubts: 'Pergunta existente.',
+    },
+    evidenceSources: [
+      {
+        id: 'meeting-1',
+        type: 'transcript',
+        title: 'Reunião com stakeholders.vtt',
+        content: 'A equipe acredita que a nova faixa aumentará conversão.',
+      },
+    ],
+  });
+
+  assert.equal(
+    result.fields.certainties,
+    'Dado validado anteriormente pelo PM.',
+  );
+  assert.match(result.fields.assumptions, /Reunião com stakeholders/);
+  assert.equal(result.evidenceField, 'assumptions');
 });
 
 test('revisao aponta campo obrigatorio vazio e bloqueia o PRD', () => {

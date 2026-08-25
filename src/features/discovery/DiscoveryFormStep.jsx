@@ -2,13 +2,18 @@ import { useCallback, useEffect } from 'react';
 import { draftDiscoveryFields } from '../../../shared/discoverySkill.js';
 import { getFramework } from '../../../shared/frameworks.js';
 import { TextAreaField } from '../../components/Field.jsx';
+import { DiscoveryEvidenceSources } from '../../components/DiscoveryEvidenceSources.jsx';
 import { LinkAttachments } from '../../components/LinkAttachments.jsx';
 import { HumanGate, SkillPanel } from '../../components/SkillPanel.jsx';
 import { StepActions } from '../../components/StepActions.jsx';
 import { BUTTON } from '../../components/ui.js';
 import { useSkill } from '../../hooks/useSkill.js';
 import { useTouched } from '../../hooks/useTouched.js';
-import { reviewDiscovery, suggestDiscoveryField } from '../../services/aiClient.js';
+import {
+  refreshDiscoveryWithEvidence,
+  reviewDiscovery,
+  suggestDiscoveryField,
+} from '../../services/aiClient.js';
 import { validateStep } from '../../services/validation.js';
 import { discoveryFields } from '../../state/journeyModel.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
@@ -18,6 +23,7 @@ export function DiscoveryFormStep({ onNext }) {
   const { markTouched, errorFor } = useTouched();
   const review = useSkill(reviewDiscovery);
   const suggest = useSkill(suggestDiscoveryField);
+  const refresh = useSkill(refreshDiscoveryWithEvidence);
 
   const framework = getFramework(journey.discovery.framework);
   const fields = discoveryFields(journey);
@@ -53,12 +59,38 @@ export function DiscoveryFormStep({ onNext }) {
       frameworkId: journey.discovery.framework,
       fields,
       initiative: journey.initiative,
+      evidenceSources: journey.discovery.evidenceSources,
     });
 
     if (result) {
       dispatch({ type: 'setDiscoveryReview', review: result });
     }
-  }, [dispatch, fields, journey.discovery.framework, journey.initiative, review]);
+  }, [
+    dispatch,
+    fields,
+    journey.discovery.evidenceSources,
+    journey.discovery.framework,
+    journey.initiative,
+    review,
+  ]);
+
+  const refreshFromEvidence = useCallback(async () => {
+    const result = await refresh.run({
+      frameworkId: journey.discovery.framework,
+      product: journey.product,
+      initiative: journey.initiative,
+      evidenceSources: journey.discovery.evidenceSources,
+      currentFields: fields,
+    });
+
+    if (result) {
+      dispatch({
+        type: 'applyDiscoveryEvidence',
+        framework: journey.discovery.framework,
+        result,
+      });
+    }
+  }, [dispatch, fields, journey, refresh]);
 
   async function suggestField(fieldKey) {
     const result = await suggest.run({
@@ -110,6 +142,53 @@ export function DiscoveryFormStep({ onNext }) {
         etapas anteriores. A skill não inventa evidência: o que faltar aparece como ponto a
         validar. Edite o que não bater e use o botão por campo para regenerar só aquele trecho.
       </p>
+
+      <DiscoveryEvidenceSources
+        sources={journey.discovery.evidenceSources}
+        onChange={(sources) =>
+          dispatch({ type: 'setDiscoveryEvidenceSources', sources })
+        }
+      />
+
+      <div className="border border-sky rounded-2xl p-5 mb-6">
+        <h3 className="font-extrabold mb-1">
+          Atualizar o template com as novas informações
+        </h3>
+        <p className="text-sm mb-4">
+          A atualização preenche campos vazios e incorpora os registros no campo
+          de evidências do framework. O conteúdo escrito pelo PM é preservado.
+        </p>
+        <button
+          type="button"
+          className={BUTTON.primary}
+          disabled={
+            refresh.loading || journey.discovery.evidenceSources.length === 0
+          }
+          onClick={refreshFromEvidence}
+        >
+          {refresh.loading
+            ? 'Atualizando discovery...'
+            : 'Atualizar template de discovery'}
+        </button>
+        {journey.discovery.evidenceAppliedAt ? (
+          <p className="text-sm font-semibold text-blue mt-3">
+            Evidências incorporadas em{' '}
+            {new Date(journey.discovery.evidenceAppliedAt).toLocaleString(
+              'pt-BR',
+            )}
+            .
+          </p>
+        ) : journey.discovery.evidenceSources.length ? (
+          <p className="text-sm font-semibold text-orange mt-3">
+            Há novas evidências aguardando atualização do template.
+          </p>
+        ) : null}
+        {refresh.error ? (
+          <p role="alert" className="text-sm font-semibold text-ember mt-3">
+            {refresh.error}
+          </p>
+        ) : null}
+      </div>
 
       {framework.fields.map((field) => (
         <div key={field.key} className="relative">

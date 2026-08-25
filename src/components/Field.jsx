@@ -19,14 +19,26 @@ function Wrapper({ id, label, hint, error, required, children }) {
   );
 }
 
-export function TextField({ label, hint, error, required, value, onChange, onBlur, placeholder }) {
+export function TextField({
+  label,
+  hint,
+  error,
+  required,
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  type = 'text',
+  autoComplete,
+}) {
   const id = useId();
 
   return (
     <Wrapper id={id} label={label} hint={hint} error={error} required={required}>
       <input
         id={id}
-        type="text"
+        type={type}
+        autoComplete={autoComplete}
         className={classNames(INPUT, error && 'border-ember')}
         value={value ?? ''}
         placeholder={placeholder}

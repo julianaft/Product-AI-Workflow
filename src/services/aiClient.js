@@ -1,6 +1,7 @@
 import {
   classifyInitiative as mockClassify,
   recommendDiscovery as mockRecommend,
+  refreshDiscoveryWithEvidence as mockRefreshDiscovery,
   reviewDiscovery as mockReview,
   suggestDiscoveryField as mockSuggestField,
 } from '../../shared/discoverySkill.js';
@@ -9,6 +10,7 @@ import { revisePrd as mockRevisePrd } from '../../shared/prdRevision.js';
 import {
   assertClassification,
   assertDiscoveryRecommendation,
+  assertDiscoveryRefresh,
   assertDiscoveryReview,
   assertPrd,
   assertPrdRevision,
@@ -88,6 +90,16 @@ export function reviewDiscovery(payload) {
     payload,
     mock: mockReview,
     assert: assertDiscoveryReview,
+  });
+}
+
+export function refreshDiscoveryWithEvidence(payload) {
+  return callSkill({
+    endpoint: 'refresh-discovery-evidence',
+    payload,
+    mock: ({ frameworkId, ...context }) =>
+      mockRefreshDiscovery(frameworkId, context),
+    assert: assertDiscoveryRefresh,
   });
 }
 

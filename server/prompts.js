@@ -83,11 +83,18 @@ suggest-discovery-field:
 review-discovery:
 {"readyForPrd":false,"completeness":0.0,"gaps":[""],"contradictions":[""],"questions":[""]}
 
+refresh-discovery-evidence:
+{"fields":{},"evidenceField":"","updatedFields":[""],"sourceIds":[""],"updatedAt":""}
+
 Em suggestedFields, use somente as chaves do framework recomendado.
 Preencha cada campo com rascunho baseado no problema (dor), na entrega
 (description) e no resultado esperado já presentes no payload. Não invente
 métrica, evidência ou sistema. O que faltar vira uma linha "A validar: ...".
 Não deixe o campo vazio se houver insumo correspondente no payload.
+Ao atualizar com evidências, preserve o texto existente em currentFields e use
+somente o conteúdo de evidenceSources. Registre documentos e transcrições no
+campo do framework mais orientado a evidências; não trate fala de reunião como
+fato comprovado sem indicação explícita.
 `;
 
 export const PRD_PROMPT = `

@@ -48,6 +48,15 @@ export const STEPS = [
     description: 'Documento gerado, revisado no chat e aprovado pelo PM.',
     accent: 'blue',
   },
+  {
+    id: 7,
+    key: 'businessmap',
+    phase: 'Entrega',
+    title: 'Story no Businessmap (WIP)',
+    description:
+      'Etapa opcional para criar um card do tipo Story a partir do PRD aprovado.',
+    accent: 'green',
+  },
 ];
 
 export const TOTAL_STEPS = STEPS.length;

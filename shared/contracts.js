@@ -63,6 +63,15 @@ export function assertDiscoveryReview(value) {
   return value;
 }
 
+export function assertDiscoveryRefresh(value) {
+  requireObject(value, 'atualização do discovery');
+  requireObject(value.fields, 'atualização.fields');
+  requireString(value.evidenceField, 'atualização.evidenceField');
+  requireArray(value.updatedFields ?? [], 'atualização.updatedFields');
+  requireArray(value.sourceIds ?? [], 'atualização.sourceIds');
+  return value;
+}
+
 export function assertPrd(value) {
   requireObject(value, 'PRD');
   requireString(value.title, 'PRD.title');

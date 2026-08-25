@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import {
   classifyInitiative,
   recommendDiscovery,
+  refreshDiscoveryWithEvidence,
   reviewDiscovery,
   suggestDiscoveryField,
 } from '../shared/discoverySkill.js';
@@ -10,12 +11,14 @@ import { revisePrd } from '../shared/prdRevision.js';
 import {
   assertClassification,
   assertDiscoveryRecommendation,
+  assertDiscoveryRefresh,
   assertDiscoveryReview,
   assertPrd,
   assertPrdRevision,
 } from '../shared/contracts.js';
 import { isProviderConfigured, runPrompt } from './provider.js';
 import { DISCOVERY_PROMPT, PRD_PROMPT, PRD_REVISION_PROMPT } from './prompts.js';
+import { createBusinessmapStory } from './businessmap.js';
 
 const PORT = Number(process.env.PORT ?? 8787);
 const MAX_BODY_BYTES = 512 * 1024;
@@ -47,6 +50,12 @@ const ROUTES = {
     prompt: () => DISCOVERY_PROMPT,
     fallback: reviewDiscovery,
     assert: assertDiscoveryReview,
+  },
+  'refresh-discovery-evidence': {
+    prompt: () => DISCOVERY_PROMPT,
+    fallback: ({ frameworkId, ...context }) =>
+      refreshDiscoveryWithEvidence(frameworkId, context),
+    assert: assertDiscoveryRefresh,
   },
   'generate-prd': {
     prompt: () => PRD_PROMPT,
@@ -111,6 +120,20 @@ async function handleSkill(route, payload) {
 }
 
 const server = createServer(async (request, response) => {
+  if (request.method === 'POST' && request.url === '/api/businessmap/stories') {
+    try {
+      const payload = await readBody(request);
+      const result = await createBusinessmapStory(payload);
+      sendJson(response, 200, result);
+    } catch (error) {
+      console.error('[businessmap:create-story]', error);
+      sendJson(response, 502, {
+        error: error.message ?? 'Falha ao criar a Story no Businessmap.',
+      });
+    }
+    return;
+  }
+
   if (request.method !== 'POST' || !request.url?.startsWith('/api/ai/')) {
     sendJson(response, 404, { error: 'Rota não encontrada.' });
     return;
@@ -138,4 +161,5 @@ const server = createServer(async (request, response) => {
 server.listen(PORT, () => {
   const mode = isProviderConfigured() ? 'provedor de IA' : 'fallback deterministico';
   console.log(`Skills disponiveis em http://localhost:${PORT}/api/ai (${mode})`);
+  console.log(`Businessmap disponivel em http://localhost:${PORT}/api/businessmap/stories`);
 });

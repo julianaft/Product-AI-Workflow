@@ -17,6 +17,8 @@ export function createProductSetup(overrides = {}) {
     businessContextSources: [],
     githubOwner: '',
     repositories: [],
+    businessmapBoardUrl: '',
+    businessmapApiKey: '',
     ...overrides,
   };
 }
@@ -58,6 +60,9 @@ export function createJourney(product = {}) {
       fieldsByFramework: {},
       review: null,
       approved: false,
+      evidenceSources: [],
+      evidenceAppliedSourceIds: [],
+      evidenceAppliedAt: null,
     },
 
     prd: {
@@ -66,6 +71,11 @@ export function createJourney(product = {}) {
       approvedAt: null,
       chat: [],
       answers: [],
+    },
+
+    businessmap: {
+      card: null,
+      stale: false,
     },
 
     links: [],
@@ -114,12 +124,27 @@ export function mergeJourney(stored) {
     },
     initiative: { ...base.initiative, ...(stored.initiative ?? {}) },
     classification: { ...base.classification, ...(stored.classification ?? {}) },
-    discovery: { ...base.discovery, ...(stored.discovery ?? {}) },
+    discovery: {
+      ...base.discovery,
+      ...(stored.discovery ?? {}),
+      evidenceSources: Array.isArray(stored.discovery?.evidenceSources)
+        ? stored.discovery.evidenceSources
+        : [],
+      evidenceAppliedSourceIds: Array.isArray(
+        stored.discovery?.evidenceAppliedSourceIds,
+      )
+        ? stored.discovery.evidenceAppliedSourceIds
+        : [],
+    },
     prd: {
       ...base.prd,
       ...(stored.prd ?? {}),
       chat: Array.isArray(stored.prd?.chat) ? stored.prd.chat : [],
       answers: Array.isArray(stored.prd?.answers) ? stored.prd.answers : [],
+    },
+    businessmap: {
+      ...base.businessmap,
+      ...(stored.businessmap ?? {}),
     },
     links: Array.isArray(stored.links) ? stored.links : [],
   };
