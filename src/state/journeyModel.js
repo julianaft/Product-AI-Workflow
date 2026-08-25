@@ -24,12 +24,15 @@ export function createProductSetup(overrides = {}) {
 }
 
 export function createJourney(product = {}) {
+  const createdAt = new Date().toISOString();
   return {
     id:
       typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : String(Date.now()),
     version: 1,
+    createdAt,
+    updatedAt: createdAt,
     activeStep: 2,
     maxRevealedStep: 2,
 

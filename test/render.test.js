@@ -55,9 +55,11 @@ after(async () => {
   await server?.close();
 });
 
-test('sem sessão a aplicação renderiza o login mockado', () => {
+test('sem sessão a aplicação renderiza o login Google', () => {
   store.clear();
-  assert.match(render(), /Continuar com Google/);
+  const html = render();
+  assert.match(html, /Continuar com Google/);
+  assert.doesNotMatch(html, /mockado|simular/i);
 });
 
 test('com setup completo a aplicação renderiza o painel de iniciativas', () => {
@@ -77,13 +79,33 @@ test('com setup completo a aplicação renderiza o painel de iniciativas', () =>
         repositories: [{ name: 'repo', selected: true }],
       },
       initiatives: [
-        { id: 'i1', activeStep: 2, initiative: { name: 'Iniciativa A' } },
+        {
+          id: 'i1',
+          createdAt: '2026-08-25T11:00:00.000Z',
+          updatedAt: '2026-08-25T11:00:00.000Z',
+          activeStep: 2,
+          initiative: { name: 'Iniciativa A' },
+        },
+        {
+          id: 'i2',
+          createdAt: '2026-08-25T12:00:00.000Z',
+          updatedAt: '2026-08-25T12:00:00.000Z',
+          initiative: { name: 'Iniciativa finalizada' },
+          prd: { document: { title: 'PRD A' } },
+        },
       ],
       activeInitiativeId: 'i1',
     }),
   );
 
-  assert.match(render(), /Iniciativa A/);
+  const html = render();
+  assert.match(html, /Iniciativa A/);
+  assert.match(html, /Iniciativa finalizada/);
+  assert.match(html, /Finalizada/);
+  assert.match(html, /Descartar/);
+  assert.ok(
+    html.indexOf('Iniciativa finalizada') < html.indexOf('Iniciativa A'),
+  );
 });
 
 test('etapa final renderiza a prévia da Story configurada', () => {

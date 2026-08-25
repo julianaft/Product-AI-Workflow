@@ -112,7 +112,11 @@ export function JourneyProvider({ children }) {
             { ...initiative, product: current.workspace.setup },
             action,
           );
-          return { ...updated, product: setup };
+          return {
+            ...updated,
+            product: setup,
+            updatedAt: new Date().toISOString(),
+          };
         });
         return {
           ...current,
@@ -138,6 +142,7 @@ export function JourneyProvider({ children }) {
       initiatives[index] = {
         ...journeyReducer(source, action),
         product: current.workspace.setup,
+        updatedAt: new Date().toISOString(),
       };
 
       return {
@@ -195,6 +200,27 @@ export function JourneyProvider({ children }) {
     }));
   }, []);
 
+  const discardInitiative = useCallback((initiativeId) => {
+    setPlatform((current) => {
+      if (!current.workspace) return current;
+      const initiatives = current.workspace.initiatives.filter(
+        (initiative) => initiative.id !== initiativeId,
+      );
+      return {
+        ...current,
+        workspace: {
+          ...current.workspace,
+          initiatives,
+          activeInitiativeId:
+            current.workspace.activeInitiativeId === initiativeId
+              ? null
+              : current.workspace.activeInitiativeId,
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
+  }, []);
+
   const goDashboard = useCallback(() => {
     setPlatform((current) => ({ ...current, view: 'dashboard' }));
   }, []);
@@ -216,6 +242,7 @@ export function JourneyProvider({ children }) {
       editSetup,
       createInitiative,
       openInitiative,
+      discardInitiative,
       goDashboard,
       setupComplete: setupIsComplete(platform.workspace?.setup),
     }),
@@ -229,6 +256,7 @@ export function JourneyProvider({ children }) {
       editSetup,
       createInitiative,
       openInitiative,
+      discardInitiative,
       goDashboard,
     ],
   );

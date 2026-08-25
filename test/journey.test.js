@@ -5,6 +5,10 @@ import { createJourney, discoveryFields, mergeJourney } from '../src/state/journ
 import { journeyReducer } from '../src/state/journeyReducer.js';
 import { isStepComplete, validateStep } from '../src/services/validation.js';
 import {
+  initiativeStatus,
+  newestFirst,
+} from '../src/services/initiativeStatus.js';
+import {
   activeJourney,
   createWorkspace,
   setupIsComplete,
@@ -30,6 +34,42 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
   assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
+});
+
+test('nova iniciativa registra datas para a ordenação do painel', () => {
+  const journey = createJourney();
+  assert.ok(Date.parse(journey.createdAt));
+  assert.equal(journey.createdAt, journey.updatedAt);
+});
+
+test('painel ordena por atividade recente e usa status semântico', () => {
+  const finalizada = {
+    id: 'finalizada',
+    updatedAt: '2026-08-25T12:00:00.000Z',
+    prd: { document: { title: 'PRD gerado' } },
+  };
+  const revisao = {
+    id: 'revisao',
+    updatedAt: '2026-08-25T11:00:00.000Z',
+    discovery: { review: { gaps: [] } },
+  };
+  const discovery = {
+    id: 'discovery',
+    updatedAt: '2026-08-25T10:00:00.000Z',
+    discovery: { framework: 'csd' },
+  };
+
+  assert.deepEqual(
+    newestFirst([discovery, revisao, finalizada]).map(({ id }) => id),
+    ['finalizada', 'revisao', 'discovery'],
+  );
+  assert.equal(initiativeStatus(finalizada).label, 'Finalizada');
+  assert.equal(initiativeStatus(revisao).label, 'Em revisão');
+  assert.equal(initiativeStatus(discovery).label, 'Em discovery');
+  assert.equal(
+    initiativeStatus({ discovery: { approved: true } }).label,
+    'Em PRD',
+  );
 });
 
 
