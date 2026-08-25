@@ -60,8 +60,7 @@ export function mergeWorkspace(stored, profile) {
 
 export function setupIsComplete(setup = {}) {
   return Boolean(
-    String(setup.projectName ?? '').trim() &&
-      String(setup.name ?? '').trim() &&
+    String(setup.name ?? '').trim() &&
       setup.businessContextSources?.length &&
       setup.repositories?.some((repository) => repository.selected),
   );

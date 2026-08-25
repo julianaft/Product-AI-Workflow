@@ -22,15 +22,6 @@ export function ProductContextStep({ onNext }) {
     <>
       <div className="grid gap-x-6 md:grid-cols-2">
         <TextField
-          label="Projeto / espaço do time"
-          required
-          value={journey.product.projectName}
-          error={errorFor(errors, 'projectName')}
-          onBlur={markTouched('projectName')}
-          onChange={update('projectName')}
-          placeholder="Ex.: Growth B2B"
-        />
-        <TextField
           label="Produto"
           required
           value={journey.product.name}
@@ -83,10 +74,7 @@ export function ProductContextStep({ onNext }) {
 
       <section className="border border-line rounded-2xl p-5 mb-6">
         <BusinessmapBrand />
-        <p className="text-xs font-extrabold uppercase tracking-widest text-blue mt-4 mb-1">
-          Integração opcional em desenvolvimento
-        </p>
-        <h3 className="text-xl font-extrabold mb-2">Criação de Story</h3>
+        <h3 className="text-xl font-extrabold mt-4 mb-2">Criação de Story</h3>
         <p className="text-sm mb-5">
           Configure o board uma vez para poder criar uma Story ao final de cada
           PRD. Se não quiser usar a integração, deixe os dois campos vazios.
@@ -112,10 +100,6 @@ export function ProductContextStep({ onNext }) {
           type="password"
           autoComplete="off"
         />
-        <p className="text-xs border border-orange rounded-xl p-3">
-          A chave deve ficar em um cofre de segredos no backend, nunca exposta
-          no navegador.
-        </p>
       </section>
 
       <StepActions blockers={blockers} onNext={onNext} nextLabel="Salvar configuração do projeto" />

@@ -100,7 +100,7 @@ export default function App() {
 
       <div className="max-w-5xl mx-auto mb-10">
         <span className="inline-block bg-blue text-white text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-          {workspace.setup.projectName}
+          {workspace.setup.name || workspace.setup.projectName}
         </span>
         <h1 className="text-3xl md:text-5xl font-extrabold mb-3">
           Da iniciativa à entrega
