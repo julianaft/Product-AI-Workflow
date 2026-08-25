@@ -1,4 +1,5 @@
 import { BusinessContextSources } from '../../components/BusinessContextSources.jsx';
+import { BusinessmapBrand } from '../../components/BusinessmapBrand.jsx';
 import { TextField } from '../../components/Field.jsx';
 import { GithubRepositorySelector } from '../../components/GithubRepositorySelector.jsx';
 import { StepActions } from '../../components/StepActions.jsx';
@@ -81,10 +82,11 @@ export function ProductContextStep({ onNext }) {
       />
 
       <section className="border border-line rounded-2xl p-5 mb-6">
-        <p className="text-xs font-extrabold uppercase tracking-widest text-blue mb-1">
-          Integração opcional
+        <BusinessmapBrand />
+        <p className="text-xs font-extrabold uppercase tracking-widest text-blue mt-4 mb-1">
+          Integração opcional em desenvolvimento
         </p>
-        <h3 className="text-xl font-extrabold mb-2">Businessmap (Kanbanize)</h3>
+        <h3 className="text-xl font-extrabold mb-2">Criação de Story</h3>
         <p className="text-sm mb-5">
           Configure o board uma vez para poder criar uma Story ao final de cada
           PRD. Se não quiser usar a integração, deixe os dois campos vazios.

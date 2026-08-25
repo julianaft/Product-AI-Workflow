@@ -25,6 +25,8 @@ test('jornada antiga no storage ganha os campos novos do modelo de PRD', () => {
   assert.equal(merged.product.businessmapBoardUrl, '');
   assert.equal(merged.product.businessmapApiKey, '');
   assert.equal(merged.businessmap.stale, false);
+  assert.deepEqual(merged.discovery.evidenceSources, []);
+  assert.deepEqual(merged.discovery.evidenceAppliedSourceIds, []);
   assert.equal(merged.initiative.okrCode, '');
   assert.equal(merged.initiative.stakeholders, '');
   assert.equal(merged.product.businessContextSources[0].content, 'Contexto anterior.');
@@ -269,4 +271,48 @@ test('o discovery so libera o PRD depois de aprovado', () => {
 
   const approved = journeyReducer(journey, { type: 'approveDiscovery' });
   assert.equal(isStepComplete(5, approved), true);
+});
+
+test('novas evidências exigem atualização do template antes da aprovação', () => {
+  const journey = reduce(
+    createJourney(),
+    { type: 'selectFramework', framework: 'csd' },
+    {
+      type: 'setDiscoveryEvidenceSources',
+      sources: [
+        {
+          id: 'meeting-1',
+          type: 'transcript',
+          title: 'reuniao.vtt',
+          content: 'Registro da reunião',
+        },
+      ],
+    },
+  );
+
+  assert.match(
+    validateStep(5, journey).blockers.join(' '),
+    /Atualize o template/,
+  );
+
+  const refreshed = journeyReducer(journey, {
+    type: 'applyDiscoveryEvidence',
+    framework: 'csd',
+    result: {
+      fields: {
+        certainties: 'Registro incorporado',
+        assumptions: 'Hipótese',
+        doubts: 'Dúvida',
+      },
+      sourceIds: ['meeting-1'],
+      updatedAt: '2026-08-25T00:00:00.000Z',
+    },
+  });
+
+  assert.equal(refreshed.discovery.evidenceAppliedAt, '2026-08-25T00:00:00.000Z');
+  assert.deepEqual(refreshed.discovery.evidenceAppliedSourceIds, ['meeting-1']);
+  assert.doesNotMatch(
+    validateStep(5, refreshed).blockers.join(' '),
+    /Atualize o template/,
+  );
 });

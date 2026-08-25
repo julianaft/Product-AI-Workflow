@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import {
   classifyInitiative,
   recommendDiscovery,
+  refreshDiscoveryWithEvidence,
   reviewDiscovery,
   suggestDiscoveryField,
 } from '../shared/discoverySkill.js';
@@ -10,6 +11,7 @@ import { revisePrd } from '../shared/prdRevision.js';
 import {
   assertClassification,
   assertDiscoveryRecommendation,
+  assertDiscoveryRefresh,
   assertDiscoveryReview,
   assertPrd,
   assertPrdRevision,
@@ -48,6 +50,12 @@ const ROUTES = {
     prompt: () => DISCOVERY_PROMPT,
     fallback: reviewDiscovery,
     assert: assertDiscoveryReview,
+  },
+  'refresh-discovery-evidence': {
+    prompt: () => DISCOVERY_PROMPT,
+    fallback: ({ frameworkId, ...context }) =>
+      refreshDiscoveryWithEvidence(frameworkId, context),
+    assert: assertDiscoveryRefresh,
   },
   'generate-prd': {
     prompt: () => PRD_PROMPT,

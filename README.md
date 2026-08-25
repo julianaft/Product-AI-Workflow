@@ -52,9 +52,9 @@ npm run build        # build de producao
 | 1 | Iniciativa | Descrição, problema, público, resultado esperado e restrições |
 | 2 | Classificação | A skill sugere incremental ou novo fluxo; o PM confirma |
 | 3 | Ferramenta de discovery | A skill recomenda um dos onze frameworks e justifica |
-| 4 | Preenchimento do discovery | Rascunho automático a partir da dor e da entrega, revisão e aprovação |
+| 4 | Preenchimento do discovery | Rascunho automático, documentos/transcrições da iniciativa, atualização com evidências, revisão e aprovação |
 | 5 | PRD | Documento gerado, revisado por chat, aprovável e exportável em DOC |
-| 6 | Story no Businessmap | Criação opcional de card do tipo Story a partir do PRD aprovado |
+| 6 | Story no Businessmap (WIP) | Criação opcional de card do tipo Story a partir do PRD aprovado |
 
 Frameworks disponiveis:
 
@@ -79,7 +79,8 @@ Veja a orientacao de uso em
 Duas skills, ambas atras do mesmo adaptador (`src/services/aiClient.js`):
 
 - **Discovery** (`shared/discoverySkill.js`): classifica a iniciativa, recomenda
-  framework, rascunha os campos com base no problema/dor/entrega e revisa o preenchimento.
+  framework, rascunha os campos com base no problema/dor/entrega, incorpora
+  documentos e transcrições sem apagar o texto do PM e revisa o preenchimento.
 - **PRD** (`shared/prdSkill.js` e `shared/prdRevision.js`): monta o documento e
   gera novas versões a partir do chat (respostas e pedidos de mudança).
 
@@ -108,6 +109,10 @@ Miro e outros materiais continuam entrando apenas como links de referência.
 
 ### Businessmap
 
+Toda a integração aparece com o selo **WIP**. A interface usa, sem alterações, o
+logo oficial servido publicamente por Businessmap e versionado em
+`src/assets/businessmap.svg`.
+
 O setup aceita o link do board corporativo no formato
 `https://grupoboticario.kanbanize.com/ctrl_board/379` e a chave de API. Depois
 da aprovação do PRD, a etapa opcional:
@@ -127,6 +132,19 @@ A chave passa pelo servidor Node; ela nunca é enviada diretamente do React para
 o domínio do Businessmap. Neste MVP ela ainda fica no `localStorage` do
 navegador porque o login é mockado. Isso não é adequado para produção: com SSO
 real, a chave deve ficar em um cofre de segredos acessível apenas pelo backend.
+
+### Evidências do discovery
+
+Cada iniciativa aceita documentos TXT, MD, DOC, DOCX e HTML e transcrições TXT,
+SRT e VTT. O botão **Atualizar template de discovery**:
+
+- preserva todo texto já escrito pelo PM;
+- preenche campos vazios com o rascunho da skill;
+- incorpora trechos com identificação da fonte no campo mais orientado a
+  evidências do framework;
+- remove timestamps de SRT/VTT do trecho incorporado;
+- derruba a aprovação anterior e marca PRD/Story como desatualizados quando
+  aplicável.
 
 ## Tipografia
 

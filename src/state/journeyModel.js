@@ -60,6 +60,9 @@ export function createJourney(product = {}) {
       fieldsByFramework: {},
       review: null,
       approved: false,
+      evidenceSources: [],
+      evidenceAppliedSourceIds: [],
+      evidenceAppliedAt: null,
     },
 
     prd: {
@@ -121,7 +124,18 @@ export function mergeJourney(stored) {
     },
     initiative: { ...base.initiative, ...(stored.initiative ?? {}) },
     classification: { ...base.classification, ...(stored.classification ?? {}) },
-    discovery: { ...base.discovery, ...(stored.discovery ?? {}) },
+    discovery: {
+      ...base.discovery,
+      ...(stored.discovery ?? {}),
+      evidenceSources: Array.isArray(stored.discovery?.evidenceSources)
+        ? stored.discovery.evidenceSources
+        : [],
+      evidenceAppliedSourceIds: Array.isArray(
+        stored.discovery?.evidenceAppliedSourceIds,
+      )
+        ? stored.discovery.evidenceAppliedSourceIds
+        : [],
+    },
     prd: {
       ...base.prd,
       ...(stored.prd ?? {}),

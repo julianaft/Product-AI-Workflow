@@ -171,6 +171,40 @@ export function journeyReducer(state, action) {
       };
     }
 
+    case 'setDiscoveryEvidenceSources':
+      return {
+        ...state,
+        discovery: {
+          ...invalidateDiscoveryApproval(state),
+          evidenceSources: Array.isArray(action.sources) ? action.sources : [],
+          evidenceAppliedSourceIds: [],
+          evidenceAppliedAt: null,
+          review: null,
+        },
+        prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
+      };
+
+    case 'applyDiscoveryEvidence': {
+      const framework = action.framework ?? state.discovery.framework;
+      if (!framework || !action.result?.fields) return state;
+      return {
+        ...state,
+        discovery: {
+          ...invalidateDiscoveryApproval(state),
+          fieldsByFramework: {
+            ...state.discovery.fieldsByFramework,
+            [framework]: action.result.fields,
+          },
+          evidenceAppliedSourceIds: action.result.sourceIds ?? [],
+          evidenceAppliedAt: action.result.updatedAt ?? new Date().toISOString(),
+          review: null,
+        },
+        prd: invalidatePrd(state),
+        businessmap: invalidateBusinessmap(state),
+      };
+    }
+
     case 'setDiscoveryReview':
       return { ...state, discovery: { ...state.discovery, review: action.review } };
 

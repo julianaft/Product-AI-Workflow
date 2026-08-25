@@ -128,6 +128,8 @@ test('etapa final renderiza a prévia da Story configurada', () => {
   assert.match(html, /Prévia do card/);
   assert.match(html, /Tipo: Story/);
   assert.match(html, /Criar Story no Businessmap/);
+  assert.match(html, /alt="Businessmap"/);
+  assert.match(html, />WIP</);
 });
 
 test('workspace corrompido não derruba a aplicação', () => {

@@ -89,6 +89,14 @@ export function validateStep(stepId, journey) {
       }
 
       const blockers = [];
+      if (
+        journey.discovery.evidenceSources?.length &&
+        !journey.discovery.evidenceAppliedAt
+      ) {
+        blockers.push(
+          'Atualize o template com os documentos e transcrições adicionados.',
+        );
+      }
       if (!journey.discovery.approved) {
         blockers.push('Aprove o discovery para liberar a geração do PRD.');
       }

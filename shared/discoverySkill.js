@@ -746,6 +746,107 @@ export function draftDiscoveryFields(frameworkId, context = {}) {
   );
 }
 
+const EVIDENCE_FIELD_BY_FRAMEWORK = {
+  'opportunity-tree': 'opportunities',
+  csd: 'certainties',
+  'double-diamond': 'discover',
+  jtbd: 'situation',
+  'assumption-mapping': 'riskiestAssumptions',
+  'impact-mapping': 'impacts',
+  'user-story-mapping': 'tasks',
+  'service-blueprint': 'journey',
+  'value-proposition-canvas': 'fitEvidence',
+  'design-sprint': 'testResults',
+  'lean-canvas': 'problems',
+};
+const EVIDENCE_START = '--- Evidências incorporadas automaticamente ---';
+const EVIDENCE_END = '--- Fim das evidências incorporadas ---';
+const MAX_EVIDENCE_EXCERPT = 1800;
+const MAX_EVIDENCE_CONTEXT = 8000;
+
+function evidenceExcerpt(source) {
+  const normalized = textOf(source.content)
+    .replace(/^\d+\s*$/gm, '')
+    .replace(
+      /^\d{2}:\d{2}(?::\d{2})?[.,]\d{3}\s+-->\s+\d{2}:\d{2}(?::\d{2})?[.,]\d{3}.*$/gm,
+      '',
+    )
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  return normalized.slice(0, MAX_EVIDENCE_EXCERPT);
+}
+
+function evidenceBlock(sources) {
+  const entries = sources
+    .map((source) => {
+      const excerpt = evidenceExcerpt(source);
+      if (!excerpt) return '';
+      const kind = source.type === 'transcript' ? 'Transcrição' : 'Documento';
+      return `[${kind}: ${textOf(source.title) || 'sem título'}]\n${excerpt}`;
+    })
+    .filter(Boolean)
+    .join('\n\n')
+    .slice(0, MAX_EVIDENCE_CONTEXT);
+
+  return `${EVIDENCE_START}\n${entries}\n${EVIDENCE_END}`;
+}
+
+function withoutPreviousEvidence(value) {
+  const start = textOf(value).indexOf(EVIDENCE_START);
+  if (start < 0) return textOf(value);
+  const end = textOf(value).indexOf(EVIDENCE_END, start);
+  if (end < 0) return textOf(value).slice(0, start).trim();
+  return `${textOf(value).slice(0, start)}${textOf(value).slice(end + EVIDENCE_END.length)}`.trim();
+}
+
+/**
+ * Atualiza o framework com evidências da iniciativa. Texto escrito pelo PM é
+ * preservado; campos vazios recebem o rascunho base e o registro dos arquivos
+ * entra no campo mais orientado a evidência de cada framework.
+ */
+export function refreshDiscoveryWithEvidence(
+  frameworkId,
+  { product = {}, initiative = {}, evidenceSources = [], currentFields = {} } = {},
+) {
+  const framework = getFramework(frameworkId);
+  if (!framework) {
+    throw new Error('Selecione um framework antes de atualizar o discovery.');
+  }
+  if (!Array.isArray(evidenceSources) || evidenceSources.length === 0) {
+    throw new Error('Adicione ao menos um documento ou transcrição.');
+  }
+
+  const drafts = draftDiscoveryFields(frameworkId, { product, initiative });
+  const fields = { ...currentFields };
+  const updatedFields = [];
+
+  for (const field of framework.fields) {
+    if (isBlank(fields[field.key]) && !isBlank(drafts[field.key])) {
+      fields[field.key] = drafts[field.key];
+      updatedFields.push(field.key);
+    }
+  }
+
+  const evidenceField =
+    EVIDENCE_FIELD_BY_FRAMEWORK[frameworkId] ?? framework.fields[0]?.key;
+  if (!evidenceField) {
+    throw new Error('O framework não possui campo para receber evidências.');
+  }
+  fields[evidenceField] = joinBlocks(
+    withoutPreviousEvidence(fields[evidenceField]),
+    evidenceBlock(evidenceSources),
+  );
+  if (!updatedFields.includes(evidenceField)) updatedFields.push(evidenceField);
+
+  return {
+    fields,
+    evidenceField,
+    updatedFields,
+    sourceIds: evidenceSources.map((source) => source.id),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
 function openQuestions({ initiative = {} }) {
   const questions = [];
 

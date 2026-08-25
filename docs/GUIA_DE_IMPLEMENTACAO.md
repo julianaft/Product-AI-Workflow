@@ -379,13 +379,17 @@ montagem das etapas.
 7. **`discovery/DiscoveryFormStep.jsx`** — renderiza os campos do framework ativo
    a partir dos metadados, já traz rascunho baseado no problema, na dor e na
    entrega da iniciativa (sem sobrescrever texto do PM), oferece sugestão por
-   campo e "preencher vazios", roda a revisão e exige aprovação humana.
+   campo e "preencher vazios", aceita documentos/transcrições por iniciativa,
+   atualiza o template com fontes identificadas, roda a revisão e exige
+   aprovação humana. `DiscoveryEvidenceSources.jsx` extrai DOCX com `mammoth` e
+   lê TXT, MD, DOC/HTML, SRT e VTT diretamente no navegador.
 8. **`prd/PrdStep.jsx`** — gera o PRD, mostra metadados e seções editáveis,
    perguntas em aberto e referências; abaixo do documento fica o chat de
    revisão (cada mensagem gera uma nova versão), seguido de aprovar/reabrir,
    exportar DOC compatível com Google Docs e copiar o conteúdo formatado.
-9. **`businessmap/BusinessmapStep.jsx`** — etapa opcional que mostra a prévia do
-   template e chama o backend para criar um card sempre do tipo `Story`.
+9. **`businessmap/BusinessmapStep.jsx`** — etapa opcional marcada como WIP, com
+   logo oficial, que mostra a prévia do template e chama o backend para criar um
+   card sempre do tipo `Story`.
 
 Padrão comum: cada etapa recebe `onNext`, lê `validateStep`, exibe bloqueios em
 `StepActions` e escreve no estado via `dispatch`.

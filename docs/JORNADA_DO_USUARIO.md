@@ -55,10 +55,11 @@ o setup geral.
 2. **Classificação:** a skill sugere incremental ou novo fluxo; o PM confirma.
 3. **Framework:** a skill recomenda um dos métodos disponíveis; o PM escolhe.
 4. **Discovery:** os campos já recebem rascunhos baseados na dor e na entrega;
-   o PM revisa e aprova.
+   o PM pode anexar documentos e transcrições da iniciativa, atualizar o
+   template com essas evidências, revisar e aprovar.
 5. **PRD:** gera o documento, permite edição e conversa no chat para responder
    perguntas ou pedir novas versões; depois aprova e exporta em DOC/Google Docs.
-6. **Story no Businessmap (opcional):** mostra a prévia no template do time e
+6. **Story no Businessmap (opcional, WIP):** mostra a prévia no template do time e
    cria o card sempre com o tipo `Story`, no workflow de cards e na coluna
    `Requested` do board configurado. O PM também pode pular e voltar depois.
 
@@ -69,6 +70,8 @@ o setup geral.
   registros independentes.
 - A IA sugere; classificação, discovery e PRD mantêm gates humanos.
 - Lacunas viram perguntas em aberto, não conteúdo inventado.
+- Documentos e transcrições são isolados por iniciativa. Nova evidência derruba
+  a aprovação anterior até o template ser atualizado e revisado novamente.
 - Miro e NotebookLM entram como links; o conteúdo desses links não é lido.
 - A chave do Businessmap fica no `localStorage` somente neste MVP. Em produção,
   precisa ser migrada para um cofre de segredos no backend.
