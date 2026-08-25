@@ -359,7 +359,7 @@ montagem das etapas.
 
 **Objetivo:** separar identidade, configuração estável e trabalho por iniciativa.
 
-1. **`auth/MockLoginPage.jsx`** — simula o login Google por e-mail. Cada conta
+1. **`auth/MockLoginPage.jsx`** — identifica o acesso por e-mail Google. Cada conta
    carrega uma chave própria de workspace no storage.
 2. **`workspace/ProjectSetupPage.jsx`** — envolve o formulário de contexto com
    Produto, PM,

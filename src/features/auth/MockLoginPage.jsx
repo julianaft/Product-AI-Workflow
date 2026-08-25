@@ -12,7 +12,7 @@ export function MockLoginPage() {
     event.preventDefault();
     const normalized = email.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
-      setError('Informe um e-mail válido para simular o login do Google.');
+      setError('Informe um e-mail Google válido.');
       return;
     }
     login({ email: normalized, name: name.trim() });
@@ -32,27 +32,22 @@ export function MockLoginPage() {
         </div>
 
         <form onSubmit={submit} className="p-6">
-          <p className="border border-orange rounded-xl p-3 text-sm mb-5">
-            Login Google mockado para o MVP. Os dados ficam separados por e-mail neste navegador.
-            O SSO real exigirá backend, sessão segura e autorização no servidor.
-          </p>
-
-          <label className="block text-sm font-bold mb-1" htmlFor="mock-name">
+          <label className="block text-sm font-bold mb-1" htmlFor="account-name">
             Nome
           </label>
           <input
-            id="mock-name"
+            id="account-name"
             className={`${INPUT} mb-4`}
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Seu nome"
           />
 
-          <label className="block text-sm font-bold mb-1" htmlFor="mock-email">
+          <label className="block text-sm font-bold mb-1" htmlFor="account-email">
             E-mail Google
           </label>
           <input
-            id="mock-email"
+            id="account-email"
             type="email"
             className={INPUT}
             value={email}
@@ -71,7 +66,7 @@ export function MockLoginPage() {
             <span className="inline-block bg-white text-blue rounded-full w-6 h-6 mr-2 leading-6">
               G
             </span>
-            Continuar com Google (mock)
+            Continuar com Google
           </button>
         </form>
       </div>

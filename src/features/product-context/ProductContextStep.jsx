@@ -113,8 +113,8 @@ export function ProductContextStep({ onNext }) {
           autoComplete="off"
         />
         <p className="text-xs border border-orange rounded-xl p-3">
-          Não use esta estratégia em produção. Com SSO real, a chave deve ficar
-          em um cofre de segredos no backend, nunca no navegador.
+          A chave deve ficar em um cofre de segredos no backend, nunca exposta
+          no navegador.
         </p>
       </section>
 

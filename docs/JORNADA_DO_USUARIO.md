@@ -1,6 +1,6 @@
 # Jornada do usuário — PM Builder
 
-Persona principal: **Product Manager**. O MVP simula o login Google, gera o PRD
+Persona principal: **Product Manager**. A plataforma usa login Google, gera o PRD
 e permite criar uma Story no Businessmap como etapa final opcional.
 
 ## Visão da plataforma

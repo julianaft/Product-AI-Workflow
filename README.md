@@ -1,6 +1,6 @@
 # PM Builder — da iniciativa à entrega
 
-Aplicação React para Product Managers, com login Google mockado, configuração
+Aplicação React para Product Managers, com login Google, configuração
 reutilizável do projeto/time e jornadas independentes por iniciativa. Cada
 iniciativa percorre seis etapas até um PRD revisado e, opcionalmente, uma Story
 criada no Businessmap. Escrita em JavaScript puro, sem TypeScript.

@@ -1,21 +1,14 @@
 import { BUTTON } from '../../components/ui.js';
+import {
+  initiativeLastActivity,
+  initiativeStatus,
+  newestFirst,
+} from '../../services/initiativeStatus.js';
 import { useJourney } from '../../state/JourneyProvider.jsx';
 
-function initiativeStatus(journey) {
-  if (journey.prd?.status === 'approved') return 'PRD aprovado';
-  if (journey.prd?.document) return `PRD versão ${journey.prd.document.revision ?? 1}`;
-  if (journey.discovery?.approved) return 'Discovery aprovado';
-  if (journey.discovery?.framework) return 'Discovery em andamento';
-  if (journey.classification?.confirmedAt) return 'Iniciativa classificada';
-  return 'Rascunho';
-}
-
 function lastUpdate(journey) {
-  const date =
-    journey.prd?.document?.generatedAt ??
-    journey.classification?.confirmedAt ??
-    null;
-  if (!date) return 'Ainda sem geração';
+  const date = initiativeLastActivity(journey);
+  if (!date) return 'Sem atividade registrada';
   return new Date(date).toLocaleString('pt-BR');
 }
 
@@ -25,10 +18,22 @@ export function WorkspaceDashboard() {
     workspace,
     createInitiative,
     openInitiative,
+    discardInitiative,
     editSetup,
     logout,
   } = useJourney();
-  const initiatives = workspace?.initiatives ?? [];
+  const initiatives = newestFirst(workspace?.initiatives ?? []);
+
+  function discard(journey) {
+    const name = journey.initiative?.name || 'esta iniciativa';
+    if (
+      window.confirm(
+        `Descartar "${name}"? Esta ação remove o discovery e o PRD desta iniciativa deste navegador.`,
+      )
+    ) {
+      discardInitiative(journey.id);
+    }
+  }
 
   return (
     <div className="min-h-screen py-10 px-4 md:px-8">
@@ -83,10 +88,14 @@ export function WorkspaceDashboard() {
             </div>
           ) : (
             <div className="grid gap-4 p-5 md:grid-cols-2">
-              {initiatives.map((journey) => (
+              {initiatives.map((journey) => {
+                const status = initiativeStatus(journey);
+                return (
                 <article key={journey.id} className="border border-line rounded-2xl p-5">
-                  <p className="text-xs font-extrabold uppercase tracking-widest text-blue">
-                    {initiativeStatus(journey)}
+                  <p
+                    className={`${status.badgeClass} inline-block rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-widest`}
+                  >
+                    {status.label}
                   </p>
                   <h3 className="text-xl font-extrabold mt-1 mb-2">
                     {journey.initiative?.name || 'Nova iniciativa'}
@@ -95,23 +104,34 @@ export function WorkspaceDashboard() {
                     {journey.initiative?.problem || 'Complete o problema e a entrega desta iniciativa.'}
                   </p>
                   <p className="text-xs mt-4 mb-4">Última referência: {lastUpdate(journey)}</p>
-                  <button
-                    type="button"
-                    className={BUTTON.quiet}
-                    onClick={() => openInitiative(journey.id)}
-                  >
-                    Continuar iniciativa
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className={BUTTON.quiet}
+                      onClick={() => openInitiative(journey.id)}
+                    >
+                      {status.label === 'Finalizada'
+                        ? 'Ver iniciativa'
+                        : 'Continuar iniciativa'}
+                    </button>
+                    <button
+                      type="button"
+                      className="text-sm font-bold text-ember px-3 py-2"
+                      onClick={() => discard(journey)}
+                    >
+                      Descartar
+                    </button>
+                  </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
 
         <p className="text-sm border border-line rounded-xl bg-white p-4">
-          Isolamento do MVP: os dados desta conta ficam em uma chave local própria para{' '}
-          <strong>{session.email}</strong>. Em produção, o SSO e a autorização devem ser validados
-          no backend.
+          As iniciativas desta conta ficam organizadas neste projeto para{' '}
+          <strong>{session.email}</strong>.
         </p>
       </main>
     </div>
