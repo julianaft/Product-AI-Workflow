@@ -42,6 +42,20 @@ test('nova iniciativa registra datas para a ordenação do painel', () => {
   assert.equal(journey.createdAt, journey.updatedAt);
 });
 
+test('iniciativa antiga ganha data estável a partir do PRD já gerado', () => {
+  const merged = mergeJourney({
+    prd: {
+      document: {
+        title: 'PRD legado',
+        generatedAt: '2026-08-20T10:00:00.000Z',
+      },
+    },
+  });
+
+  assert.equal(merged.createdAt, '2026-08-20T10:00:00.000Z');
+  assert.equal(merged.updatedAt, '2026-08-20T10:00:00.000Z');
+});
+
 test('painel ordena por atividade recente e usa status semântico', () => {
   const finalizada = {
     id: 'finalizada',

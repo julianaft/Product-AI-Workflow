@@ -94,6 +94,15 @@ export function discoveryFields(journey) {
 export function mergeJourney(stored) {
   const base = createJourney(stored?.product);
   if (!stored || typeof stored !== 'object') return base;
+  const legacyActivityAt =
+    stored.updatedAt ??
+    stored.prd?.document?.generatedAt ??
+    stored.prd?.approvedAt ??
+    stored.discovery?.evidenceAppliedAt ??
+    stored.classification?.confirmedAt ??
+    null;
+  const createdAt = stored.createdAt ?? legacyActivityAt ?? base.createdAt;
+  const updatedAt = stored.updatedAt ?? legacyActivityAt ?? createdAt;
   const storedSources = Array.isArray(stored.product?.businessContextSources)
     ? stored.product.businessContextSources
     : [];
@@ -115,6 +124,8 @@ export function mergeJourney(stored) {
   return {
     ...base,
     ...stored,
+    createdAt,
+    updatedAt,
     activeStep: Math.max(2, Number(stored.activeStep ?? 2)),
     maxRevealedStep: Math.max(2, Number(stored.maxRevealedStep ?? 2)),
     product: {
