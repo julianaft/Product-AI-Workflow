@@ -62,6 +62,21 @@ test('sem sessão a aplicação renderiza o login Google', () => {
   assert.doesNotMatch(html, /mockado|simular/i);
 });
 
+test('setup não exige nem exibe o campo de espaço do time', () => {
+  store.clear();
+  store.set(
+    'pm-builder:mock-google-session',
+    JSON.stringify({ id: 'pm@empresa.com', email: 'pm@empresa.com', name: 'PM' }),
+  );
+
+  const html = render();
+  assert.match(html, /Setup inicial do projeto/);
+  assert.match(html, /Produto/);
+  assert.doesNotMatch(html, /Projeto \/ espaço do time/);
+  assert.doesNotMatch(html, /Informações reutilizadas em toda iniciativa/);
+  assert.doesNotMatch(html, /Integração opcional em desenvolvimento/);
+});
+
 test('com setup completo a aplicação renderiza o painel de iniciativas', () => {
   store.clear();
   store.set(

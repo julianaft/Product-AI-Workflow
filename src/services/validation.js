@@ -7,7 +7,6 @@ function blank(value) {
 }
 
 const PRODUCT_RULES = [
-  ['projectName', 'Informe o nome do projeto ou time.'],
   ['name', 'Informe o nome do produto.'],
 ];
 

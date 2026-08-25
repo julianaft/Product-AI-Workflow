@@ -43,11 +43,10 @@ export function WorkspaceDashboard() {
             {session.name} · {session.email}
           </p>
           <h1 className="text-3xl md:text-5xl font-extrabold">
-            {workspace.setup.projectName}
+            {workspace.setup.name || workspace.setup.projectName}
           </h1>
           <p className="mt-2">
-            {workspace.setup.name}
-            {workspace.setup.teamName ? ` · ${workspace.setup.teamName}` : ''}
+            {workspace.setup.teamName}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

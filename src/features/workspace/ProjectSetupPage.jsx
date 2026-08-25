@@ -37,7 +37,6 @@ export function ProjectSetupPage() {
       <main className="max-w-5xl mx-auto bg-white border border-line rounded-2xl overflow-hidden">
         <div className="bg-lime px-5 py-4">
           <p className="text-xs font-extrabold uppercase tracking-widest">Configuração geral</p>
-          <h2 className="text-2xl font-extrabold">Informações reutilizadas em toda iniciativa</h2>
           <p className="text-sm mt-2 max-w-3xl">
             Cadastre uma vez os membros do time, a documentação de negócio e os repositórios.
             Novos discoveries herdam automaticamente este contexto.

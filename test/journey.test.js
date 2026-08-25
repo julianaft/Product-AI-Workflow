@@ -175,7 +175,6 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
 
   const filled = reduce(
     empty,
-    { type: 'updateProduct', field: 'projectName', value: 'Projeto GCAM' },
     { type: 'updateProduct', field: 'name', value: 'GCAM' },
     {
       type: 'updateProduct',
@@ -201,7 +200,6 @@ test('a etapa de contexto exige produto, fonte de negócio e repositório seleci
 
 test('configuração parcial do Businessmap bloqueia o setup', () => {
   const journey = createJourney({
-    projectName: 'Projeto GCAM',
     name: 'GCAM',
     businessContextSources: [{ id: 'fonte' }],
     repositories: [{ id: 1, selected: true }],
