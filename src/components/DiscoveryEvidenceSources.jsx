@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import mammoth from 'mammoth';
 import { BUTTON } from './ui.js';
 
 const MAX_FILE_SIZE = 256 * 1024;
@@ -14,6 +13,7 @@ function htmlToText(value) {
 async function extractText(file) {
   const extension = file.name.split('.').pop()?.toLowerCase();
   if (extension === 'docx') {
+    const { default: mammoth } = await import('mammoth');
     const result = await mammoth.extractRawText({
       arrayBuffer: await file.arrayBuffer(),
     });
