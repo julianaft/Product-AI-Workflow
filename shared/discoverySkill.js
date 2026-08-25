@@ -748,7 +748,9 @@ export function draftDiscoveryFields(frameworkId, context = {}) {
 
 const EVIDENCE_FIELD_BY_FRAMEWORK = {
   'opportunity-tree': 'opportunities',
-  csd: 'certainties',
+  // Registros de reunião e documentos não viram "certeza" automaticamente:
+  // entram em Suposições até o PM confirmar a natureza da evidência.
+  csd: 'assumptions',
   'double-diamond': 'discover',
   jtbd: 'situation',
   'assumption-mapping': 'riskiestAssumptions',

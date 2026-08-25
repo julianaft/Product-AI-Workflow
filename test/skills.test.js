@@ -178,6 +178,32 @@ test('documentos e transcrições atualizam o discovery sem apagar texto do PM',
   );
 });
 
+test('transcrição entra como suposição na CSD, não como certeza automática', () => {
+  const result = refreshDiscoveryWithEvidence('csd', {
+    initiative: incrementalInitiative,
+    currentFields: {
+      certainties: 'Dado validado anteriormente pelo PM.',
+      assumptions: 'Hipótese existente.',
+      doubts: 'Pergunta existente.',
+    },
+    evidenceSources: [
+      {
+        id: 'meeting-1',
+        type: 'transcript',
+        title: 'Reunião com stakeholders.vtt',
+        content: 'A equipe acredita que a nova faixa aumentará conversão.',
+      },
+    ],
+  });
+
+  assert.equal(
+    result.fields.certainties,
+    'Dado validado anteriormente pelo PM.',
+  );
+  assert.match(result.fields.assumptions, /Reunião com stakeholders/);
+  assert.equal(result.evidenceField, 'assumptions');
+});
+
 test('revisao aponta campo obrigatorio vazio e bloqueia o PRD', () => {
   const result = reviewDiscovery({
     frameworkId: 'opportunity-tree',
